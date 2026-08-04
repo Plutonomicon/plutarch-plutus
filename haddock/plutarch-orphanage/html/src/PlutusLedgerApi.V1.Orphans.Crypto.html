@@ -2,7 +2,7 @@
 </span><span id="line-2"></span><span>
 </span><span id="line-3"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">PlutusLedgerApi.V1.Orphans.Crypto</span><span> </span><span class="hs-special">(</span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-4"></span><span>
-</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-6"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html"><span class="hs-identifier">PlutusLedgerApi.Orphans.Common</span></a></span><span> </span><span class="hs-special">(</span><span>
 </span><span id="line-7"></span><span>  </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier">Blake2b244Hash</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier">Blake2b244Hash</span></a></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
 </span><span id="line-8"></span><span> </span><span class="hs-special">)</span><span>
@@ -18,15 +18,15 @@
 
 @since 1.0.0
 -}</span></span><span>
-</span><span id="line-21"></span><span id="local-6989586621679185856"><span id="local-6989586621679185861"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span></span></span><span>
+</span><span id="line-21"></span><span id="local-6989586621679143997"><span id="local-6989586621679144002"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Arbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span></span></span><span>
 </span><span id="line-22"></span><span>
 </span><span id="line-23"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
-</span><span id="line-24"></span><span id="local-6989586621679185867"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span></span><span>
+</span><span id="line-24"></span><span id="local-6989586621679144008"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Orphans.Common.html#Blake2b244Hash"><span class="hs-identifier hs-type">Blake2b244Hash</span></a></span><span> </span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">CoArbitrary</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span></span><span>
 </span><span id="line-25"></span><span>
 </span><span id="line-26"></span><span class="annot"><span class="hs-comment">-- | @since 1.0.0</span></span><span>
 </span><span id="line-27"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Function</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLA.PubKeyHash</span></span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-28"></span><span>  </span><span class="hs-pragma">{-# INLINEABLE</span><span> </span><span class="annot"><span class="hs-pragma hs-type">function</span></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-29"></span><span>  </span><span id="local-6989586621679185879"><span class="annot"><span class="annottext">function :: forall b. (PubKeyHash -&gt; b) -&gt; PubKeyHash :-&gt; b
+</span><span id="line-29"></span><span>  </span><span id="local-6989586621679144020"><span class="annot"><span class="annottext">function :: forall b. (PubKeyHash -&gt; b) -&gt; PubKeyHash :-&gt; b
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">function</span></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(PubKeyHash -&gt; BuiltinByteString)
 -&gt; (BuiltinByteString -&gt; PubKeyHash)
 -&gt; (PubKeyHash -&gt; b)
@@ -36,6 +36,6 @@ Function b =&gt;
 (a -&gt; b) -&gt; (b -&gt; a) -&gt; (a -&gt; c) -&gt; a :-&gt; c
 </span><span class="hs-identifier hs-var">functionMap</span></span><span> </span><span class="annot"><span class="annottext">PubKeyHash -&gt; BuiltinByteString
 forall a b. Coercible a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; PubKeyHash
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; PubKeyHash
 </span><span class="hs-identifier hs-var">PLA.PubKeyHash</span></span><span>
 </span><span id="line-30"></span></pre></body></html>

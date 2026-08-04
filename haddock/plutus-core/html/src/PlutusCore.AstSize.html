@@ -16,15 +16,15 @@
 </span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusCore.Core.html"><span class="hs-identifier">PlutusCore.Core</span></a></span><span>
 </span><span id="line-17"></span><span>
 </span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Control.Lens</span></span><span>
-</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BS</span></span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Monoid.html"><span class="hs-identifier">Data.Monoid</span></a></span><span>
-</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Flat</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#to"><span class="hs-identifier">to</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">BS</span></span><span>
+</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Monoid.html"><span class="hs-identifier">Data.Monoid</span></a></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusCore.Flat</span></span><span> </span><span class="hs-keyword">hiding</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html#to"><span class="hs-identifier">to</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span>
 </span><span id="line-23"></span><span class="hs-keyword">newtype</span><span> </span><span id="AstSize"><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="AstSize"><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span></span><span>
 </span><span id="line-24"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="unAstSize"><span class="annot"><span class="annottext">AstSize -&gt; Integer
-</span><a href="PlutusCore.AstSize.html#unAstSize"><span class="hs-identifier hs-var hs-var">unAstSize</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
+</span><a href="PlutusCore.AstSize.html#unAstSize"><span class="hs-identifier hs-var hs-var">unAstSize</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-25"></span><span>  </span><span class="hs-special">}</span><span>
-</span><span id="line-26"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682261580"><span id="local-6989586621682261586"><span id="local-6989586621682261590"><span class="annot"><span class="annottext">Int -&gt; AstSize -&gt; ShowS
+</span><span id="line-26"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682222388"><span id="local-6989586621682222394"><span id="local-6989586621682222398"><span class="annot"><span class="annottext">Int -&gt; AstSize -&gt; ShowS
 [AstSize] -&gt; ShowS
 AstSize -&gt; String
 (Int -&gt; AstSize -&gt; ShowS)
@@ -37,8 +37,8 @@ $cshow :: AstSize -&gt; String
 show :: AstSize -&gt; String
 $cshowList :: [AstSize] -&gt; ShowS
 showList :: [AstSize] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682261594"><span id="local-6989586621682261599"><span class="annot"><span class="annottext">(forall ann. AstSize -&gt; Doc ann)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682222402"><span id="local-6989586621682222407"><span class="annot"><span class="annottext">(forall ann. AstSize -&gt; Doc ann)
 -&gt; (forall ann. [AstSize] -&gt; Doc ann) -&gt; Pretty AstSize
 forall ann. [AstSize] -&gt; Doc ann
 forall ann. AstSize -&gt; Doc ann
@@ -49,7 +49,7 @@ $cpretty :: forall ann. AstSize -&gt; Doc ann
 pretty :: forall ann. AstSize -&gt; Doc ann
 $cprettyList :: forall ann. [AstSize] -&gt; Doc ann
 prettyList :: forall ann. [AstSize] -&gt; Doc ann
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682261605"><span id="local-6989586621682261610"><span class="annot"><span class="annottext">AstSize -&gt; AstSize -&gt; Bool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682222413"><span id="local-6989586621682222418"><span class="annot"><span class="annottext">AstSize -&gt; AstSize -&gt; Bool
 (AstSize -&gt; AstSize -&gt; Bool)
 -&gt; (AstSize -&gt; AstSize -&gt; Bool) -&gt; Eq AstSize
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -57,7 +57,7 @@ $c== :: AstSize -&gt; AstSize -&gt; Bool
 == :: AstSize -&gt; AstSize -&gt; Bool
 $c/= :: AstSize -&gt; AstSize -&gt; Bool
 /= :: AstSize -&gt; AstSize -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682261618"><span id="local-6989586621682261623"><span id="local-6989586621682261627"><span id="local-6989586621682261631"><span id="local-6989586621682261635"><span id="local-6989586621682261639"><span id="local-6989586621682261643"><span class="annot"><span class="annottext">Eq AstSize
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682222426"><span id="local-6989586621682222431"><span id="local-6989586621682222435"><span id="local-6989586621682222439"><span id="local-6989586621682222443"><span id="local-6989586621682222447"><span id="local-6989586621682222451"><span class="annot"><span class="annottext">Eq AstSize
 Eq AstSize =&gt;
 (AstSize -&gt; AstSize -&gt; Ordering)
 -&gt; (AstSize -&gt; AstSize -&gt; Bool)
@@ -94,7 +94,7 @@ $cmax :: AstSize -&gt; AstSize -&gt; AstSize
 max :: AstSize -&gt; AstSize -&gt; AstSize
 $cmin :: AstSize -&gt; AstSize -&gt; AstSize
 min :: AstSize -&gt; AstSize -&gt; AstSize
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682261649"><span id="local-6989586621682261654"><span id="local-6989586621682261658"><span id="local-6989586621682261662"><span id="local-6989586621682261666"><span id="local-6989586621682261670"><span id="local-6989586621682261674"><span class="annot"><span class="annottext">Integer -&gt; AstSize
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682222457"><span id="local-6989586621682222462"><span id="local-6989586621682222466"><span id="local-6989586621682222470"><span id="local-6989586621682222474"><span id="local-6989586621682222478"><span id="local-6989586621682222482"><span class="annot"><span class="annottext">Integer -&gt; AstSize
 AstSize -&gt; AstSize
 AstSize -&gt; AstSize -&gt; AstSize
 (AstSize -&gt; AstSize -&gt; AstSize)
@@ -128,9 +128,9 @@ $csignum :: AstSize -&gt; AstSize
 signum :: AstSize -&gt; AstSize
 $cfromInteger :: Integer -&gt; AstSize
 fromInteger :: Integer -&gt; AstSize
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682261679"><span id="local-6989586621682261681"><span id="local-6989586621682261688"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682261679"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682261697"><span id="local-6989586621682261703"><span id="local-6989586621682261710"><span class="annot"><span class="annottext">NonEmpty AstSize -&gt; AstSize
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Num.html#Num"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Num</span></a></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-28"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682222487"><span id="local-6989586621682222489"><span id="local-6989586621682222496"><span class="annot"><span class="hs-identifier hs-type">PrettyBy</span></span><span> </span><span class="annot"><a href="#local-6989586621682222487"><span class="hs-identifier hs-type">config</span></a></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-29"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621682222505"><span id="local-6989586621682222511"><span id="local-6989586621682222518"><span class="annot"><span class="annottext">NonEmpty AstSize -&gt; AstSize
 AstSize -&gt; AstSize -&gt; AstSize
 (AstSize -&gt; AstSize -&gt; AstSize)
 -&gt; (NonEmpty AstSize -&gt; AstSize)
@@ -148,7 +148,7 @@ $csconcat :: NonEmpty AstSize -&gt; AstSize
 sconcat :: NonEmpty AstSize -&gt; AstSize
 $cstimes :: forall b. Integral b =&gt; b -&gt; AstSize -&gt; AstSize
 stimes :: forall b. Integral b =&gt; b -&gt; AstSize -&gt; AstSize
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682261721"><span id="local-6989586621682261727"><span id="local-6989586621682261732"><span class="annot"><span class="annottext">Semigroup AstSize
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#Semigroup"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Semigroup</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682222529"><span id="local-6989586621682222535"><span id="local-6989586621682222540"><span class="annot"><span class="annottext">Semigroup AstSize
 AstSize
 Semigroup AstSize =&gt;
 AstSize
@@ -166,7 +166,7 @@ $cmappend :: AstSize -&gt; AstSize -&gt; AstSize
 mappend :: AstSize -&gt; AstSize -&gt; AstSize
 $cmconcat :: [AstSize] -&gt; AstSize
 mconcat :: [AstSize] -&gt; AstSize
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Semigroup.Internal.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#Monoid"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Monoid</span></a></span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Semigroup.Internal.html#Sum"><span class="hs-identifier hs-type">Sum</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span>
 </span><span id="line-30"></span><span>
 </span><span id="line-31"></span><span class="annot"><span class="hs-comment">{-| Count the number of AST nodes in a kind.
 
@@ -174,19 +174,19 @@ mconcat :: [AstSize] -&gt; AstSize
 AstSize {unAstSize = 1}
 &gt;&gt;&gt; kindAstSize $ KindArrow () (KindArrow () (Type ()) (Type ())) (Type ())
 AstSize {unAstSize = 5} -}</span></span><span>
-</span><span id="line-37"></span><span id="local-6989586621682261461"><span class="annot"><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-type">kindAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Kind"><span class="hs-identifier hs-type">Kind</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261461"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span><span>
+</span><span id="line-37"></span><span id="local-6989586621682222269"><span class="annot"><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-type">kindAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Kind"><span class="hs-identifier hs-type">Kind</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222269"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span><span>
 </span><span id="line-38"></span><span id="kindAstSize"><span class="annot"><span class="annottext">kindAstSize :: forall a. Kind a -&gt; AstSize
-</span><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-var hs-var">kindAstSize</span></a></span></span><span> </span><span id="local-6989586621682261747"><span class="annot"><span class="annottext">Kind a
-</span><a href="#local-6989586621682261747"><span class="hs-identifier hs-var">kind</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-var hs-var">kindAstSize</span></a></span></span><span> </span><span id="local-6989586621682222555"><span class="annot"><span class="annottext">Kind a
+</span><a href="#local-6989586621682222555"><span class="hs-identifier hs-var">kind</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-39"></span><span>  </span><span class="annot"><span class="annottext">[AstSize] -&gt; AstSize
 forall m. Monoid m =&gt; [m] -&gt; m
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
 </span><span id="line-40"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-41"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Kind a
-</span><a href="#local-6989586621682261747"><span class="hs-identifier hs-var">kind</span></a></span><span> </span><span class="annot"><span class="annottext">Kind a -&gt; Getting AstSize (Kind a) AstSize -&gt; AstSize
+</span><a href="#local-6989586621682222555"><span class="hs-identifier hs-var">kind</span></a></span><span> </span><span class="annot"><span class="annottext">Kind a -&gt; Getting AstSize (Kind a) AstSize -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
 </span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Kind a -&gt; Const AstSize (Kind a))
 -&gt; Kind a -&gt; Const AstSize (Kind a)
@@ -198,7 +198,7 @@ Applicative f =&gt;
 -&gt; Getting AstSize (Kind a) AstSize
 -&gt; Getting AstSize (Kind a) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind a -&gt; AstSize) -&gt; Getting AstSize (Kind a) AstSize
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind a -&gt; AstSize) -&gt; Getting AstSize (Kind a) AstSize
 forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 (Profunctor p, Contravariant f) =&gt;
 (s -&gt; a) -&gt; Optic' p f s a
@@ -208,19 +208,19 @@ forall a. Kind a -&gt; AstSize
 </span><span id="line-42"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-43"></span><span>
 </span><span id="line-44"></span><span class="annot"><span class="hs-comment">-- | Count the number of AST nodes in a type.</span></span><span>
-</span><span id="line-45"></span><span id="local-6989586621682261484"><span id="local-6989586621682261485"><span id="local-6989586621682261486"><span class="annot"><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-type">typeAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261484"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261485"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261486"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span><span>
+</span><span id="line-45"></span><span id="local-6989586621682222292"><span id="local-6989586621682222293"><span id="local-6989586621682222294"><span class="annot"><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-type">typeAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222292"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222293"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222294"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span><span>
 </span><span id="line-46"></span><span id="typeAstSize"><span class="annot"><span class="annottext">typeAstSize :: forall tyname (uni :: * -&gt; *) ann. Type tyname uni ann -&gt; AstSize
-</span><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-var hs-var">typeAstSize</span></a></span></span><span> </span><span id="local-6989586621682261761"><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682261761"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-var hs-var">typeAstSize</span></a></span></span><span> </span><span id="local-6989586621682222569"><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682222569"><span class="hs-identifier hs-var">ty</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-47"></span><span>  </span><span class="annot"><span class="annottext">[AstSize] -&gt; AstSize
 forall m. Monoid m =&gt; [m] -&gt; m
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
 </span><span id="line-48"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-49"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682261761"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682222569"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
 -&gt; Getting AstSize (Type tyname uni ann) AstSize -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
 </span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; Const AstSize (Kind ann))
@@ -235,7 +235,7 @@ Applicative f =&gt;
     -&gt; Kind ann -&gt; Const AstSize (Kind ann))
 -&gt; Getting AstSize (Type tyname uni ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
 -&gt; (AstSize -&gt; Const AstSize AstSize)
 -&gt; Kind ann
 -&gt; Const AstSize (Kind ann)
@@ -246,7 +246,7 @@ forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 forall a. Kind a -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-var">kindAstSize</span></a></span><span>
 </span><span id="line-50"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
-</span><a href="#local-6989586621682261761"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
+</span><a href="#local-6989586621682222569"><span class="hs-identifier hs-var">ty</span></a></span><span> </span><span class="annot"><span class="annottext">Type tyname uni ann
 -&gt; Getting AstSize (Type tyname uni ann) AstSize -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
 </span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; Const AstSize (Type tyname uni ann))
@@ -260,7 +260,7 @@ Applicative f =&gt;
 -&gt; Getting AstSize (Type tyname uni ann) AstSize
 -&gt; Getting AstSize (Type tyname uni ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
 -&gt; Getting AstSize (Type tyname uni ann) AstSize
 forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 (Profunctor p, Contravariant f) =&gt;
@@ -270,19 +270,19 @@ forall tyname (uni :: * -&gt; *) ann. Type tyname uni ann -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-var">typeAstSize</span></a></span><span>
 </span><span id="line-51"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-52"></span><span>
-</span><span id="line-53"></span><span id="local-6989586621682261499"><span id="local-6989586621682261500"><span class="annot"><a href="PlutusCore.AstSize.html#tyVarDeclAstSize"><span class="hs-identifier hs-type">tyVarDeclAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyVarDecl"><span class="hs-identifier hs-type">TyVarDecl</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261499"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261500"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span><span>
+</span><span id="line-53"></span><span id="local-6989586621682222307"><span id="local-6989586621682222308"><span class="annot"><a href="PlutusCore.AstSize.html#tyVarDeclAstSize"><span class="hs-identifier hs-type">tyVarDeclAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#TyVarDecl"><span class="hs-identifier hs-type">TyVarDecl</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222307"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222308"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span><span>
 </span><span id="line-54"></span><span id="tyVarDeclAstSize"><span class="annot"><span class="annottext">tyVarDeclAstSize :: forall tyname ann. TyVarDecl tyname ann -&gt; AstSize
-</span><a href="PlutusCore.AstSize.html#tyVarDeclAstSize"><span class="hs-identifier hs-var hs-var">tyVarDeclAstSize</span></a></span></span><span> </span><span id="local-6989586621682261769"><span class="annot"><span class="annottext">TyVarDecl tyname ann
-</span><a href="#local-6989586621682261769"><span class="hs-identifier hs-var">tyVarDecl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.AstSize.html#tyVarDeclAstSize"><span class="hs-identifier hs-var hs-var">tyVarDeclAstSize</span></a></span></span><span> </span><span id="local-6989586621682222577"><span class="annot"><span class="annottext">TyVarDecl tyname ann
+</span><a href="#local-6989586621682222577"><span class="hs-identifier hs-var">tyVarDecl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-55"></span><span>  </span><span class="annot"><span class="annottext">[AstSize] -&gt; AstSize
 forall m. Monoid m =&gt; [m] -&gt; m
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
 </span><span id="line-56"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-57"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">TyVarDecl tyname ann
-</span><a href="#local-6989586621682261769"><span class="hs-identifier hs-var">tyVarDecl</span></a></span><span> </span><span class="annot"><span class="annottext">TyVarDecl tyname ann
+</span><a href="#local-6989586621682222577"><span class="hs-identifier hs-var">tyVarDecl</span></a></span><span> </span><span class="annot"><span class="annottext">TyVarDecl tyname ann
 -&gt; Getting AstSize (TyVarDecl tyname ann) AstSize -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
 </span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; Const AstSize (Kind ann))
@@ -297,7 +297,7 @@ Applicative f =&gt;
     -&gt; Kind ann -&gt; Const AstSize (Kind ann))
 -&gt; Getting AstSize (TyVarDecl tyname ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
 -&gt; (AstSize -&gt; Const AstSize AstSize)
 -&gt; Kind ann
 -&gt; Const AstSize (Kind ann)
@@ -310,20 +310,20 @@ forall a. Kind a -&gt; AstSize
 </span><span id="line-58"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-59"></span><span>
 </span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | Count the number of AST nodes in a term.</span></span><span>
-</span><span id="line-61"></span><span id="local-6989586621682261507"><span id="local-6989586621682261508"><span id="local-6989586621682261509"><span id="local-6989586621682261510"><span id="local-6989586621682261511"><span class="annot"><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-type">termAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261507"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261508"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261509"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261510"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261511"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span></span><span>
+</span><span id="line-61"></span><span id="local-6989586621682222315"><span id="local-6989586621682222316"><span id="local-6989586621682222317"><span id="local-6989586621682222318"><span id="local-6989586621682222319"><span class="annot"><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-type">termAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Term"><span class="hs-identifier hs-type">Term</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222315"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222316"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222317"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222318"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222319"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span></span><span>
 </span><span id="line-62"></span><span id="termAstSize"><span class="annot"><span class="annottext">termAstSize :: forall tyname name (uni :: * -&gt; *) fun ann.
 Term tyname name uni fun ann -&gt; AstSize
-</span><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-var hs-var">termAstSize</span></a></span></span><span> </span><span id="local-6989586621682261782"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261782"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-var hs-var">termAstSize</span></a></span></span><span> </span><span id="local-6989586621682222590"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682222590"><span class="hs-identifier hs-var">term</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-63"></span><span>  </span><span class="annot"><span class="annottext">[AstSize] -&gt; AstSize
 forall m. Monoid m =&gt; [m] -&gt; m
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
 </span><span id="line-64"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-65"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261782"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682222590"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
@@ -341,7 +341,7 @@ Applicative f =&gt;
     -&gt; Kind ann -&gt; Const AstSize (Kind ann))
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Kind ann -&gt; AstSize)
 -&gt; (AstSize -&gt; Const AstSize AstSize)
 -&gt; Kind ann
 -&gt; Const AstSize (Kind ann)
@@ -352,7 +352,7 @@ forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 forall a. Kind a -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#kindAstSize"><span class="hs-identifier hs-var">kindAstSize</span></a></span><span>
 </span><span id="line-66"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261782"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682222590"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
@@ -370,7 +370,7 @@ Applicative f =&gt;
     -&gt; Type tyname uni ann -&gt; Const AstSize (Type tyname uni ann))
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
 -&gt; (AstSize -&gt; Const AstSize AstSize)
 -&gt; Type tyname uni ann
 -&gt; Const AstSize (Type tyname uni ann)
@@ -381,7 +381,7 @@ forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 forall tyname (uni :: * -&gt; *) ann. Type tyname uni ann -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#typeAstSize"><span class="hs-identifier hs-var">typeAstSize</span></a></span><span>
 </span><span id="line-67"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261782"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682222590"><span class="hs-identifier hs-var">term</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
@@ -400,7 +400,7 @@ Applicative f =&gt;
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Term tyname name uni fun ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Term tyname name uni fun ann -&gt; AstSize)
 -&gt; Getting AstSize (Term tyname name uni fun ann) AstSize
 forall (p :: * -&gt; * -&gt; *) (f :: * -&gt; *) s a.
 (Profunctor p, Contravariant f) =&gt;
@@ -411,20 +411,20 @@ Term tyname name uni fun ann -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-var">termAstSize</span></a></span><span>
 </span><span id="line-68"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-69"></span><span>
-</span><span id="line-70"></span><span id="local-6989586621682261536"><span id="local-6989586621682261537"><span id="local-6989586621682261538"><span id="local-6989586621682261539"><span class="annot"><a href="PlutusCore.AstSize.html#varDeclAstSize"><span class="hs-identifier hs-type">varDeclAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#VarDecl"><span class="hs-identifier hs-type">VarDecl</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261536"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261537"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261538"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261539"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span><span>
+</span><span id="line-70"></span><span id="local-6989586621682222344"><span id="local-6989586621682222345"><span id="local-6989586621682222346"><span id="local-6989586621682222347"><span class="annot"><a href="PlutusCore.AstSize.html#varDeclAstSize"><span class="hs-identifier hs-type">varDeclAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#VarDecl"><span class="hs-identifier hs-type">VarDecl</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222344"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222345"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222346"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222347"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span><span>
 </span><span id="line-71"></span><span id="varDeclAstSize"><span class="annot"><span class="annottext">varDeclAstSize :: forall tyname name (uni :: * -&gt; *) ann.
 VarDecl tyname name uni ann -&gt; AstSize
-</span><a href="PlutusCore.AstSize.html#varDeclAstSize"><span class="hs-identifier hs-var hs-var">varDeclAstSize</span></a></span></span><span> </span><span id="local-6989586621682261791"><span class="annot"><span class="annottext">VarDecl tyname name uni ann
-</span><a href="#local-6989586621682261791"><span class="hs-identifier hs-var">varDecl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="PlutusCore.AstSize.html#varDeclAstSize"><span class="hs-identifier hs-var hs-var">varDeclAstSize</span></a></span></span><span> </span><span id="local-6989586621682222599"><span class="annot"><span class="annottext">VarDecl tyname name uni ann
+</span><a href="#local-6989586621682222599"><span class="hs-identifier hs-var">varDecl</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-72"></span><span>  </span><span class="annot"><span class="annottext">[AstSize] -&gt; AstSize
 forall m. Monoid m =&gt; [m] -&gt; m
 forall (t :: * -&gt; *) m. (Foldable t, Monoid m) =&gt; t m -&gt; m
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Foldable.html#fold"><span class="hs-identifier hs-var">fold</span></a></span><span>
 </span><span id="line-73"></span><span>    </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">Integer -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-var">AstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Integer
 </span><span class="hs-number">1</span></span><span>
 </span><span id="line-74"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">VarDecl tyname name uni ann
-</span><a href="#local-6989586621682261791"><span class="hs-identifier hs-var">varDecl</span></a></span><span> </span><span class="annot"><span class="annottext">VarDecl tyname name uni ann
+</span><a href="#local-6989586621682222599"><span class="hs-identifier hs-var">varDecl</span></a></span><span> </span><span class="annot"><span class="annottext">VarDecl tyname name uni ann
 -&gt; Getting AstSize (VarDecl tyname name uni ann) AstSize -&gt; AstSize
 forall s a. s -&gt; Getting a s a -&gt; a
 </span><span class="hs-operator hs-var">^.</span></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; Const AstSize (Type tyname uni ann))
@@ -441,7 +441,7 @@ Applicative f =&gt;
     -&gt; Type tyname uni ann -&gt; Const AstSize (Type tyname uni ann))
 -&gt; Getting AstSize (VarDecl tyname name uni ann) AstSize
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">(Type tyname uni ann -&gt; AstSize)
 -&gt; (AstSize -&gt; Const AstSize AstSize)
 -&gt; Type tyname uni ann
 -&gt; Const AstSize (Type tyname uni ann)
@@ -454,29 +454,29 @@ forall tyname (uni :: * -&gt; *) ann. Type tyname uni ann -&gt; AstSize
 </span><span id="line-75"></span><span>    </span><span class="hs-special">]</span><span>
 </span><span id="line-76"></span><span>
 </span><span id="line-77"></span><span class="annot"><span class="hs-comment">-- | Count the number of AST nodes in a program.</span></span><span>
-</span><span id="line-78"></span><span id="local-6989586621682261550"><span id="local-6989586621682261551"><span id="local-6989586621682261552"><span id="local-6989586621682261553"><span id="local-6989586621682261554"><span class="annot"><a href="PlutusCore.AstSize.html#programAstSize"><span class="hs-identifier hs-type">programAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261550"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261551"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261552"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261553"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682261554"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span></span><span>
+</span><span id="line-78"></span><span id="local-6989586621682222358"><span id="local-6989586621682222359"><span id="local-6989586621682222360"><span id="local-6989586621682222361"><span id="local-6989586621682222362"><span class="annot"><a href="PlutusCore.AstSize.html#programAstSize"><span class="hs-identifier hs-type">programAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222358"><span class="hs-identifier hs-type">tyname</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222359"><span class="hs-identifier hs-type">name</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222360"><span class="hs-identifier hs-type">uni</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222361"><span class="hs-identifier hs-type">fun</span></a></span><span> </span><span class="annot"><a href="#local-6989586621682222362"><span class="hs-identifier hs-type">ann</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusCore.AstSize.html#AstSize"><span class="hs-identifier hs-type">AstSize</span></a></span></span></span></span></span></span><span>
 </span><span id="line-79"></span><span id="programAstSize"><span class="annot"><span class="annottext">programAstSize :: forall tyname name (uni :: * -&gt; *) fun ann.
 Program tyname name uni fun ann -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#programAstSize"><span class="hs-identifier hs-var hs-var">programAstSize</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusCore.Core.Type.html#Program"><span class="hs-identifier hs-type">Program</span></a></span><span> </span><span class="annot"><span class="annottext">ann
 </span><span class="hs-identifier">_</span></span><span> </span><span class="annot"><span class="annottext">Version
-</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682261794"><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261794"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann -&gt; AstSize
+</span><span class="hs-identifier">_</span></span><span> </span><span id="local-6989586621682222602"><span class="annot"><span class="annottext">Term tyname name uni fun ann
+</span><a href="#local-6989586621682222602"><span class="hs-identifier hs-var">t</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann -&gt; AstSize
 forall tyname name (uni :: * -&gt; *) fun ann.
 Term tyname name uni fun ann -&gt; AstSize
 </span><a href="PlutusCore.AstSize.html#termAstSize"><span class="hs-identifier hs-var">termAstSize</span></a></span><span> </span><span class="annot"><span class="annottext">Term tyname name uni fun ann
-</span><a href="#local-6989586621682261794"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><a href="#local-6989586621682222602"><span class="hs-identifier hs-var">t</span></a></span><span>
 </span><span id="line-80"></span><span>
 </span><span id="line-81"></span><span class="annot"><span class="hs-comment">-- | Compute the size of the serializabled form of a value.</span></span><span>
-</span><span id="line-82"></span><span id="local-6989586621682261562"><span class="annot"><a href="PlutusCore.AstSize.html#serialisedAstSize"><span class="hs-identifier hs-type">serialisedAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flat</span></span><span> </span><span class="annot"><a href="#local-6989586621682261562"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621682261562"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span></span><span>
+</span><span id="line-82"></span><span id="local-6989586621682222370"><span class="annot"><a href="PlutusCore.AstSize.html#serialisedAstSize"><span class="hs-identifier hs-type">serialisedAstSize</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Flat</span></span><span> </span><span class="annot"><a href="#local-6989586621682222370"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span> </span><span class="annot"><a href="#local-6989586621682222370"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span></span><span>
 </span><span id="line-83"></span><span id="serialisedAstSize"><span class="annot"><span class="annottext">serialisedAstSize :: forall a. Flat a =&gt; a -&gt; Integer
 </span><a href="PlutusCore.AstSize.html#serialisedAstSize"><span class="hs-identifier hs-var hs-var">serialisedAstSize</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Integer
 forall a b. (Integral a, Num b) =&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Integer) -&gt; (a -&gt; Int) -&gt; a -&gt; Integer
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Real.html#fromIntegral"><span class="hs-identifier hs-var">fromIntegral</span></a></span><span> </span><span class="annot"><span class="annottext">(Int -&gt; Integer) -&gt; (a -&gt; Int) -&gt; a -&gt; Integer
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
-</span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html#length"><span class="hs-identifier hs-var">BS.length</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Int) -&gt; (a -&gt; ByteString) -&gt; a -&gt; Int
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; Int
+</span><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.html#length"><span class="hs-identifier hs-var">BS.length</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; Int) -&gt; (a -&gt; ByteString) -&gt; a -&gt; Int
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; ByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; ByteString
 forall a. Flat a =&gt; a -&gt; ByteString
 </span><span class="hs-identifier hs-var">flat</span></span><span>
 </span><span id="line-84"></span></pre></body></html>

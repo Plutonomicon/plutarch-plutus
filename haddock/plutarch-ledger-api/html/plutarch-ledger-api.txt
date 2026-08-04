@@ -18,9 +18,9 @@ newtype PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
 PAssocMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
 data MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
 MergeHandler :: BothPresentHandler s k a b c -> OnePresentHandler s k a c -> OnePresentHandler s k b c -> MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
-[mhBothPresent] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> BothPresentHandler s k a b c
-[mhLeftPresent] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> OnePresentHandler s k a c
-[mhRightPresent] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> OnePresentHandler s k b c
+[$sel:mhBothPresent:MergeHandler] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> BothPresentHandler s k a b c
+[$sel:mhLeftPresent:MergeHandler] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> OnePresentHandler s k a c
+[$sel:mhRightPresent:MergeHandler] :: MergeHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) -> OnePresentHandler s k b c
 data BothPresentHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
 DropBoth :: BothPresentHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
 HandleBoth :: Term s (k :--> (a :--> (b :--> c))) -> BothPresentHandler (s :: S) (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type)
@@ -39,9 +39,9 @@ psingleton :: forall (t :: (S -> Type) -> (S -> Type) -> S -> Type) (k :: S -> T
 -- | Construct a singleton map with the given data-encoded key and value.
 psingletonData :: forall (t :: (S -> Type) -> (S -> Type) -> S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). PInner (t k v) ~ PAssocMap k v => Term s (PAsData k :--> (PAsData v :--> t k v))
 
-punsortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) f (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PUnsortedMap k v)
+punsortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S). (Foldable f, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PUnsortedMap k v)
 
-psortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) f (s :: S). (Foldable f, POrd k, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PSortedMap k v)
+psortedMapFromFoldable :: forall (k :: S -> Type) (v :: S -> Type) (f :: Type -> Type) (s :: S). (Foldable f, POrd k, PIsData k, PIsData v) => f (Term s k, Term s v) -> Term s (PSortedMap k v)
 
 -- | Attempt to promote <a>PUnsortedMap</a> to <a>PSortedMap</a>. This
 --   function checks that the keys in the input map are in strictly
@@ -118,7 +118,7 @@ pany :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). PIsData v => Term s (
 
 -- | Project all key-value pairs into a <a>Monoid</a>, then combine. Keys
 --   and values will be presented in key order.
-pfoldMapWithKey :: forall (m :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v, forall (s' :: S). () => Monoid (Term s' m)) => Term s ((k :--> (v :--> m)) :--> (PUnsortedMap k v :--> m))
+pfoldMapWithKey :: forall (m :: S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, PIsData v, forall (s' :: S). Monoid (Term s' m)) => Term s ((k :--> (v :--> m)) :--> (PUnsortedMap k v :--> m))
 
 -- | Left-associative fold with keys. Keys and values will be presented in
 --   key order.
@@ -173,7 +173,7 @@ pdifferenceWith :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (s 
 
 -- | Zip two <a>PSortedMap</a>s, using the given value merge function for
 --   key collisions, and different values for the sides.
-pzipWithDefaults :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData a, PIsData b, PIsData c) => (forall (s' :: S). () => Term s' a) -> (forall (s' :: S). () => Term s' b) -> Term s ((a :--> (b :--> c)) :--> (PSortedMap k a :--> (PSortedMap k b :--> PSortedMap k c)))
+pzipWithDefaults :: forall (k :: S -> Type) (a :: S -> Type) (b :: S -> Type) (c :: S -> Type) (s :: S). (POrd k, PIsData k, PIsData a, PIsData b, PIsData c) => (forall (s' :: S). Term s' a) -> (forall (s' :: S). Term s' b) -> Term s ((a :--> (b :--> c)) :--> (PSortedMap k a :--> (PSortedMap k b :--> PSortedMap k c)))
 
 -- | Build the intersection of two <a>PSortedMap</a>s, merging values that
 --   share the same key using the given function.
@@ -255,28 +255,28 @@ pkvPairLt :: forall (k :: S -> Type) (v :: S -> Type) (s :: S). (PIsData k, POrd
 --   we have arranged the type signature to make specifying this easy with
 --   <tt>TypeApplications</tt>.
 pkeys :: forall (ell :: (S -> Type) -> S -> Type) (t :: (S -> Type) -> (S -> Type) -> S -> Type) (k :: S -> Type) (v :: S -> Type) (s :: S). (PInner (t k v) ~ PAssocMap k v, PListLike ell, PElemConstraint ell (PAsData k)) => Term s (t k v :--> ell (PAsData k))
-instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PAssocMap k v s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PSortedMap k v s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PAssocMap k v s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PSortedMap k v s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v s)
-instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
-instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell v), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell v)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
-instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
-instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
-instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
-instance (Plutarch.Internal.Ord.POrd k, Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData k), Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData v)) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.AssocMap.PSortedMap k v))
-instance (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData k), Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData v)) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v))
 instance (Plutarch.Internal.Parse.PValidateData k, Plutarch.Internal.Parse.PValidateData v) => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
-instance (Plutarch.Internal.Parse.PValidateData k, Plutarch.Internal.Parse.PValidateData v, Plutarch.Internal.Ord.POrd k, Plutarch.Internal.IsData.PIsData k) => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
-instance (Plutarch.Internal.Parse.PValidateData k, Plutarch.Internal.Parse.PValidateData v) => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PAssocMap k v s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PAssocMap k v s)
+instance (Plutarch.Internal.Parse.PValidateData k, Plutarch.Internal.Parse.PValidateData v) => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
+instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v s)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance (Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.IsData.PIsData v, Plutarch.Internal.Show.PShow k, Plutarch.Internal.Show.PShow v) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.AssocMap.PSortedMap k v s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.AssocMap.PSortedMap k v s)
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance (Plutarch.Internal.Ord.POrd k, Plutarch.Internal.IsData.PIsData k, Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData k), Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData v)) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.AssocMap.PSortedMap k v))
+instance (Plutarch.Internal.Parse.PValidateData k, Plutarch.Internal.Parse.PValidateData v, Plutarch.Internal.Ord.POrd k, Plutarch.Internal.IsData.PIsData k) => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.AssocMap.PSortedMap k v)
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
+instance (Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData k), Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData v)) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v))
+instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell v), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell k), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell v)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.AssocMap.PUnsortedMap k v)
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.AssocMap.PAssocMap k v)
 
 
 -- | This module is meant to be imported qualified, as some of its
@@ -287,9 +287,9 @@ module Plutarch.LedgerApi.Interval
 data PInterval (a :: S -> Type) (s :: S)
 PInterval :: Term s (PLowerBound a) -> Term s (PUpperBound a) -> PInterval (a :: S -> Type) (s :: S)
 
-[pinterval'from] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
+[$sel:pinterval'from:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
 
-[pinterval'to] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
+[$sel:pinterval'to:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
 
 data PLowerBound (a :: S -> Type) (s :: S)
 PLowerBound :: Term s (PExtended a) -> Term s (PAsData PBool) -> PLowerBound (a :: S -> Type) (s :: S)
@@ -350,45 +350,45 @@ phull :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (PInter
 -- | <tt><a>pintersection</a> i1 i2</tt> gives the largest interval that is
 --   contained in both <tt>i1</tt> and <tt>i2</tt>.
 pintersection :: forall (a :: S -> Type) (s :: S). (POrd a, PIsData a) => Term s (PInterval a :--> (PInterval a :--> PInterval a))
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PExtended a s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PInterval a s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PLowerBound a s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PUpperBound a s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PExtended a s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PInterval a s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PLowerBound a s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PUpperBound a s)
+instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PExtended a)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PExtended a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PExtended a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PInterval a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PExtended a)
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PInterval a)
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PExtended a s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PExtended a s)
+instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PUpperBound a)
 instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PExtended a)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PUpperBound a s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PUpperBound a s)
+instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PLowerBound a s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PLowerBound a s)
+instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PInterval a)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PInterval a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PInterval a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PInterval a)
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Interval.PInterval a)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Interval.PInterval a s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Interval.PInterval a s)
 instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PInterval a)
 instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance (Plutarch.Internal.Ord.POrd a, Plutarch.Internal.IsData.PIsData a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PExtended a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PExtended a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PInterval a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Interval.PInterval a))
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PLowerBound a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PCountable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PLowerBound a)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Interval.PLowerBound a))
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Interval.PUpperBound a))
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Enum.PEnumerable a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PUpperBound a)
+instance (Plutarch.Internal.Ord.POrd a, Plutarch.Internal.IsData.PIsData a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Interval.PExtended a)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData a) => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Interval.PExtended a))
-instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PExtended a)
-instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PInterval a)
-instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Interval.PUpperBound a)
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PExtended a)
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PInterval a)
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PLowerBound a)
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Interval.PUpperBound a)
 
 
 -- | Useful tools that aren't part of the Plutarch API per se, but get used
@@ -401,10 +401,10 @@ PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
 
 -- | A Rational type that corresponds to the data encoding used by
 --   <a>Rational</a>.
-data PRationalData (s :: S)
-PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData (s :: S)
-[prationalData'numerator] :: PRationalData (s :: S) -> Term s (PAsData PInteger)
-[prationalData'denominator] :: PRationalData (s :: S) -> Term s (PAsData PPositive)
+data PRationalData s
+PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData s
+[$sel:prationalData'numerator:PRationalData] :: PRationalData s -> Term s (PAsData PInteger)
+[$sel:prationalData'denominator:PRationalData] :: PRationalData s -> Term s (PAsData PPositive)
 
 -- | Scott-encoded boolean.
 data PSBool (s :: S)
@@ -470,31 +470,31 @@ psor :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
 
 -- | Strict OR on Scott-encoded bool.
 psor' :: forall (s :: S). Term s PSBool -> Term s PSBool -> Term s PSBool
-instance GHC.Classes.Eq (Plutarch.LedgerApi.Utils.PSBool s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PMaybeData a s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Utils.PMaybeData a s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
-instance GHC.Classes.Ord (Plutarch.LedgerApi.Utils.PSBool s)
+instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.Internal.Eq.PEq (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Utils.PMaybeData a s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PMaybeData a s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Utils.PRationalData
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Utils.PRationalData s)
+instance GHC.Show.Show (Plutarch.LedgerApi.Utils.PSBool s)
+instance GHC.Classes.Ord (Plutarch.LedgerApi.Utils.PSBool s)
+instance GHC.Classes.Eq (Plutarch.LedgerApi.Utils.PSBool s)
 instance (PlutusTx.IsData.Class.ToData (Plutarch.Internal.Lift.AsHaskell a), PlutusTx.IsData.Class.FromData (Plutarch.Internal.Lift.AsHaskell a)) => Plutarch.Internal.Lift.PLiftable (Plutarch.LedgerApi.Utils.PMaybeData a)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Utils.PRationalData
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Ord.POrd a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Utils.PRationalData
-instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Show.PShow a) => Plutarch.Internal.Show.PShow (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Utils.PRationalData)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Utils.PMaybeData a))
-instance Plutarch.Internal.Parse.PValidateData a => Plutarch.Internal.Parse.PValidateData (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Utils.PRationalData
-instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PMaybeData a)
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PRationalData
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Utils.PSBool
 instance Plutarch.Internal.PlutusType.PlutusType (Plutarch.LedgerApi.Utils.PSBoolRaw a)
-instance GHC.Show.Show (Plutarch.LedgerApi.Utils.PSBool s)
+instance Plutarch.Internal.Ord.POrd Plutarch.LedgerApi.Utils.PRationalData
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Utils.PRationalData)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData a => Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData (Plutarch.LedgerApi.Utils.PMaybeData a))
+instance Plutarch.Internal.IsData.PIsData (Plutarch.LedgerApi.Utils.PMaybeData a)
+instance (Plutarch.Internal.IsData.PIsData a, Plutarch.Internal.Ord.POrd a) => Plutarch.Internal.Ord.POrd (Plutarch.LedgerApi.Utils.PMaybeData a)
 
 module Plutarch.LedgerApi.Value
 
@@ -577,7 +577,7 @@ padaSymbol :: forall (s :: S). Term s PCurrencySymbol
 padaSymbolData :: forall (s :: S). Term s (PAsData PCurrencySymbol)
 
 -- | The <a>PTokenName</a> of the Ada currency.
-padaToken :: forall (s :: S). Term s PTokenName
+padaToken :: Term s PTokenName
 
 -- | Attempt to promote a <a>PRawValue</a> to <a>PSortedValue</a>.
 --   
@@ -661,44 +661,44 @@ pinsertAdaEntry :: forall (s :: S). Term s (PSortedValue :--> PSortedValue)
 --   quantities.
 pnormalizeNoAdaNonZeroTokens :: forall (s :: S). Term s (PSortedValue :--> PSortedValue)
 pmapAmounts :: forall (s :: S). Term s ((PInteger :--> PInteger) :--> (PRawValue :--> PRawValue))
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PLedgerValue s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PRawValue s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PSortedValue s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PLedgerValue s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PRawValue s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PSortedValue s)
-instance PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
-instance PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
-instance PlutusTx.Monoid.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
-instance PlutusTx.Monoid.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
-instance GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
-instance GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PLedgerValue
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PLedgerValue
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PRawValue
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PRawValue
-instance Plutarch.Internal.Semigroup.PMonoid Plutarch.LedgerApi.Value.PLedgerValue
-instance Plutarch.Internal.Semigroup.PMonoid Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.LedgerApi.Value.PLedgerValue
-instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PLedgerValue
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PRawValue
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PLedgerValue)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PSortedValue)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PRawValue)
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Value.PLedgerValue
 instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Value.PRawValue
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Value.PSortedValue
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PLedgerValue
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PRawValue
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PRawValue
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PRawValue
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PRawValue s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PRawValue s)
 instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PSortedValue
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
-instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PSortedValue
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PSortedValue
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PSortedValue s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PSortedValue s)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.Value.PLedgerValue
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.Value.PLedgerValue
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.Value.PLedgerValue
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.Value.PLedgerValue s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.Value.PLedgerValue s)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.Value.PRawValue
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PLedgerValue
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.LedgerApi.Value.PLedgerValue
+instance GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
+instance PlutusTx.Monoid.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.LedgerApi.Value.PLedgerValue
+instance PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PLedgerValue)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PLedgerValue)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Value.PLedgerValue
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.Value.PSortedValue
 instance GHC.Base.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance PlutusTx.Semigroup.Semigroup (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance Plutarch.Internal.Semigroup.PSemigroup Plutarch.LedgerApi.Value.PSortedValue
+instance GHC.Base.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance PlutusTx.Monoid.Monoid (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance Plutarch.Internal.Semigroup.PMonoid Plutarch.LedgerApi.Value.PSortedValue
+instance PlutusTx.Monoid.Group (Plutarch.Internal.Term.Term s Plutarch.LedgerApi.Value.PSortedValue)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PSortedValue)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.Value.PSortedValue
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.Value.PRawValue)
 
 
 -- | Conversions between ledger API representations of <tt>Value</tt>s and
@@ -929,8 +929,8 @@ PGovernanceActionId :: Term s (PAsData PTxId) -> Term s (PAsData PInteger) -> PG
 
 data PCommittee (s :: S)
 PCommittee :: Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger)) -> Term s PRationalData -> PCommittee (s :: S)
-[pcommittee'members] :: PCommittee (s :: S) -> Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger))
-[pcommittee'quorum] :: PCommittee (s :: S) -> Term s PRationalData
+[$sel:pcommittee'members:PCommittee] :: PCommittee (s :: S) -> Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger))
+[$sel:pcommittee'quorum:PCommittee] :: PCommittee (s :: S) -> Term s PRationalData
 
 -- | A constitution, omitting the optional anchor.
 newtype PConstitution (s :: S)
@@ -938,8 +938,8 @@ PConstitution :: Term s (PMaybeData PScriptHash) -> PConstitution (s :: S)
 
 data PProtocolVersion (s :: S)
 PProtocolVersion :: Term s (PAsData PInteger) -> Term s (PAsData PInteger) -> PProtocolVersion (s :: S)
-[pprotocolVersion'major] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
-[pprotocolVersion'minor] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
+[$sel:pprotocolVersion'major:PProtocolVersion] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
+[$sel:pprotocolVersion'minor:PProtocolVersion] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
 
 newtype PChangedParameters (s :: S)
 PChangedParameters :: Term s PData -> PChangedParameters (s :: S)
@@ -955,9 +955,9 @@ PInfoAction :: PGovernanceAction (s :: S)
 
 data PProposalProcedure (s :: S)
 PProposalProcedure :: Term s (PAsData PLovelace) -> Term s PCredential -> Term s PGovernanceAction -> PProposalProcedure (s :: S)
-[pproposalProcedure'deposit] :: PProposalProcedure (s :: S) -> Term s (PAsData PLovelace)
-[pproposalProcedure'returnAddr] :: PProposalProcedure (s :: S) -> Term s PCredential
-[pproposalProcedure'governanceAction] :: PProposalProcedure (s :: S) -> Term s PGovernanceAction
+[$sel:pproposalProcedure'deposit:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s (PAsData PLovelace)
+[$sel:pproposalProcedure'returnAddr:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s PCredential
+[$sel:pproposalProcedure'governanceAction:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s PGovernanceAction
 
 data PScriptPurpose (s :: S)
 PMinting :: Term s (PAsData PCurrencySymbol) -> PScriptPurpose (s :: S)
@@ -981,32 +981,32 @@ PProposingScript :: Term s (PAsData PInteger) -> Term s PProposalProcedure -> PS
 -- | An input of the transaction.
 data PTxInInfo (s :: S)
 PTxInInfo :: Term s PTxOutRef -> Term s PTxOut -> PTxInInfo (s :: S)
-[ptxInInfo'outRef] :: PTxInInfo (s :: S) -> Term s PTxOutRef
-[ptxInInfo'resolved] :: PTxInInfo (s :: S) -> Term s PTxOut
+[$sel:ptxInInfo'outRef:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOutRef
+[$sel:ptxInInfo'resolved:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOut
 data PTxInfo (s :: S)
 PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData PLovelace) -> Term s (PAsData PMintValue) -> Term s (PAsData (PBuiltinList (PAsData PTxCert))) -> Term s (PAsData (PUnsortedMap PCredential PLovelace)) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer)) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum)) -> Term s (PAsData PTxId) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote))) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure))) -> Term s (PMaybeData PLovelace) -> Term s (PMaybeData PLovelace) -> PTxInfo (s :: S)
-[ptxInfo'inputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'referenceInputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'outputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
-[ptxInfo'fee] :: PTxInfo (s :: S) -> Term s (PAsData PLovelace)
-[ptxInfo'mint] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
-[ptxInfo'txCerts] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxCert)))
-[ptxInfo'wdrl] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PCredential PLovelace))
-[ptxInfo'validRange] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
-[ptxInfo'signatories] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
-[ptxInfo'redeemers] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
-[ptxInfo'data] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
-[ptxInfo'id] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
-[ptxInfo'votes] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote)))
-[ptxInfo'proposalProcedures] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
-[ptxInfo'currentTreasuryAmount] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
-[ptxInfo'treasuryDonation] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
+[$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'referenceInputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'outputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
+[$sel:ptxInfo'fee:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PLovelace)
+[$sel:ptxInfo'mint:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
+[$sel:ptxInfo'txCerts:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxCert)))
+[$sel:ptxInfo'wdrl:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PCredential PLovelace))
+[$sel:ptxInfo'validRange:PTxInfo] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
+[$sel:ptxInfo'signatories:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
+[$sel:ptxInfo'redeemers:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
+[$sel:ptxInfo'data:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
+[$sel:ptxInfo'id:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
+[$sel:ptxInfo'votes:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote)))
+[$sel:ptxInfo'proposalProcedures:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
+[$sel:ptxInfo'currentTreasuryAmount:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
+[$sel:ptxInfo'treasuryDonation:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
 
 data PScriptContext (s :: S)
 PScriptContext :: Term s PTxInfo -> Term s PRedeemer -> Term s PScriptInfo -> PScriptContext (s :: S)
-[pscriptContext'txInfo] :: PScriptContext (s :: S) -> Term s PTxInfo
-[pscriptContext'redeemer] :: PScriptContext (s :: S) -> Term s PRedeemer
-[pscriptContext'scriptInfo] :: PScriptContext (s :: S) -> Term s PScriptInfo
+[$sel:pscriptContext'txInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PTxInfo
+[$sel:pscriptContext'redeemer:PScriptContext] :: PScriptContext (s :: S) -> Term s PRedeemer
+[$sel:pscriptContext'scriptInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PScriptInfo
 
 -- | Find the input currently being validated.
 pfindOwnInput :: forall (s :: S). Term s (PScriptContext :--> PMaybe PTxInInfo)
@@ -1068,134 +1068,165 @@ pownCurrencySymbol :: forall (s :: S). Term s (PScriptContext :--> PMaybe PCurre
 --   (identified by the hash of a transaction and an index into that
 --   transactions' outputs)
 pspendsOutput :: forall (s :: S). Term s (PTxInfo :--> (PTxId :--> (PInteger :--> PBool)))
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PChangedParameters s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PCommittee s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PConstitution s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDRep s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDRepCredential s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDelegatee s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceAction s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PProposalProcedure s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PProtocolVersion s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptContext s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptPurpose s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxCert s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PVote s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PVoter s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PChangedParameters s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PCommittee s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PConstitution s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDRep s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDRepCredential s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDelegatee s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceAction s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PProposalProcedure s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PProtocolVersion s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptContext s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptPurpose s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxCert s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PVote s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PVoter s)
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
 instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PCommittee
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptInfo
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxCert
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxInInfo
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PVote
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PVoter
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PChangedParameters
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PCommittee
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptInfo
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDRepCredential s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDRepCredential s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDRep s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDRep s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PDelegatee s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PDelegatee s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxCert
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxCert
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxCert
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxCert
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PTxCert
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PTxInInfo
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PVote
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxCert s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxCert s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PVoter
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PVoter
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PVoter
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PVoter
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PVoter
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PVoter s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PVoter s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PVote
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PVote
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PVote
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PVote
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PVote
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PVote s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PVote s)
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PCommittee
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PCommittee
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PCommittee
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PCommittee
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PCommittee
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PCommittee s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PCommittee s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PConstitution
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PConstitution
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PConstitution
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PConstitution
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PConstitution
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PConstitution s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PConstitution s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PProtocolVersion s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PProtocolVersion s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PChangedParameters s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PChangedParameters s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceAction s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PGovernanceAction s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PProposalProcedure s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PProposalProcedure s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptPurpose s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptPurpose s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxInInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxInInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxInInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxInInfo
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PTxInInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PTxInfo
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PTxInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PTxInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptContext
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptContext
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptContext
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V3.Contexts.PScriptContext
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V3.Contexts.PScriptContext
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptContext s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V3.Contexts.PScriptContext s)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDRepCredential
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDRep
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDelegatee
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PTxCert
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PVoter
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PVote
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PCommittee
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PScriptInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PChangedParameters
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PTxCert
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PScriptInfo
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PTxInInfo
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PVote
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PVoter
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PChangedParameters
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PCommittee
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxCert
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxInInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PVote
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V3.Contexts.PVoter
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PConstitution)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PCommittee)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PVote)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PVoter)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PTxCert)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PDelegatee)
-instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PDRep)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V3.Contexts.PScriptContext
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PScriptContext)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PTxInfo)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PTxInInfo)
@@ -1205,49 +1236,18 @@ instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarc
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PGovernanceAction)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PChangedParameters)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PProtocolVersion)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PConstitution)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PCommittee)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PVote)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PVoter)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PTxCert)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PDelegatee)
+instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PDRep)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PDRepCredential)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential)
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PChangedParameters
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PCommittee
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxCert
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxInInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PVote
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V3.Contexts.PVoter
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PChangedParameters
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PColdCommitteeCredential
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PCommittee
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PConstitution
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDRep
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDRepCredential
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PDelegatee
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PGovernanceAction
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PGovernanceActionId
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PHotCommitteeCredential
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PProposalProcedure
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PProtocolVersion
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptContext
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PScriptPurpose
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxCert
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxInInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PTxInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PVote
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V3.Contexts.PVoter
 
 
 -- | <h1>Note</h1>
@@ -1259,27 +1259,27 @@ module Plutarch.LedgerApi.V3
 
 data PScriptContext (s :: S)
 PScriptContext :: Term s PTxInfo -> Term s PRedeemer -> Term s PScriptInfo -> PScriptContext (s :: S)
-[pscriptContext'txInfo] :: PScriptContext (s :: S) -> Term s PTxInfo
-[pscriptContext'redeemer] :: PScriptContext (s :: S) -> Term s PRedeemer
-[pscriptContext'scriptInfo] :: PScriptContext (s :: S) -> Term s PScriptInfo
+[$sel:pscriptContext'txInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PTxInfo
+[$sel:pscriptContext'redeemer:PScriptContext] :: PScriptContext (s :: S) -> Term s PRedeemer
+[$sel:pscriptContext'scriptInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PScriptInfo
 data PTxInfo (s :: S)
 PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData PLovelace) -> Term s (PAsData PMintValue) -> Term s (PAsData (PBuiltinList (PAsData PTxCert))) -> Term s (PAsData (PUnsortedMap PCredential PLovelace)) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer)) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum)) -> Term s (PAsData PTxId) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote))) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure))) -> Term s (PMaybeData PLovelace) -> Term s (PMaybeData PLovelace) -> PTxInfo (s :: S)
-[ptxInfo'inputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'referenceInputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'outputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
-[ptxInfo'fee] :: PTxInfo (s :: S) -> Term s (PAsData PLovelace)
-[ptxInfo'mint] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
-[ptxInfo'txCerts] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxCert)))
-[ptxInfo'wdrl] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PCredential PLovelace))
-[ptxInfo'validRange] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
-[ptxInfo'signatories] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
-[ptxInfo'redeemers] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
-[ptxInfo'data] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
-[ptxInfo'id] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
-[ptxInfo'votes] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote)))
-[ptxInfo'proposalProcedures] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
-[ptxInfo'currentTreasuryAmount] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
-[ptxInfo'treasuryDonation] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
+[$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'referenceInputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'outputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
+[$sel:ptxInfo'fee:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PLovelace)
+[$sel:ptxInfo'mint:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
+[$sel:ptxInfo'txCerts:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxCert)))
+[$sel:ptxInfo'wdrl:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PCredential PLovelace))
+[$sel:ptxInfo'validRange:PTxInfo] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
+[$sel:ptxInfo'signatories:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
+[$sel:ptxInfo'redeemers:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
+[$sel:ptxInfo'data:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
+[$sel:ptxInfo'id:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
+[$sel:ptxInfo'votes:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote)))
+[$sel:ptxInfo'proposalProcedures:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
+[$sel:ptxInfo'currentTreasuryAmount:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
+[$sel:ptxInfo'treasuryDonation:PTxInfo] :: PTxInfo (s :: S) -> Term s (PMaybeData PLovelace)
 
 data PScriptInfo (s :: S)
 PMintingScript :: Term s (PAsData PCurrencySymbol) -> PScriptInfo (s :: S)
@@ -1302,15 +1302,15 @@ PProposing :: Term s (PAsData PInteger) -> Term s PProposalProcedure -> PScriptP
 
 data PTxOutRef (s :: S)
 PTxOutRef :: Term s (PAsData PTxId) -> Term s (PAsData PInteger) -> PTxOutRef (s :: S)
-[ptxOutRef'id] :: PTxOutRef (s :: S) -> Term s (PAsData PTxId)
-[ptxOutRef'idx] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
+[$sel:ptxOutRef'id:PTxOutRef] :: PTxOutRef (s :: S) -> Term s (PAsData PTxId)
+[$sel:ptxOutRef'idx:PTxOutRef] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
 
 data PTxOut (s :: S)
 PTxOut :: Term s PAddress -> Term s (PAsData PLedgerValue) -> Term s POutputDatum -> Term s (PMaybeData PScriptHash) -> PTxOut (s :: S)
-[ptxOut'address] :: PTxOut (s :: S) -> Term s PAddress
-[ptxOut'value] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
-[ptxOut'datum] :: PTxOut (s :: S) -> Term s POutputDatum
-[ptxOut'referenceScript] :: PTxOut (s :: S) -> Term s (PMaybeData PScriptHash)
+[$sel:ptxOut'address:PTxOut] :: PTxOut (s :: S) -> Term s PAddress
+[$sel:ptxOut'value:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
+[$sel:ptxOut'datum:PTxOut] :: PTxOut (s :: S) -> Term s POutputDatum
+[$sel:ptxOut'referenceScript:PTxOut] :: PTxOut (s :: S) -> Term s (PMaybeData PScriptHash)
 
 -- | Hashed with <tt>BLAKE2b-256</tt>.
 newtype PTxId (s :: S)
@@ -1319,17 +1319,17 @@ PTxId :: Term s PByteString -> PTxId (s :: S)
 -- | An input of the transaction.
 data PTxInInfo (s :: S)
 PTxInInfo :: Term s PTxOutRef -> Term s PTxOut -> PTxInInfo (s :: S)
-[ptxInInfo'outRef] :: PTxInInfo (s :: S) -> Term s PTxOutRef
-[ptxInInfo'resolved] :: PTxInInfo (s :: S) -> Term s PTxOut
+[$sel:ptxInInfo'outRef:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOutRef
+[$sel:ptxInInfo'resolved:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOut
 
 data POutputDatum (s :: S)
 PNoOutputDatum :: POutputDatum (s :: S)
 POutputDatumHash :: Term s (PAsData PDatumHash) -> POutputDatum (s :: S)
-[poutputDatum'datumHash] :: POutputDatum (s :: S) -> Term s (PAsData PDatumHash)
+[$sel:poutputDatum'datumHash:PNoOutputDatum] :: POutputDatum (s :: S) -> Term s (PAsData PDatumHash)
 
 -- | Inline datum as per <a>CIP-0032</a>
 POutputDatum :: Term s PDatum -> POutputDatum (s :: S)
-[poutputDatum'outputDatum] :: POutputDatum (s :: S) -> Term s PDatum
+[$sel:poutputDatum'outputDatum:PNoOutputDatum] :: POutputDatum (s :: S) -> Term s PDatum
 
 newtype PDatum (s :: S)
 PDatum :: Term s PData -> PDatum (s :: S)
@@ -1353,7 +1353,7 @@ datumHash :: Datum -> DatumHash
 
 redeemerHash :: Redeemer -> RedeemerHash
 
-dataHash :: ToData a => a -> BuiltinByteString
+dataHash :: forall (a :: Type). ToData a => a -> BuiltinByteString
 
 -- | Represents Values without any guarantees.
 --   
@@ -1428,8 +1428,8 @@ PStakingPtr :: Term s (PAsData PInteger) -> Term s (PAsData PInteger) -> Term s 
 
 data PAddress (s :: S)
 PAddress :: Term s PCredential -> Term s (PMaybeData PStakingCredential) -> PAddress (s :: S)
-[paddress'credential] :: PAddress (s :: S) -> Term s PCredential
-[paddress'stakingCredential] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
+[$sel:paddress'credential:PAddress] :: PAddress (s :: S) -> Term s PCredential
+[$sel:paddress'stakingCredential:PAddress] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
 
 newtype PPosixTime (s :: S)
 PPosixTime :: Term s PInteger -> PPosixTime (s :: S)
@@ -1446,9 +1446,9 @@ unPPosixTime :: forall (s :: S). Term s PPosixTime -> Term s PInteger
 data PInterval (a :: S -> Type) (s :: S)
 PInterval :: Term s (PLowerBound a) -> Term s (PUpperBound a) -> PInterval (a :: S -> Type) (s :: S)
 
-[pinterval'from] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
+[$sel:pinterval'from:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
 
-[pinterval'to] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
+[$sel:pinterval'to:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
 
 data PLowerBound (a :: S -> Type) (s :: S)
 PLowerBound :: Term s (PExtended a) -> Term s (PAsData PBool) -> PLowerBound (a :: S -> Type) (s :: S)
@@ -1508,14 +1508,14 @@ PAbstain :: PVote (s :: S)
 
 data PProtocolVersion (s :: S)
 PProtocolVersion :: Term s (PAsData PInteger) -> Term s (PAsData PInteger) -> PProtocolVersion (s :: S)
-[pprotocolVersion'major] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
-[pprotocolVersion'minor] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
+[$sel:pprotocolVersion'major:PProtocolVersion] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
+[$sel:pprotocolVersion'minor:PProtocolVersion] :: PProtocolVersion (s :: S) -> Term s (PAsData PInteger)
 
 data PProposalProcedure (s :: S)
 PProposalProcedure :: Term s (PAsData PLovelace) -> Term s PCredential -> Term s PGovernanceAction -> PProposalProcedure (s :: S)
-[pproposalProcedure'deposit] :: PProposalProcedure (s :: S) -> Term s (PAsData PLovelace)
-[pproposalProcedure'returnAddr] :: PProposalProcedure (s :: S) -> Term s PCredential
-[pproposalProcedure'governanceAction] :: PProposalProcedure (s :: S) -> Term s PGovernanceAction
+[$sel:pproposalProcedure'deposit:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s (PAsData PLovelace)
+[$sel:pproposalProcedure'returnAddr:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s PCredential
+[$sel:pproposalProcedure'governanceAction:PProposalProcedure] :: PProposalProcedure (s :: S) -> Term s PGovernanceAction
 
 data PGovernanceAction (s :: S)
 PParameterChange :: Term s (PMaybeData PGovernanceActionId) -> Term s PChangedParameters -> Term s (PMaybeData PScriptHash) -> PGovernanceAction (s :: S)
@@ -1535,13 +1535,13 @@ PConstitution :: Term s (PMaybeData PScriptHash) -> PConstitution (s :: S)
 
 data PCommittee (s :: S)
 PCommittee :: Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger)) -> Term s PRationalData -> PCommittee (s :: S)
-[pcommittee'members] :: PCommittee (s :: S) -> Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger))
-[pcommittee'quorum] :: PCommittee (s :: S) -> Term s PRationalData
+[$sel:pcommittee'members:PCommittee] :: PCommittee (s :: S) -> Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger))
+[$sel:pcommittee'quorum:PCommittee] :: PCommittee (s :: S) -> Term s PRationalData
 
 newtype PubKey
 PubKey :: LedgerBytes -> PubKey
 
-[getPubKey] :: PubKey -> LedgerBytes
+[$sel:getPubKey:PubKey] :: PubKey -> LedgerBytes
 
 newtype PPubKeyHash (s :: S)
 PPubKeyHash :: Term s PByteString -> PPubKeyHash (s :: S)
@@ -1554,10 +1554,10 @@ PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
 
 -- | A Rational type that corresponds to the data encoding used by
 --   <a>Rational</a>.
-data PRationalData (s :: S)
-PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData (s :: S)
-[prationalData'numerator] :: PRationalData (s :: S) -> Term s (PAsData PInteger)
-[prationalData'denominator] :: PRationalData (s :: S) -> Term s (PAsData PPositive)
+data PRationalData s
+PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData s
+[$sel:prationalData'numerator:PRationalData] :: PRationalData s -> Term s (PAsData PInteger)
+[$sel:prationalData'denominator:PRationalData] :: PRationalData s -> Term s (PAsData PPositive)
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
@@ -1585,9 +1585,9 @@ pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMay
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: forall (s :: S). Term s (PRationalData :--> PRational)
-instance GHC.Classes.Eq Plutarch.LedgerApi.V3.PubKey
-instance GHC.Classes.Ord Plutarch.LedgerApi.V3.PubKey
 instance GHC.Show.Show Plutarch.LedgerApi.V3.PubKey
+instance GHC.Classes.Ord Plutarch.LedgerApi.V3.PubKey
+instance GHC.Classes.Eq Plutarch.LedgerApi.V3.PubKey
 
 module Plutarch.LedgerApi.V2
 
@@ -1599,8 +1599,8 @@ PCertifying :: Term s PDCert -> PScriptPurpose (s :: S)
 
 data PScriptContext (s :: S)
 PScriptContext :: Term s PTxInfo -> Term s PScriptPurpose -> PScriptContext (s :: S)
-[pscriptContext'txInfo] :: PScriptContext (s :: S) -> Term s PTxInfo
-[pscriptContext'purpose] :: PScriptContext (s :: S) -> Term s PScriptPurpose
+[$sel:pscriptContext'txInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PTxInfo
+[$sel:pscriptContext'purpose:PScriptContext] :: PScriptContext (s :: S) -> Term s PScriptPurpose
 
 data PDCert (s :: S)
 PDCertDelegRegKey :: Term s PStakingCredential -> PDCert (s :: S)
@@ -1703,9 +1703,9 @@ PUpperBound :: Term s (PExtended a) -> Term s (PAsData PBool) -> PUpperBound (a 
 data PInterval (a :: S -> Type) (s :: S)
 PInterval :: Term s (PLowerBound a) -> Term s (PUpperBound a) -> PInterval (a :: S -> Type) (s :: S)
 
-[pinterval'from] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
+[$sel:pinterval'from:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
 
-[pinterval'to] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
+[$sel:pinterval'to:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
 
 newtype PDatum (s :: S)
 PDatum :: Term s PData -> PDatum (s :: S)
@@ -1724,8 +1724,8 @@ PScriptHash :: Term s PByteString -> PScriptHash (s :: S)
 
 data PAddress (s :: S)
 PAddress :: Term s PCredential -> Term s (PMaybeData PStakingCredential) -> PAddress (s :: S)
-[paddress'credential] :: PAddress (s :: S) -> Term s PCredential
-[paddress'stakingCredential] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
+[$sel:paddress'credential:PAddress] :: PAddress (s :: S) -> Term s PCredential
+[$sel:paddress'stakingCredential:PAddress] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
 
 newtype PPubKeyHash (s :: S)
 PPubKeyHash :: Term s PByteString -> PPubKeyHash (s :: S)
@@ -1736,46 +1736,46 @@ PTxId :: Term s (PAsData PByteString) -> PTxId (s :: S)
 
 data PTxInfo (s :: S)
 PTxInfo :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo))) -> Term s (PAsData (PBuiltinList (PAsData PTxOut))) -> Term s (PAsData PLedgerValue) -> Term s (PAsData PMintValue) -> Term s (PAsData (PBuiltinList (PAsData PDCert))) -> Term s (PAsData (PUnsortedMap PStakingCredential PInteger)) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer)) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum)) -> Term s PTxId -> PTxInfo (s :: S)
-[ptxInfo'inputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'referenceInputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
-[ptxInfo'outputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
-[ptxInfo'fee] :: PTxInfo (s :: S) -> Term s (PAsData PLedgerValue)
-[ptxInfo'mint] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
-[ptxInfo'dcert] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PDCert)))
-[ptxInfo'wdrl] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PStakingCredential PInteger))
-[ptxInfo'validRange] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
-[ptxInfo'signatories] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
-[ptxInfo'redeemers] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
-[ptxInfo'data] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
-[ptxInfo'id] :: PTxInfo (s :: S) -> Term s PTxId
+[$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'referenceInputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
+[$sel:ptxInfo'outputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PTxOut)))
+[$sel:ptxInfo'fee:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PLedgerValue)
+[$sel:ptxInfo'mint:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
+[$sel:ptxInfo'dcert:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PDCert)))
+[$sel:ptxInfo'wdrl:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PStakingCredential PInteger))
+[$sel:ptxInfo'validRange:PTxInfo] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
+[$sel:ptxInfo'signatories:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
+[$sel:ptxInfo'redeemers:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
+[$sel:ptxInfo'data:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PUnsortedMap PDatumHash PDatum))
+[$sel:ptxInfo'id:PTxInfo] :: PTxInfo (s :: S) -> Term s PTxId
 
 data PTxOut (s :: S)
 PTxOut :: Term s PAddress -> Term s (PAsData PLedgerValue) -> Term s POutputDatum -> Term s (PMaybeData PScriptHash) -> PTxOut (s :: S)
-[ptxOut'address] :: PTxOut (s :: S) -> Term s PAddress
-[ptxOut'value] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
-[ptxOut'datum] :: PTxOut (s :: S) -> Term s POutputDatum
-[ptxOut'referenceScript] :: PTxOut (s :: S) -> Term s (PMaybeData PScriptHash)
+[$sel:ptxOut'address:PTxOut] :: PTxOut (s :: S) -> Term s PAddress
+[$sel:ptxOut'value:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
+[$sel:ptxOut'datum:PTxOut] :: PTxOut (s :: S) -> Term s POutputDatum
+[$sel:ptxOut'referenceScript:PTxOut] :: PTxOut (s :: S) -> Term s (PMaybeData PScriptHash)
 
 -- | Reference to a transaction output, with an index referencing which
 --   exact output we mean.
 data PTxOutRef (s :: S)
 PTxOutRef :: Term s PTxId -> Term s (PAsData PInteger) -> PTxOutRef (s :: S)
-[ptxOutRef'id] :: PTxOutRef (s :: S) -> Term s PTxId
-[ptxOutRef'idx] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
+[$sel:ptxOutRef'id:PTxOutRef] :: PTxOutRef (s :: S) -> Term s PTxId
+[$sel:ptxOutRef'idx:PTxOutRef] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
 
 data PTxInInfo (s :: S)
 PTxInInfo :: Term s PTxOutRef -> Term s PTxOut -> PTxInInfo (s :: S)
-[ptxInInfo'outRef] :: PTxInInfo (s :: S) -> Term s PTxOutRef
-[ptxInInfo'resolved] :: PTxInInfo (s :: S) -> Term s PTxOut
+[$sel:ptxInInfo'outRef:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOutRef
+[$sel:ptxInInfo'resolved:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOut
 
 data POutputDatum (s :: S)
 PNoOutputDatum :: POutputDatum (s :: S)
 POutputDatumHash :: Term s (PAsData PDatumHash) -> POutputDatum (s :: S)
-[poutputDatum'datumHash] :: POutputDatum (s :: S) -> Term s (PAsData PDatumHash)
+[$sel:poutputDatum'datumHash:PNoOutputDatum] :: POutputDatum (s :: S) -> Term s (PAsData PDatumHash)
 
 -- | Inline datum as per <a>CIP-0032</a>
 POutputDatum :: Term s PDatum -> POutputDatum (s :: S)
-[poutputDatum'outputDatum] :: POutputDatum (s :: S) -> Term s PDatum
+[$sel:poutputDatum'outputDatum:PNoOutputDatum] :: POutputDatum (s :: S) -> Term s PDatum
 
 newtype PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
 PAssocMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
@@ -1790,10 +1790,10 @@ PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
 
 -- | A Rational type that corresponds to the data encoding used by
 --   <a>Rational</a>.
-data PRationalData (s :: S)
-PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData (s :: S)
-[prationalData'numerator] :: PRationalData (s :: S) -> Term s (PAsData PInteger)
-[prationalData'denominator] :: PRationalData (s :: S) -> Term s (PAsData PPositive)
+data PRationalData s
+PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData s
+[$sel:prationalData'numerator:PRationalData] :: PRationalData s -> Term s (PAsData PInteger)
+[$sel:prationalData'denominator:PRationalData] :: PRationalData s -> Term s (PAsData PPositive)
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
@@ -1821,33 +1821,33 @@ pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMay
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: forall (s :: S). Term s (PRationalData :--> PRational)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PScriptContext s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PScriptContext s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PTxInInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PTxInfo s)
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PTxInInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V2.PTxInInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PTxInInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PTxInfo
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PScriptContext
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PTxInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PTxInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V2.PScriptContext
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V2.PScriptContext
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V2.PScriptContext s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V2.PScriptContext s)
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PTxInInfo
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PScriptContext
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V2.PTxInfo
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V2.PScriptContext
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V2.PScriptContext)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V2.PTxInfo)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V2.PTxInInfo)
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PScriptContext
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V2.PTxInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PScriptContext
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V2.PTxInfo
 
 module Plutarch.LedgerApi.V1
 
@@ -1859,8 +1859,8 @@ PCertifying :: Term s PDCert -> PScriptPurpose (s :: S)
 
 data PScriptContext (s :: S)
 PScriptContext :: Term s PTxInfo -> Term s PScriptPurpose -> PScriptContext (s :: S)
-[pscriptContext'txInfo] :: PScriptContext (s :: S) -> Term s PTxInfo
-[pscriptContext'purpose] :: PScriptContext (s :: S) -> Term s PScriptPurpose
+[$sel:pscriptContext'txInfo:PScriptContext] :: PScriptContext (s :: S) -> Term s PTxInfo
+[$sel:pscriptContext'purpose:PScriptContext] :: PScriptContext (s :: S) -> Term s PScriptPurpose
 
 data PDCert (s :: S)
 PDCertDelegRegKey :: Term s PStakingCredential -> PDCert (s :: S)
@@ -1963,9 +1963,9 @@ PUpperBound :: Term s (PExtended a) -> Term s (PAsData PBool) -> PUpperBound (a 
 data PInterval (a :: S -> Type) (s :: S)
 PInterval :: Term s (PLowerBound a) -> Term s (PUpperBound a) -> PInterval (a :: S -> Type) (s :: S)
 
-[pinterval'from] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
+[$sel:pinterval'from:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PLowerBound a)
 
-[pinterval'to] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
+[$sel:pinterval'to:PInterval] :: PInterval (a :: S -> Type) (s :: S) -> Term s (PUpperBound a)
 
 newtype PDatum (s :: S)
 PDatum :: Term s PData -> PDatum (s :: S)
@@ -1984,8 +1984,8 @@ PScriptHash :: Term s PByteString -> PScriptHash (s :: S)
 
 data PAddress (s :: S)
 PAddress :: Term s PCredential -> Term s (PMaybeData PStakingCredential) -> PAddress (s :: S)
-[paddress'credential] :: PAddress (s :: S) -> Term s PCredential
-[paddress'stakingCredential] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
+[$sel:paddress'credential:PAddress] :: PAddress (s :: S) -> Term s PCredential
+[$sel:paddress'stakingCredential:PAddress] :: PAddress (s :: S) -> Term s (PMaybeData PStakingCredential)
 
 -- | Hashed with <tt>BLAKE2b-256</tt>.
 newtype PTxId (s :: S)
@@ -1993,37 +1993,37 @@ PTxId :: Term s (PAsData PByteString) -> PTxId (s :: S)
 
 data PTxOut (s :: S)
 PTxOut :: Term s PAddress -> Term s (PAsData PLedgerValue) -> Term s (PAsData PDatumHash) -> PTxOut (s :: S)
-[ptxOut'address] :: PTxOut (s :: S) -> Term s PAddress
-[ptxOut'value] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
-[ptxOut'datumHash] :: PTxOut (s :: S) -> Term s (PAsData PDatumHash)
+[$sel:ptxOut'address:PTxOut] :: PTxOut (s :: S) -> Term s PAddress
+[$sel:ptxOut'value:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PLedgerValue)
+[$sel:ptxOut'datumHash:PTxOut] :: PTxOut (s :: S) -> Term s (PAsData PDatumHash)
 
 data PTxInInfo (s :: S)
 PTxInInfo :: Term s PTxOutRef -> Term s PTxOut -> PTxInInfo (s :: S)
-[ptxInInfo'outRef] :: PTxInInfo (s :: S) -> Term s PTxOutRef
-[ptxInInfo'resolved] :: PTxInInfo (s :: S) -> Term s PTxOut
+[$sel:ptxInInfo'outRef:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOutRef
+[$sel:ptxInInfo'resolved:PTxInInfo] :: PTxInInfo (s :: S) -> Term s PTxOut
 
 -- | Reference to a transaction output, with an index referencing which
 --   exact output we mean.
 data PTxOutRef (s :: S)
 PTxOutRef :: Term s PTxId -> Term s (PAsData PInteger) -> PTxOutRef (s :: S)
-[ptxOutRef'id] :: PTxOutRef (s :: S) -> Term s PTxId
-[ptxOutRef'idx] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
+[$sel:ptxOutRef'id:PTxOutRef] :: PTxOutRef (s :: S) -> Term s PTxId
+[$sel:ptxOutRef'idx:PTxOutRef] :: PTxOutRef (s :: S) -> Term s (PAsData PInteger)
 
 newtype PPubKeyHash (s :: S)
 PPubKeyHash :: Term s PByteString -> PPubKeyHash (s :: S)
 
 data PTxInfo (s :: S)
 PTxInfo :: Term s (PAsData (PBuiltinList PTxInInfo)) -> Term s (PAsData (PBuiltinList PTxOut)) -> Term s (PAsData PLedgerValue) -> Term s (PAsData PMintValue) -> Term s (PAsData (PBuiltinList PDCert)) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PAsData PInteger))))) -> Term s (PInterval PPosixTime) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash))) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum))))) -> Term s (PAsData PTxId) -> PTxInfo (s :: S)
-[ptxInfo'inputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PTxInInfo))
-[ptxInfo'outputs] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PTxOut))
-[ptxInfo'fee] :: PTxInfo (s :: S) -> Term s (PAsData PLedgerValue)
-[ptxInfo'mint] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
-[ptxInfo'dCert] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PDCert))
-[ptxInfo'wdrl] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PAsData PInteger)))))
-[ptxInfo'validRange] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
-[ptxInfo'signatories] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
-[ptxInfo'data] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)))))
-[ptxInfo'id] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
+[$sel:ptxInfo'inputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PTxInInfo))
+[$sel:ptxInfo'outputs:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PTxOut))
+[$sel:ptxInfo'fee:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PLedgerValue)
+[$sel:ptxInfo'mint:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PMintValue)
+[$sel:ptxInfo'dCert:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList PDCert))
+[$sel:ptxInfo'wdrl:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PStakingCredential) (PAsData PInteger)))))
+[$sel:ptxInfo'validRange:PTxInfo] :: PTxInfo (s :: S) -> Term s (PInterval PPosixTime)
+[$sel:ptxInfo'signatories:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData PPubKeyHash)))
+[$sel:ptxInfo'data:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData (PBuiltinList (PAsData (PBuiltinPair (PAsData PDatumHash) (PAsData PDatum)))))
+[$sel:ptxInfo'id:PTxInfo] :: PTxInfo (s :: S) -> Term s (PAsData PTxId)
 
 newtype PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
 PAssocMap :: Term s (PBuiltinList (PBuiltinPair (PAsData k) (PAsData v))) -> PAssocMap (k :: S -> Type) (v :: S -> Type) (s :: S)
@@ -2038,10 +2038,10 @@ PDNothing :: PMaybeData (a :: S -> Type) (s :: S)
 
 -- | A Rational type that corresponds to the data encoding used by
 --   <a>Rational</a>.
-data PRationalData (s :: S)
-PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData (s :: S)
-[prationalData'numerator] :: PRationalData (s :: S) -> Term s (PAsData PInteger)
-[prationalData'denominator] :: PRationalData (s :: S) -> Term s (PAsData PPositive)
+data PRationalData s
+PRationalData :: Term s (PAsData PInteger) -> Term s (PAsData PPositive) -> PRationalData s
+[$sel:prationalData'numerator:PRationalData] :: PRationalData s -> Term s (PAsData PInteger)
+[$sel:prationalData'denominator:PRationalData] :: PRationalData s -> Term s (PAsData PPositive)
 
 -- | Extracts the element out of a <a>PDJust</a> and throws an error if its
 --   argument is <a>PDNothing</a>.
@@ -2069,39 +2069,39 @@ pmaybeToMaybeData :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PMay
 passertPDJust :: forall (a :: S -> Type) (s :: S). PIsData a => Term s (PString :--> (PMaybeData a :--> a))
 
 prationalFromData :: forall (s :: S). Term s (PRationalData :--> PRational)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PScriptContext s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInfo s)
-instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxOut s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PScriptContext s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxInInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxInfo s)
-instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxOut s)
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxOut
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxOut
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PTxInfo
 instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PScriptContext
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxOut s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxOut s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInInfo
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PTxInInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxInInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PTxInfo
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PTxInfo
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PTxInfo s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PTxInfo s)
+instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PScriptContext
+instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PScriptContext
+instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PScriptContext
+instance Plutarch.Internal.Eq.PEq Plutarch.LedgerApi.V1.PScriptContext
+instance Plutarch.Internal.IsData.PIsData Plutarch.LedgerApi.V1.PScriptContext
+instance Generics.SOP.Universe.Generic (Plutarch.LedgerApi.V1.PScriptContext s)
+instance GHC.Generics.Generic (Plutarch.LedgerApi.V1.PScriptContext s)
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxOut
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxInInfo
 instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Internal.Show.PShow Plutarch.LedgerApi.V1.PTxOut
+instance Plutarch.Internal.Lift.PLiftable Plutarch.LedgerApi.V1.PScriptContext
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V1.PScriptContext)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V1.PTxInfo)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V1.PTxInInfo)
 instance Plutarch.Internal.TryFrom.PTryFrom Plutarch.Builtin.Data.PData (Plutarch.Builtin.Data.PAsData Plutarch.LedgerApi.V1.PTxOut)
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Internal.Parse.PValidateData Plutarch.LedgerApi.V1.PTxOut
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PScriptContext
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxInfo
-instance Plutarch.Internal.PlutusType.PlutusType Plutarch.LedgerApi.V1.PTxOut

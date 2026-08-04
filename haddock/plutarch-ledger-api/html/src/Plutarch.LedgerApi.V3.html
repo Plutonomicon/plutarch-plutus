@@ -123,10 +123,10 @@ Plutarch prelude. These should be imported qualified.
 </span><span id="line-123"></span><span>  </span><span class="annot"><span class="hs-identifier">hashWith</span></span><span class="hs-special">,</span><span>
 </span><span id="line-124"></span><span> </span><span class="hs-special">)</span><span>
 </span><span id="line-125"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Data.ByteArray</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">convert</span></span><span class="hs-special">)</span><span>
-</span><span id="line-126"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#toStrict"><span class="hs-identifier">toStrict</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-127"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Short.html"><span class="hs-identifier">Data.ByteString.Short</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Short.Internal.html#fromShort"><span class="hs-identifier">fromShort</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-128"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-129"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-126"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.html"><span class="hs-identifier">Data.ByteString</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier">ByteString</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Lazy.Internal.html#toStrict"><span class="hs-identifier">toStrict</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-127"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Short.html"><span class="hs-identifier">Data.ByteString.Short</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Short.Internal.html#fromShort"><span class="hs-identifier">fromShort</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-128"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Coerce.html"><span class="hs-identifier">Data.Coerce</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier">coerce</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-129"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/Data.Kind.html"><span class="hs-identifier">Data.Kind</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier">Type</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-130"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.AssocMap.html"><span class="hs-identifier">Plutarch.LedgerApi.AssocMap</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">AssocMap</span></span><span>
 </span><span id="line-131"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Interval.html"><span class="hs-identifier">Plutarch.LedgerApi.Interval</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Interval</span></span><span>
 </span><span id="line-132"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html"><span class="hs-identifier">Plutarch.LedgerApi.Utils</span></a></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Utils</span></span><span>
@@ -157,13 +157,13 @@ Plutarch prelude. These should be imported qualified.
 </span><span id="line-154"></span><span>
 </span><span id="line-155"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
 </span><span id="line-156"></span><span class="hs-keyword">newtype</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.LedgerApi.V3.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PubKey"><span class="annot"><a href="Plutarch.LedgerApi.V3.html#PubKey"><span class="hs-identifier hs-var">PubKey</span></a></span></span><span>
-</span><span id="line-157"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="getPubKey"><span class="annot"><span class="annottext">PubKey -&gt; LedgerBytes
-</span><a href="Plutarch.LedgerApi.V3.html#getPubKey"><span class="hs-identifier hs-var hs-var">getPubKey</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.LedgerBytes</span></span><span>
+</span><span id="line-157"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="%24sel%3AgetPubKey%3APubKey"><span class="annot"><span class="annottext">PubKey -&gt; LedgerBytes
+</span><a href="Plutarch.LedgerApi.V3.html#%24sel%3AgetPubKey%3APubKey"><span class="hs-identifier hs-var hs-var">getPubKey</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.LedgerBytes</span></span><span>
 </span><span id="line-158"></span><span>  </span><span class="annot"><span class="hs-comment">-- ^ @since 2.0.0</span></span><span>
 </span><span id="line-159"></span><span>  </span><span class="hs-special">}</span><span>
 </span><span id="line-160"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-161"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-162"></span><span>      </span><span id="local-6989586621679396841"><span id="local-6989586621679396845"><span class="annot"><span class="annottext">PubKey -&gt; PubKey -&gt; Bool
+</span><span id="line-162"></span><span>      </span><span id="local-6989586621679371430"><span id="local-6989586621679371434"><span class="annot"><span class="annottext">PubKey -&gt; PubKey -&gt; Bool
 (PubKey -&gt; PubKey -&gt; Bool)
 -&gt; (PubKey -&gt; PubKey -&gt; Bool) -&gt; Eq PubKey
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
@@ -171,9 +171,9 @@ $c== :: PubKey -&gt; PubKey -&gt; Bool
 == :: PubKey -&gt; PubKey -&gt; Bool
 $c/= :: PubKey -&gt; PubKey -&gt; Bool
 /= :: PubKey -&gt; PubKey -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span>
 </span><span id="line-163"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-164"></span><span>      </span><span id="local-6989586621679396852"><span id="local-6989586621679396856"><span id="local-6989586621679396859"><span id="local-6989586621679396863"><span id="local-6989586621679396866"><span id="local-6989586621679396869"><span id="local-6989586621679396872"><span class="annot"><span class="annottext">Eq PubKey
+</span><span id="line-164"></span><span>      </span><span id="local-6989586621679371441"><span id="local-6989586621679371445"><span id="local-6989586621679371448"><span id="local-6989586621679371452"><span id="local-6989586621679371455"><span id="local-6989586621679371458"><span id="local-6989586621679371461"><span class="annot"><span class="annottext">Eq PubKey
 Eq PubKey =&gt;
 (PubKey -&gt; PubKey -&gt; Ordering)
 -&gt; (PubKey -&gt; PubKey -&gt; Bool)
@@ -210,11 +210,11 @@ $cmax :: PubKey -&gt; PubKey -&gt; PubKey
 max :: PubKey -&gt; PubKey -&gt; PubKey
 $cmin :: PubKey -&gt; PubKey -&gt; PubKey
 min :: PubKey -&gt; PubKey -&gt; PubKey
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span>
 </span><span id="line-165"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-166"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
 </span><span id="line-167"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
-</span><span id="line-168"></span><span>      </span><span id="local-6989586621679396876"><span id="local-6989586621679396882"><span id="local-6989586621679396886"><span class="annot"><span class="annottext">Int -&gt; PubKey -&gt; ShowS
+</span><span id="line-168"></span><span>      </span><span id="local-6989586621679371465"><span id="local-6989586621679371471"><span id="local-6989586621679371475"><span class="annot"><span class="annottext">Int -&gt; PubKey -&gt; ShowS
 [PubKey] -&gt; ShowS
 PubKey -&gt; String
 (Int -&gt; PubKey -&gt; ShowS)
@@ -227,7 +227,7 @@ $cshow :: PubKey -&gt; String
 show :: PubKey -&gt; String
 $cshowList :: [PubKey] -&gt; ShowS
 showList :: [PubKey] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span>
 </span><span id="line-169"></span><span>    </span><span class="hs-special">)</span><span>
 </span><span id="line-170"></span><span>
 </span><span id="line-171"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
@@ -235,7 +235,7 @@ showList :: [PubKey] -&gt; ShowS
 </span><span id="line-173"></span><span id="pubKeyHash"><span class="annot"><span class="annottext">pubKeyHash :: PubKey -&gt; PubKeyHash
 </span><a href="Plutarch.LedgerApi.V3.html#pubKeyHash"><span class="hs-identifier hs-var hs-var">pubKeyHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(LedgerBytes -&gt; BuiltinByteString) -&gt; PubKey -&gt; PubKeyHash
 forall a b. Coercible a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#hashLedgerBytes"><span class="hs-identifier hs-var">hashLedgerBytes</span></a></span><span>
 </span><span id="line-174"></span><span>
 </span><span id="line-175"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
@@ -243,25 +243,25 @@ forall a b. Coercible a b =&gt; a -&gt; b
 </span><span id="line-177"></span><span id="datumHash"><span class="annot"><span class="annottext">datumHash :: Datum -&gt; DatumHash
 </span><a href="Plutarch.LedgerApi.V3.html#datumHash"><span class="hs-identifier hs-var hs-var">datumHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; DatumHash
 forall a b. Coercible a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; DatumHash)
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; DatumHash)
 -&gt; (Datum -&gt; BuiltinByteString) -&gt; Datum -&gt; DatumHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Datum -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Datum -&gt; BuiltinByteString
 forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#dataHash"><span class="hs-identifier hs-var">dataHash</span></a></span><span>
 </span><span id="line-178"></span><span>
 </span><span id="line-179"></span><span class="annot"><span class="hs-comment">-- | @since 2.0.0</span></span><span>
 </span><span id="line-180"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#dataHash"><span class="hs-identifier hs-type">dataHash</span></a></span><span> </span><span class="hs-glyph">::</span><span>
-</span><span id="line-181"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679396705"><span class="annot"><a href="#local-6989586621679396705"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
-</span><span id="line-182"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="annot"><a href="#local-6989586621679396705"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
-</span><span id="line-183"></span><span>  </span><span class="annot"><a href="#local-6989586621679396705"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
+</span><span id="line-181"></span><span>  </span><span class="hs-keyword">forall</span><span> </span><span class="hs-special">(</span><span id="local-6989586621679371295"><span class="annot"><a href="#local-6989586621679371295"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Type"><span class="hs-identifier hs-type">Type</span></a></span><span class="hs-special">)</span><span class="hs-operator">.</span><span>
+</span><span id="line-182"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ToData</span></span><span> </span><span class="annot"><a href="#local-6989586621679371295"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">=&gt;</span><span>
+</span><span id="line-183"></span><span>  </span><span class="annot"><a href="#local-6989586621679371295"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span>
 </span><span id="line-184"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-185"></span><span id="dataHash"><span class="annot"><span class="annottext">dataHash :: forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#dataHash"><span class="hs-identifier hs-var hs-var">dataHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Data -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#hashData"><span class="hs-identifier hs-var">hashData</span></a></span><span> </span><span class="annot"><span class="annottext">(Data -&gt; BuiltinByteString)
 -&gt; (a -&gt; Data) -&gt; a -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Data
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">a -&gt; Data
 forall a. ToData a =&gt; a -&gt; Data
 </span><span class="hs-identifier hs-var">Plutus.toData</span></span><span>
 </span><span id="line-186"></span><span>
@@ -270,46 +270,46 @@ forall a. ToData a =&gt; a -&gt; Data
 </span><span id="line-189"></span><span id="redeemerHash"><span class="annot"><span class="annottext">redeemerHash :: Redeemer -&gt; RedeemerHash
 </span><a href="Plutarch.LedgerApi.V3.html#redeemerHash"><span class="hs-identifier hs-var hs-var">redeemerHash</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; RedeemerHash
 forall a b. Coercible a b =&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; RedeemerHash)
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Prim.html#coerce"><span class="hs-identifier hs-var">coerce</span></a></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; RedeemerHash)
 -&gt; (Redeemer -&gt; BuiltinByteString) -&gt; Redeemer -&gt; RedeemerHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Redeemer -&gt; BuiltinByteString
 forall a. ToData a =&gt; a -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#dataHash"><span class="hs-identifier hs-var">dataHash</span></a></span><span>
 </span><span id="line-190"></span><span>
 </span><span id="line-191"></span><span class="hs-comment">-- Helpers</span><span>
 </span><span id="line-192"></span><span>
-</span><span id="line-193"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashScriptWithPrefix"><span class="hs-identifier hs-type">hashScriptWithPrefix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
+</span><span id="line-193"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashScriptWithPrefix"><span class="hs-identifier hs-type">hashScriptWithPrefix</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Script</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.ScriptHash</span></span><span>
 </span><span id="line-194"></span><span id="hashScriptWithPrefix"><span class="annot"><span class="annottext">hashScriptWithPrefix :: ByteString -&gt; Script -&gt; ScriptHash
-</span><a href="Plutarch.LedgerApi.V3.html#hashScriptWithPrefix"><span class="hs-identifier hs-var hs-var">hashScriptWithPrefix</span></a></span></span><span> </span><span id="local-6989586621679396895"><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679396895"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621679396896"><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679396896"><span class="hs-identifier hs-var">scr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
+</span><a href="Plutarch.LedgerApi.V3.html#hashScriptWithPrefix"><span class="hs-identifier hs-var hs-var">hashScriptWithPrefix</span></a></span></span><span> </span><span id="local-6989586621679371484"><span class="annot"><span class="annottext">ByteString
+</span><a href="#local-6989586621679371484"><span class="hs-identifier hs-var">prefix</span></a></span></span><span> </span><span id="local-6989586621679371485"><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679371485"><span class="hs-identifier hs-var">scr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
 </span><span id="line-195"></span><span>  </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ScriptHash
 </span><span class="hs-identifier hs-var">Plutus.ScriptHash</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; ScriptHash)
 -&gt; (ByteString -&gt; BuiltinByteString) -&gt; ByteString -&gt; ScriptHash
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_224"><span class="hs-identifier hs-var">hashBlake2b_224</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ScriptHash) -&gt; ByteString -&gt; ScriptHash
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span>
 </span><span id="line-196"></span><span>    </span><span class="annot"><span class="annottext">ByteString
-</span><a href="#local-6989586621679396895"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
+</span><a href="#local-6989586621679371484"><span class="hs-identifier hs-var">prefix</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString -&gt; ByteString
 forall a. Semigroup a =&gt; a -&gt; a -&gt; a
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ShortByteString -&gt; ByteString
-</span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Short.Internal.html#fromShort"><span class="hs-identifier hs-var">fromShort</span></a></span><span> </span><span class="annot"><span class="annottext">(ShortByteString -&gt; ByteString)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#%3C%3E"><span class="hs-operator hs-var">&lt;&gt;</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">ShortByteString -&gt; ByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Short.Internal.html#fromShort"><span class="hs-identifier hs-var">fromShort</span></a></span><span> </span><span class="annot"><span class="annottext">(ShortByteString -&gt; ByteString)
 -&gt; (Script -&gt; ShortByteString) -&gt; Script -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; ShortByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Program DeBruijn DefaultUni DefaultFun () -&gt; ShortByteString
 </span><span class="hs-identifier hs-var">serialiseUPLC</span></span><span> </span><span class="annot"><span class="annottext">(Program DeBruijn DefaultUni DefaultFun () -&gt; ShortByteString)
 -&gt; (Script -&gt; Program DeBruijn DefaultUni DefaultFun ())
 -&gt; Script
 -&gt; ShortByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Program DeBruijn DefaultUni DefaultFun ()
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Script -&gt; Program DeBruijn DefaultUni DefaultFun ()
 </span><span class="hs-identifier hs-var">unScript</span></span><span> </span><span class="annot"><span class="annottext">(Script -&gt; ByteString) -&gt; Script -&gt; ByteString
 forall a b. (a -&gt; b) -&gt; a -&gt; b
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Script
-</span><a href="#local-6989586621679396896"><span class="hs-identifier hs-var">scr</span></a></span><span class="hs-special">)</span><span>
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">Script
+</span><a href="#local-6989586621679371485"><span class="hs-identifier hs-var">scr</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-197"></span><span>
 </span><span id="line-198"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashLedgerBytes"><span class="hs-identifier hs-type">hashLedgerBytes</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.LedgerBytes</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-199"></span><span id="hashLedgerBytes"><span class="annot"><span class="annottext">hashLedgerBytes :: LedgerBytes -&gt; BuiltinByteString
@@ -317,16 +317,16 @@ forall a b. (a -&gt; b) -&gt; a -&gt; b
 </span><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_224"><span class="hs-identifier hs-var">hashBlake2b_224</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
 -&gt; (LedgerBytes -&gt; ByteString) -&gt; LedgerBytes -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinByteString -&gt; ByteString
 BuiltinByteString -&gt; FromBuiltin BuiltinByteString
 forall arep. HasFromBuiltin arep =&gt; arep -&gt; FromBuiltin arep
 </span><span class="hs-identifier hs-var">PlutusTx.fromBuiltin</span></span><span> </span><span class="annot"><span class="annottext">(BuiltinByteString -&gt; ByteString)
 -&gt; (LedgerBytes -&gt; BuiltinByteString) -&gt; LedgerBytes -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">LedgerBytes -&gt; BuiltinByteString
 </span><span class="hs-identifier hs-var">Plutus.getLedgerBytes</span></span><span>
 </span><span id="line-200"></span><span>
-</span><span id="line-201"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_224"><span class="hs-identifier hs-type">hashBlake2b_224</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-201"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_224"><span class="hs-identifier hs-type">hashBlake2b_224</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-202"></span><span id="hashBlake2b_224"><span class="annot"><span class="annottext">hashBlake2b_224 :: ByteString -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_224"><span class="hs-identifier hs-var hs-var">hashBlake2b_224</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 ByteString -&gt; ToBuiltin ByteString
@@ -334,20 +334,20 @@ forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
 </span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall bin bout.
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall bin bout.
 (ByteArrayAccess bin, ByteArray bout) =&gt;
 bin -&gt; bout
-</span><span class="hs-identifier hs-var">convert</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(Digest Blake2b_224 -&gt; ByteString)
+</span><span class="hs-identifier hs-var">convert</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(Digest Blake2b_224 -&gt; ByteString)
 -&gt; (ByteString -&gt; Digest Blake2b_224) -&gt; ByteString -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Blake2b_224 -&gt; ByteString -&gt; Digest Blake2b_224
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Blake2b_224 -&gt; ByteString -&gt; Digest Blake2b_224
 forall ba alg.
 (ByteArrayAccess ba, HashAlgorithm alg) =&gt;
 alg -&gt; ba -&gt; Digest alg
 </span><span class="hs-identifier hs-var">hashWith</span></span><span> </span><span class="annot"><span class="annottext">Blake2b_224
 </span><span class="hs-identifier hs-var">Blake2b_224</span></span><span>
 </span><span id="line-203"></span><span>
-</span><span id="line-204"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_256"><span class="hs-identifier hs-type">hashBlake2b_256</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
+</span><span id="line-204"></span><span class="annot"><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_256"><span class="hs-identifier hs-type">hashBlake2b_256</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PlutusTx.BuiltinByteString</span></span><span>
 </span><span id="line-205"></span><span id="hashBlake2b_256"><span class="annot"><span class="annottext">hashBlake2b_256 :: ByteString -&gt; BuiltinByteString
 </span><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_256"><span class="hs-identifier hs-var hs-var">hashBlake2b_256</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; BuiltinByteString
 ByteString -&gt; ToBuiltin ByteString
@@ -355,13 +355,13 @@ forall a. HasToBuiltin a =&gt; a -&gt; ToBuiltin a
 </span><span class="hs-identifier hs-var">PlutusTx.toBuiltin</span></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
 -&gt; (ByteString -&gt; ByteString) -&gt; ByteString -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall bin bout.
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">forall bin bout.
 (ByteArrayAccess bin, ByteArray bout) =&gt;
 bin -&gt; bout
-</span><span class="hs-identifier hs-var">convert</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(Digest Blake2b_256 -&gt; ByteString)
+</span><span class="hs-identifier hs-var">convert</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">@</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Internal.Type.html#ByteString"><span class="hs-identifier hs-type">ByteString</span></a></span><span> </span><span class="annot"><span class="annottext">(Digest Blake2b_256 -&gt; ByteString)
 -&gt; (ByteString -&gt; Digest Blake2b_256) -&gt; ByteString -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Blake2b_256 -&gt; ByteString -&gt; Digest Blake2b_256
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Blake2b_256 -&gt; ByteString -&gt; Digest Blake2b_256
 forall ba alg.
 (ByteArrayAccess ba, HashAlgorithm alg) =&gt;
 alg -&gt; ba -&gt; Digest alg
@@ -374,11 +374,11 @@ alg -&gt; ba -&gt; Digest alg
 </span><a href="Plutarch.LedgerApi.V3.html#hashBlake2b_256"><span class="hs-identifier hs-var">hashBlake2b_256</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; BuiltinByteString)
 -&gt; (Data -&gt; ByteString) -&gt; Data -&gt; BuiltinByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">LazyByteString -&gt; ByteString
-</span><a href="../../../ghc-9.8.4/html/libraries/bytestring-0.12.1.0-inplace/src/Data.ByteString.Lazy.Internal.html#toStrict"><span class="hs-identifier hs-var">toStrict</span></a></span><span> </span><span class="annot"><span class="annottext">(LazyByteString -&gt; ByteString)
--&gt; (Data -&gt; LazyByteString) -&gt; Data -&gt; ByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">ByteString -&gt; ByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/bytestring-0.11.5.4/src/Data.ByteString.Lazy.Internal.html#toStrict"><span class="hs-identifier hs-var">toStrict</span></a></span><span> </span><span class="annot"><span class="annottext">(ByteString -&gt; ByteString)
+-&gt; (Data -&gt; ByteString) -&gt; Data -&gt; ByteString
 forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Data -&gt; LazyByteString
-forall a. Serialise a =&gt; a -&gt; LazyByteString
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Data -&gt; ByteString
+forall a. Serialise a =&gt; a -&gt; ByteString
 </span><span class="hs-identifier hs-var">serialise</span></span><span>
 </span><span id="line-209"></span></pre></body></html>

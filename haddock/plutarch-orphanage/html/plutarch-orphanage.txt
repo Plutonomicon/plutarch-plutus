@@ -8,13 +8,13 @@
 
 module PlutusCore.Value.Orphans
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.K
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Quantity
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Value
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.K
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Quantity
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Value
 instance Test.QuickCheck.Function.Function PlutusCore.Value.K
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Quantity
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Quantity
 instance Test.QuickCheck.Function.Function PlutusCore.Value.Quantity
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Value.Value
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Value.Value
 instance Test.QuickCheck.Function.Function PlutusCore.Value.Value
 
 module PlutusLedgerApi.QuickCheck.Utils
@@ -26,7 +26,7 @@ data SizedByteString (n :: Natural)
 
 -- | Read-only pattern for accessing the underlying <a>ByteString</a>. Use
 --   it just like you would use a data constructor in a pattern match.
-pattern SizedByteString :: ByteString -> SizedByteString n
+pattern SizedByteString :: forall (n :: Natural). ByteString -> SizedByteString n
 
 -- | Get the underlying <a>ByteString</a>. It is guaranteed to have the
 --   length specified in its type.
@@ -45,18 +45,18 @@ data AsWord64
 pattern AsWord64 :: Integer -> AsWord64
 
 fromAsWord64 :: AsWord64 -> Integer
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.QuickCheck.Utils.AsWord64
-instance GHC.TypeNats.KnownNat n => Test.QuickCheck.Arbitrary.Arbitrary (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.QuickCheck.Utils.AsWord64
-instance Test.QuickCheck.Arbitrary.CoArbitrary (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
-instance GHC.Classes.Eq PlutusLedgerApi.QuickCheck.Utils.AsWord64
-instance GHC.Classes.Eq (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.QuickCheck.Utils.AsWord64
-instance Test.QuickCheck.Function.Function (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
-instance GHC.Classes.Ord PlutusLedgerApi.QuickCheck.Utils.AsWord64
-instance GHC.Classes.Ord (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
-instance GHC.Show.Show PlutusLedgerApi.QuickCheck.Utils.AsWord64
 instance GHC.Show.Show (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
+instance GHC.Classes.Ord (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
+instance GHC.Classes.Eq (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
+instance GHC.Show.Show PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance GHC.Classes.Ord PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance GHC.Classes.Eq PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance Test.QuickCheck.Arbitrary.CoArbitrary (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.QuickCheck.Utils.AsWord64
+instance GHC.TypeNats.KnownNat n => Test.QuickCheck.Arbitrary.Arbitrary (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
+instance Test.QuickCheck.Function.Function (PlutusLedgerApi.QuickCheck.Utils.SizedByteString n)
 
 module PlutusLedgerApi.V1.Orphans
 
@@ -154,74 +154,74 @@ newtype FeeValue
 FeeValue :: Value -> FeeValue
 
 getFeeValue :: FeeValue -> Value
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Data.Data
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V1.Bytes.LedgerBytes
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V2.Contexts.ScriptContext
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Data.Data
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V1.Bytes.LedgerBytes
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V2.Contexts.ScriptContext
-instance Test.QuickCheck.Function.Function PlutusCore.Data.Data
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V1.Bytes.LedgerBytes
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V2.Contexts.ScriptContext
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V2.Contexts.ScriptContext
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V2.Contexts.ScriptContext
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusCore.Data.Data
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusCore.Data.Data
+instance Test.QuickCheck.Function.Function PlutusCore.Data.Data
 
 module PlutusLedgerApi.V3.Orphans
 pruneZeroes :: Value -> Value
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ChangedParameters
 instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Committee
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Constitution
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.DRep
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.DRepCredential
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Delegatee
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.GovernanceAction
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.GovernanceActionId
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.MintValue.MintValue
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ProposalProcedure
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ProtocolVersion
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptContext
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptInfo
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptPurpose
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxCert
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Tx.TxId
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInInfo
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInfo
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Tx.TxOutRef
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Vote
-instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Voter
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ChangedParameters
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Committee
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Constitution
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.DRep
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.DRepCredential
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Delegatee
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.GovernanceAction
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ProposalProcedure
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ProtocolVersion
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ScriptPurpose
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.TxCert
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.DRepCredential
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.DRepCredential
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Tx.TxId
 instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Tx.TxId
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Tx.TxOutRef
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Vote
-instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Voter
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Constitution
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Constitution
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ChangedParameters
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ColdCommitteeCredential
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.DRepCredential
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.DRep
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.DRep
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.DRep
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Delegatee
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Delegatee
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Delegatee
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxCert
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.TxCert
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.TxCert
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Voter
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Voter
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Voter
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Vote
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Vote
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Vote
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Tx.TxId
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.GovernanceActionId
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.Committee
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.Committee
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Committee
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Constitution
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.DRep
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.DRepCredential
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Delegatee
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.GovernanceAction
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.GovernanceActionId
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.HotCommitteeCredential
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ProtocolVersion
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ProtocolVersion
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ProtocolVersion
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ScriptPurpose
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.TxCert
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Tx.TxId
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ChangedParameters
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.GovernanceAction
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ProposalProcedure
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Tx.TxOutRef
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Tx.TxOutRef
 instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Tx.TxOutRef
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Vote
-instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.Voter
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance Test.QuickCheck.Arbitrary.CoArbitrary PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance Test.QuickCheck.Function.Function PlutusLedgerApi.V3.Contexts.ScriptPurpose
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptInfo
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInInfo
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.MintValue.MintValue
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.TxInfo
+instance Test.QuickCheck.Arbitrary.Arbitrary PlutusLedgerApi.V3.Contexts.ScriptContext

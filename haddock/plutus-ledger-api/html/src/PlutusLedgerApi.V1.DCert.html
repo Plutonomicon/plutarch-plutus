@@ -15,8 +15,8 @@
 </span><span id="line-15"></span><span>  </span><span class="hs-special">(</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCert"><span class="hs-identifier">DCert</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span>
 </span><span id="line-16"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
 </span><span id="line-17"></span><span>
-</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html"><span class="hs-identifier">Control.DeepSeq</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier">NFData</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html"><span class="hs-identifier">Control.DeepSeq</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier">NFData</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html"><span class="hs-identifier">PlutusLedgerApi.V1.Credential</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Credential.html#StakingCredential"><span class="hs-identifier">StakingCredential</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html"><span class="hs-identifier">PlutusLedgerApi.V1.Crypto</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier">PubKeyHash</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusTx.Blueprint.Definition</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">HasBlueprintDefinition</span></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-identifier">definitionRef</span></span><span class="hs-special">)</span><span>
@@ -65,19 +65,19 @@
 </span><span id="line-65"></span><span>      </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier hs-type">PubKeyHash</span></a></span><span>
 </span><span id="line-66"></span><span>      </span><span class="annot"><span class="hs-comment">-- ^ pool VFR</span></span><span>
 </span><span id="line-67"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">-- | The retirement certificate and the Epoch in which the retirement will take place</span></span><span>
-</span><span id="line-68"></span><span>    </span><span id="DCertPoolRetire"><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCertPoolRetire"><span class="hs-identifier hs-var">DCertPoolRetire</span></a></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier hs-type">PubKeyHash</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-bignum-1.3-inplace/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-comment">-- NB: Should be Word64 but we only have Integer on-chain</span><span>
+</span><span id="line-68"></span><span>    </span><span id="DCertPoolRetire"><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCertPoolRetire"><span class="hs-identifier hs-var">DCertPoolRetire</span></a></span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.Crypto.html#PubKeyHash"><span class="hs-identifier hs-type">PubKeyHash</span></a></span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-bignum-1.3/src/GHC.Num.Integer.html#Integer"><span class="hs-identifier hs-type">Integer</span></a></span><span> </span><span class="hs-comment">-- NB: Should be Word64 but we only have Integer on-chain</span><span>
 </span><span id="line-69"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">-- | A really terse Digest</span></span><span>
 </span><span id="line-70"></span><span>    </span><span id="DCertGenesis"><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCertGenesis"><span class="hs-identifier hs-var">DCertGenesis</span></a></span></span><span>
 </span><span id="line-71"></span><span>  </span><span class="hs-glyph">|</span><span> </span><span class="annot"><span class="hs-comment">-- | Another really terse Digest</span></span><span>
 </span><span id="line-72"></span><span>    </span><span id="DCertMir"><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCertMir"><span class="hs-identifier hs-var">DCertMir</span></a></span></span><span>
-</span><span id="line-73"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681314821"><span id="local-6989586621681314834"><span class="annot"><span class="annottext">DCert -&gt; DCert -&gt; Bool
+</span><span id="line-73"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681265382"><span id="local-6989586621681265395"><span class="annot"><span class="annottext">DCert -&gt; DCert -&gt; Bool
 (DCert -&gt; DCert -&gt; Bool) -&gt; (DCert -&gt; DCert -&gt; Bool) -&gt; Eq DCert
 forall a. (a -&gt; a -&gt; Bool) -&gt; (a -&gt; a -&gt; Bool) -&gt; Eq a
 $c== :: DCert -&gt; DCert -&gt; Bool
 == :: DCert -&gt; DCert -&gt; Bool
 $c/= :: DCert -&gt; DCert -&gt; Bool
 /= :: DCert -&gt; DCert -&gt; Bool
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681314841"><span id="local-6989586621681314854"><span id="local-6989586621681314858"><span id="local-6989586621681314861"><span id="local-6989586621681314864"><span id="local-6989586621681314867"><span id="local-6989586621681314870"><span class="annot"><span class="annottext">Eq DCert
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681265402"><span id="local-6989586621681265415"><span id="local-6989586621681265419"><span id="local-6989586621681265422"><span id="local-6989586621681265425"><span id="local-6989586621681265428"><span id="local-6989586621681265431"><span class="annot"><span class="annottext">Eq DCert
 Eq DCert =&gt;
 (DCert -&gt; DCert -&gt; Ordering)
 -&gt; (DCert -&gt; DCert -&gt; Bool)
@@ -114,7 +114,7 @@ $cmax :: DCert -&gt; DCert -&gt; DCert
 max :: DCert -&gt; DCert -&gt; DCert
 $cmin :: DCert -&gt; DCert -&gt; DCert
 min :: DCert -&gt; DCert -&gt; DCert
-</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681314874"><span id="local-6989586621681314893"><span id="local-6989586621681314897"><span class="annot"><span class="annottext">Int -&gt; DCert -&gt; ShowS
+</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681265435"><span id="local-6989586621681265454"><span id="local-6989586621681265458"><span class="annot"><span class="annottext">Int -&gt; DCert -&gt; ShowS
 [DCert] -&gt; ShowS
 DCert -&gt; String
 (Int -&gt; DCert -&gt; ShowS)
@@ -127,7 +127,7 @@ $cshow :: DCert -&gt; String
 show :: DCert -&gt; String
 $cshowList :: [DCert] -&gt; ShowS
 showList :: [DCert] -&gt; ShowS
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681314901"><span id="local-6989586621681314903"><span class="annot"><span class="annottext">(forall x. DCert -&gt; Rep DCert x)
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681265462"><span id="local-6989586621681265464"><span class="annot"><span class="annottext">(forall x. DCert -&gt; Rep DCert x)
 -&gt; (forall x. Rep DCert x -&gt; DCert) -&gt; Generic DCert
 forall x. Rep DCert x -&gt; DCert
 forall x. DCert -&gt; Rep DCert x
@@ -137,19 +137,19 @@ $cfrom :: forall x. DCert -&gt; Rep DCert x
 from :: forall x. DCert -&gt; Rep DCert x
 $cto :: forall x. Rep DCert x -&gt; DCert
 to :: forall x. Rep DCert x -&gt; DCert
-</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-74"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681314907"><span class="annot"><span class="annottext">DCert -&gt; ()
+</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-74"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681265468"><span class="annot"><span class="annottext">DCert -&gt; ()
 (DCert -&gt; ()) -&gt; NFData DCert
 forall a. (a -&gt; ()) -&gt; NFData a
 $crnf :: DCert -&gt; ()
 rnf :: DCert -&gt; ()
-</span><a href="../../../ghc-9.8.4/html/libraries/deepseq-1.5.1.0-inplace/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681314949"><span class="annot"><span class="annottext">DefinitionId
+</span><a href="../../../ghc-9.6.7/html/libraries/deepseq-1.4.8.1/src/Control.DeepSeq.html#NFData"><span class="hs-identifier hs-var hs-var hs-var hs-var">NFData</span></a></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681265510"><span class="annot"><span class="annottext">DefinitionId
 DefinitionId -&gt; HasBlueprintDefinition DCert
 forall t. DefinitionId -&gt; HasBlueprintDefinition t
 $cdefinitionId :: DefinitionId
 definitionId :: DefinitionId
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var">HasBlueprintDefinition</span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-75"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681314955"><span id="local-6989586621681314961"><span class="annot"><span class="annottext">(forall ann. DCert -&gt; Doc ann)
+</span><span id="line-75"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="hs-special">(</span><span id="local-6989586621681265516"><span id="local-6989586621681265522"><span class="annot"><span class="annottext">(forall ann. DCert -&gt; Doc ann)
 -&gt; (forall ann. [DCert] -&gt; Doc ann) -&gt; Pretty DCert
 forall ann. [DCert] -&gt; Doc ann
 forall ann. DCert -&gt; Doc ann
@@ -162,13 +162,13 @@ $cprettyList :: forall ann. [DCert] -&gt; Doc ann
 prettyList :: forall ann. [DCert] -&gt; Doc ann
 </span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Pretty</span></span></span></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Prettyprinter.Extras.html#PrettyShow"><span class="hs-identifier hs-type">PrettyShow</span></a></span><span> </span><span class="annot"><a href="PlutusLedgerApi.V1.DCert.html#DCert"><span class="hs-identifier hs-type">DCert</span></a></span><span class="hs-special">)</span><span>
 </span><span id="line-76"></span><span>
-</span><span id="line-77"></span><span id="local-6989586621681314968"><span class="hs-identifier">P.deriveEq</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span><span>
+</span><span id="line-77"></span><span id="local-6989586621681265529"><span class="hs-identifier">P.deriveEq</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span><span>
 </span><span id="line-78"></span><span>
 </span><span id="line-79"></span><span class="hs-comment">----------------------------------------------------------------------------------------------------</span><span>
 </span><span id="line-80"></span><span class="hs-comment">-- TH Splices --------------------------------------------------------------------------------------</span><span>
 </span><span id="line-81"></span><span>
-</span><span id="line-82"></span><span id="local-6989586621681315001"><span id="local-6989586621681315003"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span></span><span>
-</span><span id="line-83"></span><span id="local-6989586621681314775"><span id="local-6989586621681315682"><span id="local-6989586621681315695"><span id="local-6989586621681315697"><span id="local-6989586621681315713"><span class="hs-identifier">makeIsDataSchemaIndexed</span><span>
+</span><span id="line-82"></span><span id="local-6989586621681265562"><span id="local-6989586621681265564"><span class="hs-identifier">makeLift</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span></span><span>
+</span><span id="line-83"></span><span id="local-6989586621681265336"><span id="local-6989586621681266243"><span id="local-6989586621681266256"><span id="local-6989586621681266258"><span id="local-6989586621681266274"><span class="hs-identifier">makeIsDataSchemaIndexed</span><span>
 </span><span id="line-84"></span><span>  </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span><span>
 </span><span id="line-85"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">DCertDelegRegKey</span><span class="hs-special">,</span><span> </span><span class="hs-number">0</span><span class="hs-special">)</span><span>
 </span><span id="line-86"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">DCertDelegDeRegKey</span><span class="hs-special">,</span><span> </span><span class="hs-number">1</span><span class="hs-special">)</span><span>
@@ -179,5 +179,5 @@ prettyList :: forall ann. [DCert] -&gt; Doc ann
 </span><span id="line-91"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="hs-special">(</span><span class="hs-special">'</span><span class="hs-identifier">DCertMir</span><span class="hs-special">,</span><span> </span><span class="hs-number">6</span><span class="hs-special">)</span><span>
 </span><span id="line-92"></span><span>  </span><span class="hs-special">]</span></span></span></span></span></span><span>
 </span><span id="line-93"></span><span>
-</span><span id="line-94"></span><span id="local-6989586621681315833"><span id="local-6989586621681315854"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span></span><span>
+</span><span id="line-94"></span><span id="local-6989586621681266394"><span id="local-6989586621681266415"><span class="hs-identifier">deriveShow</span><span> </span><span class="hs-special">''</span><span class="hs-identifier">DCert</span></span></span><span>
 </span><span id="line-95"></span></pre></body></html>
