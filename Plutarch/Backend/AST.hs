@@ -94,7 +94,12 @@ import Plutarch.Backend.VarMap (
   vmSingleton,
  )
 import Plutarch.Helpers.Backend (getFresh)
-import Plutarch.Utils.Pretty (blockList, compactReadableVar, prettyValueOf, taggedNode)
+import Plutarch.Helpers.Pretty (
+  blockList,
+  compactReadableVar,
+  prettyValueOf,
+  taggedNode,
+ )
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import Prettyprinter (

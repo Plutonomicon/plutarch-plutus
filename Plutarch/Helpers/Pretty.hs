@@ -1,5 +1,5 @@
 -- | Miscellaneous helpers for the various pretty printers.
-module Plutarch.Utils.Pretty (
+module Plutarch.Helpers.Pretty (
   prettyValueOf,
   compactReadableVar,
   (<:=>),
@@ -53,7 +53,20 @@ import Prettyprinter (
   (<+>),
  )
 import UntypedPlutusCore (DefaultFun, Name (Name), Unique (Unique))
-import UntypedPlutusCore.Core.Type (Term (Apply, Builtin, Case, Constant, Constr, Delay, Error, Force, LamAbs, Var))
+import UntypedPlutusCore.Core.Type (
+  Term (
+    Apply,
+    Builtin,
+    Case,
+    Constant,
+    Constr,
+    Delay,
+    Error,
+    Force,
+    LamAbs,
+    Var
+  ),
+ )
 
 -- We can do better than the Plutus Pretty instance.
 -- If we use (_,_) for pairs and [] for list types then

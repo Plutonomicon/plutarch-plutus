@@ -67,7 +67,7 @@ import Plutarch.Backend.AST (
  )
 import Plutarch.Backend.AST qualified as AST
 import Plutarch.Backend.UPLC (UPLCTerm)
-import Plutarch.Utils.Pretty (prettyValueOf, (<:=>))
+import Plutarch.Helpers.Pretty (prettyValueOf, (<:=>))
 import PlutusCore (Some (Some), ValueOf (ValueOf))
 import PlutusCore qualified as PLC
 import Prettyprinter (

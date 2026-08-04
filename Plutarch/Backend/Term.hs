@@ -122,8 +122,19 @@ import Plutarch.Backend.VarMap (
   vmSingleton,
  )
 import Plutarch.Helpers.Backend (getFresh)
+import Plutarch.Helpers.Pretty (
+  PrintMode (PrintAtomic, PrintDefault),
+  appTemplate,
+  blockParens,
+  caseTemplate,
+  compactReadableVar,
+  composeTemplate,
+  ctorTemplate,
+  lambdaTemplate,
+  letTemplate,
+  prettyValueOf,
+ )
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Utils.Pretty (PrintMode (PrintAtomic, PrintDefault), appTemplate, blockParens, caseTemplate, compactReadableVar, composeTemplate, ctorTemplate, lambdaTemplate, letTemplate, prettyValueOf)
 import PlutusCore (Some, ValueOf)
 import PlutusCore qualified as PLC
 import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))

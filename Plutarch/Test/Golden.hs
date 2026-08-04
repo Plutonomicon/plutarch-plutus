@@ -2,30 +2,31 @@
 
 module Plutarch.Test.Golden (
   plutarchGolden,
+  plutarchGoldenEval,
 ) where
 
 import Control.Exception (Exception, throwIO)
-import Control.Monad.Except (runExceptT)
-import Control.Monad.RWS.CPS (runRWS)
 import Data.ByteString.Lazy qualified as Lazy
 import Data.Char (isSpace, isUpperCase, toLower)
 import Data.Kind (Type)
+import Data.Text (Text)
 import Data.Text.Lazy.Encoding (encodeUtf8)
 import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
-import Plutarch.Backend.RawTerm (RawTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (
-  Term (Term),
-  TermEnv (TermEnv),
-  TermError,
- )
+import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
+import Plutarch.Helpers.Compile (compileTerm, termToUPLC)
+import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
+import PlutusCore qualified as PLC
+import PlutusCore.Evaluation.Machine.ExBudget (ExBudget)
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.Text (renderLazy)
 import System.FilePath ((<.>), (</>))
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.Golden (goldenVsString)
+import UntypedPlutusCore.Evaluation.Machine.Cek qualified as Cek
 
 {- | Constructs golden files based on the given closed 'Term'. Specifically,
 will generate golden files of each of the following:
@@ -79,6 +80,52 @@ plutarchGolden testDescription testName t =
         , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr asUPLC)
         ]
 
+{- | Constructs golden files based on the given closed 'Term' and its
+evaluation. Specifically, will generate golden files of each of the
+following:
+
+* The 'Term' itself;
+* The UPLC resulting from compiling the 'Term'; and
+* The UPLC resulting from evaluating the compiled 'Term'.
+
+All but the first will produce an error if the 'Term' fails to compile, and
+the last will produce an error if the compiled 'Term' fails to evaluate.
+
+= Important note
+
+The caveats regarding naming given for 'plutarchGolden' also apply to this
+function. If you have both a 'plutarchGolden' and a 'plutarchGoldenEval'
+based on the same 'Term' with the same test name, these are designed not to
+clash: however, if you have /different/ 'Term's with the same test name, one
+as a 'plutarchGolden' and another as a 'plutarchGoldenEval', these /will/
+clash.
+
+@since wip
+-}
+plutarchGoldenEval ::
+  forall (a :: S -> Type).
+  -- | A description for the test. This is what you will see when the test runs.
+  String ->
+  -- | A name for the test, which should be unique (as described above).
+  String ->
+  -- | A closed 'Term'.
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenEval testDescription testName t =
+  let folderName = toFolderName testName
+      goldenFolderFP = "golden" </> folderName
+      termGoldenFP = goldenFolderFP </> "term" <.> "golden"
+      compiled = termToUPLC t
+      uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
+      evaluated = evalUPLC maxBudget <$> compiled
+      uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
+   in testGroup
+        (testName <> ": " <> testDescription)
+        [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
+        , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr compiled)
+        , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)
+        ]
+
 -- Helpers
 
 -- Replace whitespace with dash, downcase everything
@@ -90,12 +137,6 @@ toFolderName s = go <$> s
       | isSpace c = '-'
       | isUpperCase c = toLower c
       | otherwise = c
-
-compileTerm ::
-  forall (a :: S -> Type).
-  (forall (s :: S). Term s a) ->
-  Either TermError (RawTerm ())
-compileTerm (Term comp) = (\(x, _, _) -> fmap snd x) . runRWS (runExceptT comp) TermEnv $ 0
 
 toLazyBS :: forall (a :: Type). Pretty a => a -> Lazy.ByteString
 toLazyBS = encodeUtf8 . renderLazy . layoutSmart defaultLayoutOptions . pretty
@@ -109,7 +150,29 @@ toLazyBSOrErr = \case
   Left err -> throwIO . DidNotCompileException $ err
   Right res -> pure . toLazyBS $ res
 
+toLazyBSEvaluated ::
+  Either
+    TermError
+    ( Either
+        (Cek.CekEvaluationException PLC.Name PLC.DefaultUni PLC.DefaultFun)
+        (Either (PLC.Some (PLC.ValueOf PLC.DefaultUni)) UPLCTerm)
+    , ExBudget
+    , [Text]
+    ) ->
+  IO Lazy.ByteString
+toLazyBSEvaluated = \case
+  Left err -> throwIO . DidNotCompileException $ err
+  Right (Left err, _, _) -> throwIO . DidNotEvaluateException $ err
+  Right (Right (Left c), _, _) -> pure . toLazyBS . uplcConstant $ c
+  Right (Right (Right t), _, _) -> pure . toLazyBS $ t
+
 newtype DidNotCompileException = DidNotCompileException TermError
   deriving stock (Show)
 
 instance Exception DidNotCompileException
+
+newtype DidNotEvaluateException
+  = DidNotEvaluateException (Cek.CekEvaluationException PLC.Name PLC.DefaultUni PLC.DefaultFun)
+  deriving stock (Show)
+
+instance Exception DidNotEvaluateException
