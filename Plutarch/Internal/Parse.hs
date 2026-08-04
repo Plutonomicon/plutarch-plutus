@@ -5,6 +5,8 @@
 -- Note (Koz, 25/08/2025): Needed to ensure that `pparseData` doesn't get used
 -- on a type that doesn't have a sensible `PAsData`.
 {-# OPTIONS_GHC -Wno-redundant-constraints #-}
+-- Ensures that we can still use this without TypeAbstractions
+{-# OPTIONS_GHC -Wwarn #-}
 
 module Plutarch.Internal.Parse (
   -- * Type class

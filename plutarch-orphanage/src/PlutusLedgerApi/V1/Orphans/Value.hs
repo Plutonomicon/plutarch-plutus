@@ -29,7 +29,6 @@ import Test.QuickCheck (
   CoArbitrary,
   Function (function),
   Gen,
-  NonEmptyList (NonEmpty),
   NonZero (NonZero),
   Positive (Positive),
   chooseBoundedIntegral,
@@ -308,20 +307,6 @@ instance Function PLA.TokenName where
   function = functionMap coerce PLA.TokenName
 
 -- Helpers
-
--- This is frankly a bizarre omission
-instance Arbitrary1 NonEmptyList where
-  {-# INLINEABLE liftArbitrary #-}
-  liftArbitrary genInner =
-    NonEmpty <$> do
-      x <- genInner
-      xs <- liftArbitrary genInner
-      pure $ x : xs
-  {-# INLINEABLE liftShrink #-}
-  liftShrink shrinkInner (NonEmpty ell) =
-    NonEmpty <$> case ell of
-      [] -> []
-      (x : xs) -> (:) <$> shrinkInner x <*> liftShrink shrinkInner xs
 
 {- | A 'PLA.Value' containing only Ada, suitable for fees. Furthermore, the
 Ada quantity is positive.
