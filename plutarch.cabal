@@ -142,6 +142,7 @@ library
     Plutarch.Numeric.Zeroable
     Plutarch.Pair
     Plutarch.Prelude
+    Plutarch.Prelude.Ratio
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant
     Plutarch.Pretty.Internal.Config
