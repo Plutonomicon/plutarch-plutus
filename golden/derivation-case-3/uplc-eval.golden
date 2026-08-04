@@ -1,0 +1,24 @@
+\a b ->
+  let bind_c = \unused_n unused_o -> (False :: Bool)
+  let bind_d = \unused_m -> (False :: Bool)
+  in case 
+       (constr 0
+         [ \e ->
+             case (constr 0 [\f -> EqualsInteger # e # f, bind_d, bind_c]) [b]
+         , \g ->
+             case (constr 0 [bind_d, \h -> EqualsInteger # g # h, bind_c]) [b]
+         , \i j ->
+             case 
+               (constr 0
+                 [ bind_d
+                 , bind_d
+                 , \k l ->
+                     case 
+                       (EqualsInteger # j # l)
+                       [(False :: Bool), EqualsInteger # i # k]
+                 ]
+               )
+               [b]
+         ]
+       )
+       [a]

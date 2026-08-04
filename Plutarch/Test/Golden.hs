@@ -120,7 +120,7 @@ plutarchGoldenEval testDescription testName t =
       evaluated = evalUPLC maxBudget <$> compiled
       uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
    in testGroup
-        (testName <> ": " <> testDescription)
+        (testName <> ": " <> testDescription <> " (eval)")
         [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
         , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr compiled)
         , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)

@@ -1,0 +1,6 @@
+\a b ->
+  let bind_c = \unused_h -> (False :: Bool)
+  in case a
+       [ \d -> case b [\e -> EqualsInteger # d # e, bind_c]
+       , \f -> case b [bind_c, \g -> EqualsInteger # f # g]
+       ]
