@@ -1,14 +1,14 @@
-<\oOLG13GvP3nN:1 fDjhdb6tHhr:2 -> 
+<\oOLG13GvP3nN fDjhdb6tHhr -> 
   <case
     <Apply
       <EqualsInteger>@dr5yy9ULU5j [<0 :: Integer>@mqE7eqJLvgvN, fDjhdb6tHhr]
     >@qSfJlBaB8jg 
     [
       <Apply
-        <\datZyZxDQtv:2 -> 
+        <\datZyZxDQtv -> 
           <Fix
-            [lZmjiLE9xtw:4]
-            <\eCBOolj7xId:6 -> 
+            [lZmjiLE9xtw]
+            <\eCBOolj7xId -> 
               <case
                 <Apply
                   <EqualsInteger>@dr5yy9ULU5j
@@ -78,12 +78,12 @@
                   datZyZxDQtv
                 ]
               >@tbak4tM3q4m
-            >@clZ1xRwReny
-          >@f2HZ3PbF85qN
-        >@eCmWgwcEpfjN
+            >@dSDLXI2AqLrN
+          >@qIlqxlCbDTsN
+        >@ygpCJXqcK7p
         [oOLG13GvP3nN, fDjhdb6tHhr]
-      >@rrb4goHIsXuN, 
+      >@pzGgO57CRMz, 
       <1 :: Integer>@vyRIuwDii3A
     ]
-  >@y1JFByIR9wo
->@jhU9DszYDGv
+  >@yBcJHEiWRjf
+>@wsd3Ga1GKRs
