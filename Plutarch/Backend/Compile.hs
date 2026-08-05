@@ -498,9 +498,11 @@ checkCache = \case
       -- Use code unconditionally
       _ -> code
 
+-- Note (Koz, 06/08/2026): The fold direction is important, as this preserves
+-- the dependency order of `let`-binds.
 doLetBinds :: [(PLC.Name, UPLCTerm)] -> UPLCTerm -> UPLCTerm
 doLetBinds requiredLetBinds t =
-  foldl' (\acc (name, bind) -> uplcLet name bind acc) t requiredLetBinds
+  foldr (\(name, bind) acc -> uplcLet name bind acc) t requiredLetBinds
 
 isTheIdentity ::
   forall (m :: Type -> Type).

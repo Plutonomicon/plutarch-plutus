@@ -5,8 +5,8 @@
         (\mArg_a -> mArg_a # mArg_a)
         # (\functionalArg_b ->
             (\lZmjiLE9xtw eCBOolj7xId ->
-              (\bind_p ->
-                (\bind_o ->
+              (\bind_o ->
+                (\bind_p ->
                   case 
                     (EqualsInteger # eCBOolj7xId # (1 :: Integer))
                     [ case 
@@ -15,11 +15,9 @@
                     , datZyZxDQtv
                     ]
                 )
-                # (lZmjiLE9xtw
-                    # (QuotientInteger # eCBOolj7xId # (2 :: Integer))
-                  )
+                # (MultiplyInteger # bind_o # bind_o)
               )
-              # (MultiplyInteger # bind_o # bind_o)
+              # (lZmjiLE9xtw # (QuotientInteger # eCBOolj7xId # (2 :: Integer)))
             )
             # (functionalArg_b # functionalArg_b)
           )
