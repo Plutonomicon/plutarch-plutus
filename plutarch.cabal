@@ -144,6 +144,7 @@ library
     Plutarch.Numeric.Zeroable
     Plutarch.Pair
     Plutarch.Prelude
+    Plutarch.Prelude.PullArray
     Plutarch.Prelude.Ratio
     Plutarch.Pretty
     Plutarch.Pretty.Internal.BuiltinConstant
