@@ -1,0 +1,3 @@
+(\a -> a # 10 :: Integer # (\b -> b))
+# (\c d e -> e # c # (\f -> (((\g h -> AddInteger # g # h) # f) . d) # f))
+# (\i j k -> k # i # (\l -> (((\m n -> AddInteger # m # n) # l) . j) # l))

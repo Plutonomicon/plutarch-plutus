@@ -1,5 +1,6 @@
 module Main (main) where
 
+import Array qualified
 import Bool qualified
 import Compiled qualified
 import Compose qualified
@@ -21,4 +22,5 @@ main =
     , Compose.goldens
     , Pretty.goldens
     , Derivation.goldens
+    , Array.goldens
     ]

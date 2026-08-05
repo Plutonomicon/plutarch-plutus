@@ -1,0 +1,19 @@
+(\oOLG13GvP3nN ->
+  oOLG13GvP3nN # (10 :: Integer) # (\fDjhdb6tHhr -> fDjhdb6tHhr)
+)
+# (\datZyZxDQtv lZmjiLE9xtw eCBOolj7xId ->
+    eCBOolj7xId
+    # datZyZxDQtv
+    # (\bUiGidwO3Fh ->
+        (\compArg_a -> AddInteger # bUiGidwO3Fh # (lZmjiLE9xtw # compArg_a))
+        # bUiGidwO3Fh
+      )
+  )
+# (\yWumnJg3ddDN gj5npqULRul m8Q5Lv3inRkN ->
+    m8Q5Lv3inRkN
+    # yWumnJg3ddDN
+    # (\ehMhZ6O4MHoN ->
+        (\compArg_b -> AddInteger # ehMhZ6O4MHoN # (gj5npqULRul # compArg_b))
+        # ehMhZ6O4MHoN
+      )
+  )

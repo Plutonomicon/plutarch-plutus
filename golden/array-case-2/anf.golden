@@ -1,0 +1,39 @@
+ANF Hashes:
+ #0 := d9BTnRxpywy
+ #1 := bhU9rS8A7HDN
+ #2 := m3w8IV2sOoiN
+ #3 := n0MFQ1jonftN
+ #4 := m5XKL3leqWoN
+ #5 := nqoTSVKmZ1h
+ #6 := s7ZkLLAi4miN
+ #7 := a1zzuIYBGzx
+ #8 := tWCslS6w3CpN
+ #9 := thqzBhebkSh
+ #10 := pAcYmj9LRaw
+ #11 := jBQDcPGV6ixN
+ #12 := alcjxLcDIcbN
+ #13 := tcWWpi0AAWlN
+ #14 := atQknUBhQvq
+ #15 := xqmhzoaWlyp
+ #16 := llmh5FrE3Gp
+ #17 := k8J10QyTycyN
+
+ANF Binds:
+ #0 := 10 :: Integer
+ #1 := \fDjhdb6tHhr:1 -> fDjhdb6tHhr
+ #2 := Apply oOLG13GvP3nN [#0, #1]
+ #3 := \oOLG13GvP3nN:0 -> #2
+ #4 := AddInteger
+ #5 := Apply #4 [bUiGidwO3Fh]
+ #6 := #5 <<< lZmjiLE9xtw
+ #7 := Apply #6 [bUiGidwO3Fh]
+ #8 := \bUiGidwO3Fh:1 -> #7
+ #9 := Apply eCBOolj7xId [datZyZxDQtv, #8]
+ #10 := \datZyZxDQtv:0 lZmjiLE9xtw:1 eCBOolj7xId:0 -> #9
+ #11 := Apply #4 [ehMhZ6O4MHoN]
+ #12 := #11 <<< gj5npqULRul
+ #13 := Apply #12 [ehMhZ6O4MHoN]
+ #14 := \ehMhZ6O4MHoN:1 -> #13
+ #15 := Apply m8Q5Lv3inRkN [yWumnJg3ddDN, #14]
+ #16 := \yWumnJg3ddDN:0 gj5npqULRul:1 m8Q5Lv3inRkN:0 -> #15
+ #17 := Apply #3 [#10, #16]

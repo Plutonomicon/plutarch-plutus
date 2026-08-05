@@ -1,0 +1,48 @@
+<Apply
+  <\oOLG13GvP3nN -> 
+    <Apply
+      oOLG13GvP3nN
+      [<10 :: Integer>@d9BTnRxpywy, <\fDjhdb6tHhr -> fDjhdb6tHhr>@bhU9rS8A7HDN]
+    >@m3w8IV2sOoiN
+  >@n0MFQ1jonftN
+  [
+    <\datZyZxDQtv lZmjiLE9xtw eCBOolj7xId -> 
+      <Apply
+        eCBOolj7xId
+        [
+          datZyZxDQtv, 
+          <Compose
+            [
+              <\bUiGidwO3Fh -> 
+                <Apply
+                  <AddInteger>@m5XKL3leqWoN
+                  [bUiGidwO3Fh, <1 :: Integer>@vyRIuwDii3A]
+                >@eCRM9j6bM7e
+              >@i7zZqwB3nro, 
+              lZmjiLE9xtw
+            ]
+          >@syjXZqADefsN
+        ]
+      >@eBtoCghmeFkN
+    >@eOBSWkCMuRkN, 
+    <\yWumnJg3ddDN gj5npqULRul m8Q5Lv3inRkN -> 
+      <Apply
+        m8Q5Lv3inRkN
+        [
+          yWumnJg3ddDN, 
+          <Compose
+            [
+              <\ehMhZ6O4MHoN -> 
+                <Apply
+                  <AddInteger>@m5XKL3leqWoN
+                  [ehMhZ6O4MHoN, <1 :: Integer>@vyRIuwDii3A]
+                >@tjnU60tEwruN
+              >@jhSWpzuwvFh, 
+              gj5npqULRul
+            ]
+          >@zPFGxY0HmioN
+        ]
+      >@zPVFgSnCLii
+    >@ci7mCIVp3DgN
+  ]
+>@wZMHJSQLicwN
