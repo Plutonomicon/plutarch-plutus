@@ -12,6 +12,8 @@ form](https://en.wikipedia.org/wiki/A-normal_form)
 @since wip
 -}
 module Plutarch.Backend.ANF (
+  BoundVar (..),
+  Multiplicity (MultOne),
   Leaf (..),
   Ref (..),
   ANFBind (..),
@@ -25,6 +27,7 @@ module Plutarch.Backend.ANF (
 
 import Control.Monad.ST (ST, runST)
 import Control.Monad.State.Strict (
+  MonadState,
   State,
   execStateT,
   gets,
@@ -41,6 +44,7 @@ import Data.Kind (Type)
 import Data.Map.Strict (Map)
 import Data.Map.Strict qualified as Map
 import Data.Maybe (fromJust)
+import Data.Monoid (Sum (Sum))
 import Data.Set (Set)
 import Data.Set qualified as Set
 import Data.Vector (MVector, Vector)
@@ -62,7 +66,6 @@ import Plutarch.Backend.AST (
     ASTLam,
     ASTLeaf
   ),
-  BoundVar (BoundVar),
   Hash,
  )
 import Plutarch.Backend.AST qualified as AST
@@ -86,6 +89,50 @@ import Prettyprinter (
   viaShow,
   (<+>),
  )
+
+{- | A hash identifying a bound variable argument, together with its
+multiplicity (how many times it occurs in the body where it is bound).
+
+@since wip
+-}
+data BoundVar = BoundVar Hash Multiplicity
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+-- | @since wip
+instance Pretty BoundVar where
+  pretty (BoundVar h m) = pretty h <> ":" <> pretty m
+
+{- | A positive-only number indicating the number of times a bound variable is
+used in the body of whatever binds it.
+
+@since wip
+-}
+newtype Multiplicity = Multiplicity Word
+  deriving stock
+    ( -- | @since wip
+      Show
+    )
+  deriving
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Pretty
+    )
+    via Word
+  deriving
+    ( -- | @since wip
+      Semigroup
+    )
+    via (Sum Word)
+
+-- | @since wip
+pattern MultOne :: Multiplicity
+pattern MultOne = Multiplicity 1
 
 {- | A leaf bind in the ANF (that is, one that cannot have dependencies).
 
@@ -280,12 +327,14 @@ fromHashedAST ast = case runState (go ast) (Bimap.empty, IntMap.empty) of
       ASTDelay h body -> withLookup h $ do
         bodyRef <- go body
         newBind h (ANFDelay () bodyRef)
-      ASTLam h mults body -> withLookup h $ do
+      ASTLam h bvs body -> withLookup h $ do
         bodyRef <- go body
-        newBind h (ANFLam () mults bodyRef)
-      ASTFix h mult body -> withLookup h $ do
+        boundVars <- traverse (traverse (bvWithMultiplicity bodyRef)) bvs
+        newBind h (ANFLam () boundVars bodyRef)
+      ASTFix h bv body -> withLookup h $ do
         bodyRef <- go body
-        newBind h (ANFFix () mult bodyRef)
+        boundVar <- bvWithMultiplicity bodyRef bv
+        newBind h (ANFFix () boundVar bodyRef)
       ASTApply h f xs -> withLookup h $ do
         fRef <- go f
         xsRefs <- traverse go xs
@@ -490,6 +539,37 @@ analyzeDemand (ANF bm binds) = runST $ do
           neededComponents <- traverse (getNeededFrom neededVarsMV) components
           MVector.write countMV i 0
           MVector.write neededVarsMV i . fold $ neededComponents
+
+bvWithMultiplicity ::
+  forall (a :: Type) (m :: Type -> Type).
+  MonadState (a, IntMap (ANFBind ())) m =>
+  Ref -> Hash -> m BoundVar
+bvWithMultiplicity r h = case r of
+  AVar h' ->
+    if h' == h
+      then pure . BoundVar h . Multiplicity $ 1
+      else error "Argument claimed as used, but body shows it as unused. If you see this, report a bug."
+  AnId (Id i) -> do
+    (existingBinds, _) <- gets (IntMap.split i . snd)
+    let (Sum mult) = foldMap countOccurrence existingBinds
+    pure . BoundVar h . Multiplicity $ mult
+    where
+      countOccurrence :: ANFBind () -> Sum Word
+      countOccurrence = \case
+        ANFLeaf _ -> mempty
+        ANFForce _ body -> hashToCount h body
+        ANFDelay _ body -> hashToCount h body
+        ANFLam _ _ body -> hashToCount h body
+        ANFFix _ _ body -> hashToCount h body
+        ANFApply _ f xs -> hashToCount h f <> foldMap (hashToCount h) xs
+        ANFConstr _ _ fields -> foldMap (hashToCount h) fields
+        ANFCase _ scrut handlers -> hashToCount h scrut <> foldMap (hashToCount h) handlers
+        ANFCompose _ components -> foldMap (hashToCount h) components
+
+hashToCount :: Hash -> Ref -> Sum Word
+hashToCount h = \case
+  AVar h' -> if h == h' then Sum 1 else mempty
+  AnId _ -> mempty
 
 -- Pretty Printer Helpers
 

@@ -1,15 +1,15 @@
-<\oOLG13GvP3nN:2 fDjhdb6tHhr:2 -> 
+<\oOLG13GvP3nN fDjhdb6tHhr -> 
   <case
     <Apply
       <EqualsInteger>@dr5yy9ULU5j [oOLG13GvP3nN, <0 :: Integer>@mqE7eqJLvgvN]
     >@xHs2s8gm9YgN 
     [
       <Apply
-        <\datZyZxDQtv:1 -> 
+        <\datZyZxDQtv -> 
           <Apply
             <Fix
-              [lZmjiLE9xtw:1]
-              <\eCBOolj7xId:2 bUiGidwO3Fh:2 -> 
+              [lZmjiLE9xtw]
+              <\eCBOolj7xId bUiGidwO3Fh -> 
                 <case
                   <Apply
                     <EqualsInteger>@dr5yy9ULU5j
@@ -17,7 +17,7 @@
                   >@snLiMg4JfOrN 
                   [
                     <Apply
-                      <\ti6ipqViMlsN:2 -> 
+                      <\ti6ipqViMlsN -> 
                         <Apply
                           lZmjiLE9xtw
                           [
@@ -28,11 +28,11 @@
                             >@cIWTqFaO6ECN
                           ]
                         >@gr94HPjl9bA
-                      >@waEoq0hhp4r
+                      >@y9zKuaDB1TdN
                       [bUiGidwO3Fh]
-                    >@i8RlbDpxYphN, 
+                    >@rFhvYxqVC9o, 
                     <Apply
-                      <\p4sXwS8SsCb:3 -> 
+                      <\p4sXwS8SsCb -> 
                         <case
                           <Apply
                             <LessThanEqualsInteger>@khwRaGmJyGyN
@@ -41,29 +41,29 @@
                           [
                             p4sXwS8SsCb, 
                             <Apply
-                              <\yWumnJg3ddDN:1 -> 
+                              <\yWumnJg3ddDN -> 
                                 <Apply
                                   <SubtractInteger>@lAuuiZ9AppE
                                   [<0 :: Integer>@mqE7eqJLvgvN, yWumnJg3ddDN]
                                 >@cw80DIyiumyN
-                              >@xc7canbYuJi
+                              >@okZw5ucp1Qq
                               [p4sXwS8SsCb]
-                            >@nZ7OvwvfpYmN
+                            >@aEUaamMiaP
                           ]
-                        >@lWA1q3JcxPb
-                      >@lp4m3fI44AkN
+                        >@mwgFLMjlLCy
+                      >@fMaRgivOQAiN
                       [eCBOolj7xId]
-                    >@ddBkoDu5prEN
+                    >@z1RyQQts7ioN
                   ]
-                >@pbwDHrc56yC
-              >@bCEcVV1FgSd
-            >@eq8jlfSqPrz
+                >@jlnbXt8gECf
+              >@rDrE1mi9yffN
+            >@qC2LUp79Mem
             [datZyZxDQtv, fDjhdb6tHhr]
-          >@aeJvdYWrfnhN
-        >@nwwEFXyuoHtN
+          >@iRMtoKgJhdm
+        >@cnpY2rVCt0n
         [oOLG13GvP3nN]
-      >@bzQqmRfHoKn, 
+      >@aWSsisStt8zN, 
       fDjhdb6tHhr
     ]
-  >@olCkKrI9txu
->@fx2nFCMg6Ac
+  >@jHWBdjO9RAyN
+>@nbQETFpV7vi

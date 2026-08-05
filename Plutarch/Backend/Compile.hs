@@ -49,6 +49,7 @@ import Plutarch.Backend.ANF (
     ANFLam,
     ANFLeaf
   ),
+  BoundVar (BoundVar),
   Demand (Demanded, NeverDemanded, Trivial),
   Id (Id),
   Leaf (
@@ -61,7 +62,6 @@ import Plutarch.Backend.ANF (
   getANFBindAnn,
  )
 import Plutarch.Backend.AST (
-  BoundVar (BoundVar),
   Hash (Hash),
  )
 import Plutarch.Backend.UPLC (
