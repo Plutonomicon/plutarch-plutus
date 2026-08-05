@@ -1,17 +1,17 @@
 \a b ->
-  let bind_c = \unused_n unused_o -> (False :: Bool)
-  let bind_d = \unused_m -> (False :: Bool)
+  let bind_c = \unused_o -> (False :: Bool)
+  let bind_d = \unused_m unused_n -> (False :: Bool)
   in case 
        (constr 0
          [ \e ->
-             case (constr 0 [\f -> EqualsInteger # e # f, bind_d, bind_c]) [b]
+             case (constr 0 [\f -> EqualsInteger # e # f, bind_c, bind_d]) [b]
          , \g ->
-             case (constr 0 [bind_d, \h -> EqualsInteger # g # h, bind_c]) [b]
+             case (constr 0 [bind_c, \h -> EqualsInteger # g # h, bind_d]) [b]
          , \i j ->
              case 
                (constr 0
-                 [ bind_d
-                 , bind_d
+                 [ bind_c
+                 , bind_c
                  , \k l ->
                      case 
                        (EqualsInteger # j # l)
