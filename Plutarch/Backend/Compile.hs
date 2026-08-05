@@ -460,7 +460,7 @@ bvToName = \case
   Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
 
 selfToName :: BoundVar -> PLC.Name
-selfToName (BoundVar (Hash h) _) = mkName "self" h
+selfToName (BoundVar (Hash h) _) = mkName "arg" h
 
 writeToCache :: Id -> UPLCTerm -> CompileState -> CompileState
 writeToCache i code = \case
