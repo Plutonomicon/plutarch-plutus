@@ -2,24 +2,24 @@ ANF Hashes:
  #0 := m5XKL3leqWoN
  #1 := qjJx7b4Msxl
  #2 := i8py2W1iKkz
- #3 := rY8t205mIUqN
+ #3 := lwtfqdLnzLwN
  #4 := sQnIXlhM1Ik
- #5 := fzqRsCxjgzd
+ #5 := hJb5m3l0IRbN
  #6 := hLjyGBI2DHlN
- #7 := r1bRZ8ojbEq
- #8 := nx0SijiY6dt
- #9 := dKME6huWJmj
- #10 := gwPLgUbJ3AqN
+ #7 := nJ7qEPyB0Lu
+ #8 := dqgydrqWvtb
+ #9 := vy24sWzhjJuN
+ #10 := symab48wp9n
 
 ANF Binds:
  #0 := AddInteger
  #1 := 2 :: Integer
  #2 := Apply #0 [fDjhdb6tHhr, #1]
- #3 := \fDjhdb6tHhr:1 -> #2
+ #3 := \fDjhdb6tHhr:0 -> #2
  #4 := Apply #0 [datZyZxDQtv, #1]
- #5 := \datZyZxDQtv:1 -> #4
+ #5 := \datZyZxDQtv:0 -> #4
  #6 := Apply #0 [lZmjiLE9xtw, #1]
- #7 := \lZmjiLE9xtw:1 -> #6
+ #7 := \lZmjiLE9xtw:0 -> #6
  #8 := #3 <<< #5 <<< #7
  #9 := Apply #8 [oOLG13GvP3nN]
- #10 := \oOLG13GvP3nN:1 -> #9
+ #10 := \oOLG13GvP3nN:0 -> #9
