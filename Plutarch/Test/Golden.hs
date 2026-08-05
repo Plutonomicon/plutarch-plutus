@@ -15,7 +15,12 @@ import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.Term (
+  Term,
+  TermError,
+  debugTermEnv,
+  releaseTermEnv,
+ )
 import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
 import Plutarch.Helpers.Compile (compileTerm, termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
@@ -37,7 +42,7 @@ will generate golden files of each of the following:
 * The resulting UPLC.
 
 All but the first of these will produce an error if the 'Term' fails to
-compile.
+compile. This uses 'debugTermEnv' for clarity.
 
 = Important note
 
@@ -62,7 +67,7 @@ plutarchGolden testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = compileTerm t
+      compiled = compileTerm debugTermEnv t
       asAST = fromRawTerm <$> compiled
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
@@ -91,6 +96,8 @@ following:
 All but the first will produce an error if the 'Term' fails to compile, and
 the last will produce an error if the compiled 'Term' fails to evaluate.
 
+This uses 'releaseTermEnv', as this produces the best possible code.
+
 = Important note
 
 The caveats regarding naming given for 'plutarchGolden' also apply to this
@@ -115,7 +122,7 @@ plutarchGoldenEval testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = termToUPLC t
+      compiled = termToUPLC releaseTermEnv t
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
       evaluated = evalUPLC maxBudget <$> compiled
       uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
