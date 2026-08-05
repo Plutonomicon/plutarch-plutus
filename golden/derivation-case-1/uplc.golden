@@ -1,6 +1,6 @@
 \oOLG13GvP3nN fDjhdb6tHhr ->
-  let bind_g = \unused_a unused_a -> (False :: Bool)
   let bind_f = \unused_a -> (False :: Bool)
+  let bind_g = \unused_a unused_a -> (False :: Bool)
   in case oOLG13GvP3nN
        [ \datZyZxDQtv ->
            case fDjhdb6tHhr
