@@ -380,9 +380,12 @@ compileAndCache ix requiredLetBinds = \case
   -- Furthermore, `let`-bind requirements have to be done carefully. Like with
   -- lambdas, our analysis detects _binding_ sites, which means that we have to
   -- resolve `let`-bindings required here 'around' `F`, not the result!
-  ANFFix _ _ body -> do
+  ANFFix _ bv body -> do
     -- Might as well resolve `let`-binds _now_.
     bodyCode <- doLetBinds requiredLetBinds <$> checkCache body
+    -- We have to translate F to a lambda before doing the rest of the
+    -- transform.
+    let bodyLam = uplcLam1 (selfToName bv) bodyCode
     -- This cannot 'miss', as we checked before for all fixpoint sites and made
     -- a name pair for each.
     (mArgName, functionalArgName) <- asks (fromJust . Map.lookup ix . ceFPNameMap)
@@ -393,7 +396,7 @@ compileAndCache ix requiredLetBinds = \case
     -- `r r`
     let funcSelfApp = uplcApply1 funcArg funcArg
     -- Assemble everything.
-    let finalCode = uplcApply1 m . uplcLam1 functionalArgName . uplcApply1 bodyCode $ funcSelfApp
+    let finalCode = uplcApply1 m . uplcLam1 functionalArgName . uplcApply1 bodyLam $ funcSelfApp
     modify (writeToCache (Id ix) finalCode)
   ANFConstr _ tag fields -> do
     fieldCodes <- traverse checkCache fields
@@ -455,6 +458,9 @@ bvToName = \case
   -- Unused argument, use reserved name
   Nothing -> asks ceUnusedParamName
   Just (BoundVar (Hash h) _) -> pure . mkName "arg" $ h
+
+selfToName :: BoundVar -> PLC.Name
+selfToName (BoundVar (Hash h) _) = mkName "arg" h
 
 writeToCache :: Id -> UPLCTerm -> CompileState -> CompileState
 writeToCache i code = \case
