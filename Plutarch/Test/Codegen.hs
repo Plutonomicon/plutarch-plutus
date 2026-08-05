@@ -2,18 +2,13 @@ module Plutarch.Test.Codegen (
   identicalCode,
 ) where
 
-import Control.Monad.Except (runExceptT)
-import Control.Monad.RWS.CPS (runRWS)
 import Data.Diff.Myers (diffTexts)
 import Data.Kind (Type)
 import Data.Tagged (Tagged (Tagged))
 import Data.Text (Text)
-import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
-import Plutarch.Backend.AST (fromRawTerm)
-import Plutarch.Backend.Compile (toUPLCTerm)
-import Plutarch.Backend.RawTerm (RawTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term (Term), TermEnv (TermEnv), TermError)
+import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Helpers.Compile (termToUPLC)
 import Prettyprinter (defaultLayoutOptions, layoutSmart, pretty)
 import Prettyprinter.Render.Text (renderStrict)
 import Test.Tasty (TestTree)
@@ -64,12 +59,6 @@ instance Typeable a => IsTest (IdenticalCode a) where
               pure . testFailed $ "Code differs: \n" <> show diff
   testOptions = Tagged []
 
-compileTerm ::
-  forall (a :: S -> Type).
-  (forall (s :: S). Term s a) ->
-  Either TermError (RawTerm ())
-compileTerm (Term comp) = (\(x, _, _) -> fmap snd x) . runRWS (runExceptT comp) TermEnv $ 0
-
 toPrettyUPLC ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
@@ -78,8 +67,4 @@ toPrettyUPLC t =
   renderStrict
     . layoutSmart defaultLayoutOptions
     . pretty
-    . toUPLCTerm
-    . analyzeDemand
-    . fromHashedAST
-    . fromRawTerm
-    <$> compileTerm t
+    <$> termToUPLC t

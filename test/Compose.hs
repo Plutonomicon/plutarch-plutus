@@ -12,7 +12,7 @@ import Plutarch.Primitive.BuiltinFun (paddInteger, pmultiplyInteger, psubtractIn
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Test.Codegen (identicalCode)
-import Plutarch.Test.Golden (plutarchGolden)
+import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
 import PlutusCore qualified as PLC
 import Test.Tasty (TestTree, testGroup)
 
@@ -21,9 +21,13 @@ goldens =
   testGroup
     "Compose"
     [ plutarchGolden "\\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x, left assoc" "Compose Case 1" case1
+    , plutarchGoldenEval "\\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x, left assoc" "Compose Case 1" case1
     , plutarchGolden "\\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x, right assoc" "Compose Case 2" case2
+    , plutarchGoldenEval "\\x -> (compose [\\y -> y + 2, \\z -> x * z, \\z1 -> z1 - 5]) x, right assoc" "Compose Case 2" case2
     , plutarchGolden "\\x -> (compose [\\y -> y + 2, \\z -> z + 2, \\z1 -> z1 + 2]) x" "Compose Case 3" case3
+    , plutarchGoldenEval "\\x -> (compose [\\y -> y + 2, \\z -> z + 2, \\z1 -> z1 + 2]) x" "Compose Case 3" case3
     , plutarchGolden "\\x -> (compose [\\y -> y * y, \\z -> z + 2]) x" "Compose Case 4" case4
+    , plutarchGoldenEval "\\x -> (compose [\\y -> y * y, \\z -> z + 2]) x" "Compose Case 4" case4
     , identicalCode "Case 1 and Case 2" case1 case2
     ]
 

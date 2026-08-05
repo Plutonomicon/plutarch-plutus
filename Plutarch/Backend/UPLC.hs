@@ -42,7 +42,7 @@ import Data.Vector qualified as Vector
 import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
-import Plutarch.Utils.Pretty (prettyUPLC)
+import Plutarch.Helpers.Pretty (prettyUPLC)
 import PlutusCore (Some, ValueOf)
 import Prettyprinter (Pretty (pretty))
 import UntypedPlutusCore qualified as UPLC

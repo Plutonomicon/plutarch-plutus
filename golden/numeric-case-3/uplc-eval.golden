@@ -1,0 +1,28 @@
+\a b ->
+  case 
+    (EqualsInteger # (0 :: Integer) # b)
+    [ (\c ->
+        (\mArg_d -> mArg_d # mArg_d)
+        # (\functionalArg_e ->
+            (\f g ->
+              (\bind_h ->
+                (\bind_i ->
+                  case 
+                    (EqualsInteger # g # (1 :: Integer))
+                    [ case 
+                        (RemainderInteger # g # (2 :: Integer))
+                        [bind_i, MultiplyInteger # bind_i # c]
+                    , c
+                    ]
+                )
+                # (MultiplyInteger # bind_h # bind_h)
+              )
+              # (f # (QuotientInteger # g # (2 :: Integer)))
+            )
+            # (functionalArg_e # functionalArg_e)
+          )
+      )
+      # a
+      # b
+    , (1 :: Integer)
+    ]

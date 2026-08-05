@@ -104,7 +104,10 @@ library
     Plutarch.Enum
     Plutarch.Evaluate
     Plutarch.Helpers.Backend
+    Plutarch.Helpers.Compile
+    Plutarch.Helpers.Evaluate
     Plutarch.Helpers.Numeric
+    Plutarch.Helpers.Pretty
     Plutarch.Helpers.TH
     Plutarch.Internal.Case
     Plutarch.Internal.Eq
@@ -193,7 +196,6 @@ library
     Plutarch.Trace
     Plutarch.Unroll
     Plutarch.Unsafe
-    Plutarch.Utils.Pretty
 
   build-depends:
     , aeson
