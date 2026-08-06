@@ -173,6 +173,7 @@ library
     Plutarch.Primitive.Pair
     Plutarch.Primitive.SOP
     Plutarch.Primitive.String
+    Plutarch.Primitive.Trace
     Plutarch.Primitive.Value
     Plutarch.Rational
     Plutarch.Reducible
