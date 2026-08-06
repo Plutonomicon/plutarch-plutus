@@ -9,6 +9,7 @@ import Numeric qualified
 import Pretty qualified
 import Term qualified
 import Test.Tasty (defaultMain, testGroup)
+import Trace qualified
 
 main :: IO ()
 main =
@@ -21,4 +22,5 @@ main =
     , Compose.goldens
     , Pretty.goldens
     , Derivation.goldens
+    , Trace.goldens
     ]

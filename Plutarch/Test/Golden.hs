@@ -2,7 +2,9 @@
 
 module Plutarch.Test.Golden (
   plutarchGolden,
+  plutarchGoldenWith,
   plutarchGoldenEval,
+  plutarchGoldenEvalWith,
 ) where
 
 import Control.Exception (Exception, throwIO)
@@ -17,6 +19,7 @@ import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
   Term,
+  TermEnv,
   TermError,
   debugTermEnv,
   releaseTermEnv,
@@ -63,11 +66,24 @@ plutarchGolden ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGolden testDescription testName t =
+plutarchGolden = plutarchGoldenWith debugTermEnv
+
+{- | As 'plutarchGolden', but allows specifying the 'TermEnv' to compile with.
+
+@since wip
+-}
+plutarchGoldenWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = compileTerm debugTermEnv t
+      compiled = compileTerm env t
       asAST = fromRawTerm <$> compiled
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
@@ -118,11 +134,25 @@ plutarchGoldenEval ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGoldenEval testDescription testName t =
+plutarchGoldenEval = plutarchGoldenEvalWith releaseTermEnv
+
+{- | As 'plutarchGoldenEval', but allows specifying the 'TermEnv' to compile
+with.
+
+@since wip
+-}
+plutarchGoldenEvalWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenEvalWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = termToUPLC releaseTermEnv t
+      compiled = termToUPLC env t
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
       evaluated = evalUPLC maxBudget <$> compiled
       uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"

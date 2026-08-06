@@ -251,6 +251,7 @@ test-suite tests
     TH.Enum
     TH.MS
     TH.SOP
+    Trace
 
   hs-source-dirs: test
   build-depends:
