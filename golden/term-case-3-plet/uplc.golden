@@ -1,0 +1,6 @@
+\ ->
+  let oOLG13GvP3nN = \fDjhdb6tHhr ->
+                       case fDjhdb6tHhr [(2 :: Integer), (1 :: Integer)]
+  in AddInteger
+     # (oOLG13GvP3nN # (True :: Bool))
+     # (oOLG13GvP3nN # (False :: Bool))

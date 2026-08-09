@@ -7,6 +7,7 @@ import Plutarch.Backend.Term (
   pdelay,
   pforce,
   plam',
+  plet,
   punsafeConstant,
  )
 import Plutarch.Primitive.Apply ((#))
@@ -26,6 +27,7 @@ goldens =
     , plutarchGoldenEval "\\x -> (\\y -> y) ((\\z -> z) x)" "Term Case 1" case1
     , plutarchGolden "\\x -> force (delay x)" "Term Case 2" case2
     , plutarchGolden "(pif false 1 2) + (pif true 1 2)" "Term Case 3" case3
+    , plutarchGolden "(pif false 1 2) + (pif true 1 2)" "Term Case 3 plet" case3Plet
     ]
 
 -- Cases
@@ -42,6 +44,10 @@ case3 :: forall (s :: S). Term s PInteger
 case3 =
   let f = plam' $ \x -> pif x (ic 1) (ic 2)
    in paddInteger # (f # ptrue) # (f # pfalse)
+
+case3Plet :: forall (s :: S). Term s PInteger
+case3Plet = plet (plam' $ \x -> pif x (ic 1) (ic 2)) $ \f ->
+  paddInteger # (f # ptrue) # (f # pfalse)
 
 -- Helpers
 
