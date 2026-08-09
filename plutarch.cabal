@@ -243,6 +243,7 @@ test-suite tests
     Bool
     Compiled
     Compose
+    Debug
     Derivation
     Error
     Numeric
