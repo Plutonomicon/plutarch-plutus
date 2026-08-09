@@ -1,0 +1,68 @@
+\ ->
+  let bind_d = (0 :: String)
+  let bind_e = (1 :: String)
+  let bind_f = (2 :: String)
+  let bind_g = (3 :: String)
+  let bind_h = (4 :: String)
+  let bind_i = (5 :: String)
+  let bind_j = (6 :: String)
+  let bind_k = (7 :: String)
+  let bind_l = (8 :: String)
+  let bind_m = (9 :: String)
+  let bind_n = (A :: String)
+  let bind_o = (B :: String)
+  let bind_p = (C :: String)
+  let bind_q = (D :: String)
+  let bind_r = (E :: String)
+  let bind_s = (F :: String)
+  in AppendString
+     # (0x :: String)
+     # (
+         AppendString
+         # (
+             (\oOLG13GvP3nN ->
+               case oOLG13GvP3nN
+                 [ bind_d
+                 , bind_e
+                 , bind_f
+                 , bind_g
+                 , bind_h
+                 , bind_i
+                 , bind_j
+                 , bind_k
+                 , bind_l
+                 , bind_m
+                 , bind_n
+                 , bind_o
+                 , bind_p
+                 , bind_q
+                 , bind_r
+                 , bind_s
+                 ]
+             )
+             # (QuotientInteger # (31 :: Integer) # (16 :: Integer))
+           )
+         # (
+             (\fDjhdb6tHhr ->
+               case fDjhdb6tHhr
+                 [ bind_d
+                 , bind_e
+                 , bind_f
+                 , bind_g
+                 , bind_h
+                 , bind_i
+                 , bind_j
+                 , bind_k
+                 , bind_l
+                 , bind_m
+                 , bind_n
+                 , bind_o
+                 , bind_p
+                 , bind_q
+                 , bind_r
+                 , bind_s
+                 ]
+             )
+             # (RemainderInteger # (31 :: Integer) # (16 :: Integer))
+           )
+       )

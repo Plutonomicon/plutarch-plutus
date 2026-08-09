@@ -1,0 +1,129 @@
+\ ->
+  let bind_g = (-12345 :: Integer)
+  let bind_u = (0 :: String)
+  let bind_v = (1 :: String)
+  let bind_w = (2 :: String)
+  let bind_x = (3 :: String)
+  let bind_y = (4 :: String)
+  let bind_z = (5 :: String)
+  let bind_ab = (6 :: String)
+  let bind_bb = (7 :: String)
+  let bind_cb = (8 :: String)
+  let bind_db = (9 :: String)
+  let bind_ub = SubtractInteger # (0 :: Integer) # bind_g
+  in case 
+       (LessThanEqualsInteger # bind_g # (-1 :: Integer))
+       [ case 
+           (EqualsInteger # bind_g # (0 :: Integer))
+           [ (\mArg_a -> mArg_a # mArg_a)
+             # (\functionalArg_b ->
+                 (\oOLG13GvP3nN fDjhdb6tHhr datZyZxDQtv ->
+                   case 
+                     (EqualsInteger # fDjhdb6tHhr # (0 :: Integer))
+                     [ AppendString
+                       # (
+                           oOLG13GvP3nN
+                           # (QuotientInteger # fDjhdb6tHhr # (10 :: Integer))
+                           # (RemainderInteger # fDjhdb6tHhr # (10 :: Integer))
+                         )
+                       # (
+                           (\lZmjiLE9xtw ->
+                             case lZmjiLE9xtw
+                               [ bind_u
+                               , bind_v
+                               , bind_w
+                               , bind_x
+                               , bind_y
+                               , bind_z
+                               , bind_ab
+                               , bind_bb
+                               , bind_cb
+                               , bind_db
+                               ]
+                           )
+                           # datZyZxDQtv
+                         )
+                     , (\eCBOolj7xId ->
+                         case eCBOolj7xId
+                           [ bind_u
+                           , bind_v
+                           , bind_w
+                           , bind_x
+                           , bind_y
+                           , bind_z
+                           , bind_ab
+                           , bind_bb
+                           , bind_cb
+                           , bind_db
+                           ]
+                       )
+                       # datZyZxDQtv
+                     ]
+                 )
+                 # (functionalArg_b # functionalArg_b)
+               )
+             # (QuotientInteger # bind_g # (10 :: Integer))
+             # (RemainderInteger # bind_g # (10 :: Integer))
+           , bind_u
+           ]
+       , AppendString
+         # (- :: String)
+         # (case 
+             (EqualsInteger # bind_ub # (0 :: Integer))
+             [ (\mArg_c -> mArg_c # mArg_c)
+               # (\functionalArg_d ->
+                   (\bUiGidwO3Fh ti6ipqViMlsN p4sXwS8SsCb ->
+                     case 
+                       (EqualsInteger # ti6ipqViMlsN # (0 :: Integer))
+                       [ AppendString
+                         # (
+                             bUiGidwO3Fh
+                             # (
+                                 QuotientInteger# ti6ipqViMlsN# (10 :: Integer)
+                               )
+                             # (
+                                 RemainderInteger# ti6ipqViMlsN# (10 :: Integer)
+                               )
+                           )
+                         # (
+                             (\yWumnJg3ddDN ->
+                               case yWumnJg3ddDN
+                                 [ bind_u
+                                 , bind_v
+                                 , bind_w
+                                 , bind_x
+                                 , bind_y
+                                 , bind_z
+                                 , bind_ab
+                                 , bind_bb
+                                 , bind_cb
+                                 , bind_db
+                                 ]
+                             )
+                             # p4sXwS8SsCb
+                           )
+                       , (\gj5npqULRul ->
+                           case gj5npqULRul
+                             [ bind_u
+                             , bind_v
+                             , bind_w
+                             , bind_x
+                             , bind_y
+                             , bind_z
+                             , bind_ab
+                             , bind_bb
+                             , bind_cb
+                             , bind_db
+                             ]
+                         )
+                         # p4sXwS8SsCb
+                       ]
+                   )
+                   # (functionalArg_d # functionalArg_d)
+                 )
+               # (QuotientInteger # bind_ub # (10 :: Integer))
+               # (RemainderInteger # bind_ub # (10 :: Integer))
+             , bind_u
+             ]
+           )
+       ]
