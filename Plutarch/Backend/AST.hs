@@ -360,7 +360,7 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
                   mkHashed structuralHash (\h -> ASTApply h f' . NEVector.singleton $ x')
       RLamAbs _ mpt body -> do
         fresh <- getFresh
-        let mbv = mkVarHash fresh <$ mpt -- (\pt -> BoundVar (mkVarHash fresh) . Multiplicity . countVarUsage pt $ body) <$> mpt
+        let mbv = mkVarHash fresh <$ mpt
         vm' <- asks (vmMap stepDownOne)
         let extendedVM = case mpt of
               Nothing -> vm'

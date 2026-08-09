@@ -1,0 +1,9 @@
+AddInteger
+# (
+    (\oOLG13GvP3nN -> case oOLG13GvP3nN [(2 :: Integer), (1 :: Integer)])
+    # (True :: Bool)
+  )
+# (
+    (\fDjhdb6tHhr -> case fDjhdb6tHhr [(2 :: Integer), (1 :: Integer)])
+    # (False :: Bool)
+  )
