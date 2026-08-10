@@ -24,6 +24,7 @@ which describes the \'@ST@ trick\'
 -}
 module Plutarch.Backend.Term (
   TracingMode (..),
+  OptimizationMode (..),
   TermEnv (..),
   debugTermEnv,
   releaseTermEnv,
@@ -158,19 +159,57 @@ data TracingMode
       Show
     )
 
+{- | Whether to use external optimizations on the generated code or not.
+
+Currently, \'external optimizations\' consist of the following:
+
+* Pre-evaluation of the generated code; followed by
+* The UPLC optimizer provided in Plutus Core.
+
+These are labelled as \'external\' as Plutarch does not control them.
+
+@since wip
+-}
+data OptimizationMode = OnlyInternal | InternalExternal
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
 {- | A configuration environment for 'Term's and their compilation.
 
 @since wip
 -}
-newtype TermEnv = TermEnv TracingMode
+data TermEnv = TermEnv TracingMode OptimizationMode
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
 
--- | @since wip
+{- | An environment suitable for debugging. This currently means the following:
+
+* Tracing enabled at the most verbose level ('DebugTracing'); and
+* External optimizations disabled ('OnlyInternal).
+
+@since wip
+-}
 debugTermEnv :: TermEnv
-debugTermEnv = TermEnv DebugTracing
+debugTermEnv = TermEnv DebugTracing OnlyInternal
 
--- | @since wip
+{- | An environment suitable for final production. This currently means the
+following:
+
+* Tracing turned off ('NoTracing'); and
+* External optimizations enabled ('InternalExternal').
+
+@since wip
+-}
 releaseTermEnv :: TermEnv
-releaseTermEnv = TermEnv NoTracing
+releaseTermEnv = TermEnv NoTracing InternalExternal
 
 {- | Various errors that can arise during 'Term' construction.
 
