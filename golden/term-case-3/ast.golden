@@ -2,22 +2,22 @@
   <AddInteger>@m5XKL3leqWoN
   [
     <Apply
-      <\oOLG13GvP3nN -> 
+      <\a -> 
         <case
-          oOLG13GvP3nN 
+          a 
           [<2 :: Integer>@qjJx7b4Msxl, <1 :: Integer>@vyRIuwDii3A]
         >@eJ2sVwlfY1m
-      >@gMmkqEpKUjs
+      >@vI00VyRQS6A
       [<True :: Bool>@nAyEnYBEW9k]
-    >@kSkBGgYWngn, 
+    >@jlZgYE9Z2Si, 
     <Apply
-      <\fDjhdb6tHhr -> 
+      <\b -> 
         <case
-          fDjhdb6tHhr 
+          b 
           [<2 :: Integer>@qjJx7b4Msxl, <1 :: Integer>@vyRIuwDii3A]
         >@qURW0sYOiSx
-      >@lQjZsAqhYno
+      >@vI00VyRQS6A
       [<False :: Bool>@ofkSqfsbj7l]
-    >@h8xf9FoC7xiN
+    >@dPDj36DsUvgN
   ]
->@omfk6xACYUC
+>@vHYZgfj1lfD

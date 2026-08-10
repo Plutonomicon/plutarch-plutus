@@ -3,11 +3,11 @@ ANF Hashes:
  #1 := ofkSqfsbj7l
  #2 := hJah96zkoBhN
  #3 := hCOqT14ed8pN
- #4 := bd9TpDsHKIBN
+ #4 := uGKlYA2nKTkN
 
 ANF Binds:
  #0 := True :: Bool
  #1 := False :: Bool
- #2 := Case oOLG13GvP3nN [#0, #1]
- #3 := Case #2 [fDjhdb6tHhr, #0]
- #4 := \oOLG13GvP3nN:1 fDjhdb6tHhr:0 -> #3
+ #2 := Case a [#0, #1]
+ #3 := Case #2 [b, #0]
+ #4 := \a:1 b:0 -> #3

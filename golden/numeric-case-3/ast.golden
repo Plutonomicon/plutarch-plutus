@@ -1,44 +1,43 @@
-<\oOLG13GvP3nN fDjhdb6tHhr -> 
+<\a b -> 
   <case
     <Apply
-      <EqualsInteger>@dr5yy9ULU5j [<0 :: Integer>@mqE7eqJLvgvN, fDjhdb6tHhr]
+      <EqualsInteger>@dr5yy9ULU5j [<0 :: Integer>@mqE7eqJLvgvN, b]
     >@qSfJlBaB8jg 
     [
       <Apply
-        <\datZyZxDQtv -> 
+        <\c -> 
           <Fix
-            [lZmjiLE9xtw]
-            <\eCBOolj7xId -> 
+            [d]
+            <\e -> 
               <case
                 <Apply
-                  <EqualsInteger>@dr5yy9ULU5j
-                  [eCBOolj7xId, <1 :: Integer>@vyRIuwDii3A]
+                  <EqualsInteger>@dr5yy9ULU5j [e, <1 :: Integer>@vyRIuwDii3A]
                 >@kMkRSKqTnAkN 
                 [
                   <case
                     <Apply
                       <RemainderInteger>@n275PtZtdlc
-                      [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                      [e, <2 :: Integer>@qjJx7b4Msxl]
                     >@ocG8t8PJKFA 
                     [
                       <Apply
                         <MultiplyInteger>@vjMEhbkCp9cN
                         [
                           <Apply
-                            lZmjiLE9xtw
+                            d
                             [
                               <Apply
                                 <QuotientInteger>@kq3kmmKulbi
-                                [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                [e, <2 :: Integer>@qjJx7b4Msxl]
                               >@hg2X6q0B0Ux
                             ]
                           >@jFoE1cKX8xk, 
                           <Apply
-                            lZmjiLE9xtw
+                            d
                             [
                               <Apply
                                 <QuotientInteger>@kq3kmmKulbi
-                                [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                [e, <2 :: Integer>@qjJx7b4Msxl]
                               >@hg2X6q0B0Ux
                             ]
                           >@jFoE1cKX8xk
@@ -51,39 +50,39 @@
                             <MultiplyInteger>@vjMEhbkCp9cN
                             [
                               <Apply
-                                lZmjiLE9xtw
+                                d
                                 [
                                   <Apply
                                     <QuotientInteger>@kq3kmmKulbi
-                                    [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                    [e, <2 :: Integer>@qjJx7b4Msxl]
                                   >@hg2X6q0B0Ux
                                 ]
                               >@jFoE1cKX8xk, 
                               <Apply
-                                lZmjiLE9xtw
+                                d
                                 [
                                   <Apply
                                     <QuotientInteger>@kq3kmmKulbi
-                                    [eCBOolj7xId, <2 :: Integer>@qjJx7b4Msxl]
+                                    [e, <2 :: Integer>@qjJx7b4Msxl]
                                   >@hg2X6q0B0Ux
                                 ]
                               >@jFoE1cKX8xk
                             ]
                           >@eMYZWc7UWso, 
-                          datZyZxDQtv
+                          c
                         ]
                       >@smkDB23mVKfN
                     ]
                   >@jmtcjBojUkdN, 
-                  datZyZxDQtv
+                  c
                 ]
               >@tbak4tM3q4m
-            >@dSDLXI2AqLrN
-          >@qIlqxlCbDTsN
-        >@ygpCJXqcK7p
-        [oOLG13GvP3nN, fDjhdb6tHhr]
-      >@pzGgO57CRMz, 
+            >@sSe8g6y6fcd
+          >@m5vrss997TCN
+        >@cV8IAnffpQb
+        [a, b]
+      >@wPYiwTMcL1dN, 
       <1 :: Integer>@vyRIuwDii3A
     ]
-  >@yBcJHEiWRjf
->@wsd3Ga1GKRs
+  >@kVqYMhmALclN
+>@x2MHfToEJzu

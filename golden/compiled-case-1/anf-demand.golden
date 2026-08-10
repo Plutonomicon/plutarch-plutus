@@ -1,13 +1,12 @@
 ANF Hashes:
- #0 := nHY6ZBWu65xN
- #1 := fH1r6OpkSnj
- #2 := hi7OTlGfXWC
+ #0 := wE6DiS8hnVtN
+ #1 := kv3ZC4hknUv
+ #2 := tDXzjDDLhtwN
 
 ANF Binds:
- #0 := COMPILED {\oOLG13GvP3nN fDjhdb6tHhr datZyZxDQtv ->
-                   case oOLG13GvP3nN [datZyZxDQtv, fDjhdb6tHhr]}
- #1 := Apply #0 [oOLG13GvP3nN, fDjhdb6tHhr, datZyZxDQtv]
- #2 := \oOLG13GvP3nN:0 fDjhdb6tHhr:0 datZyZxDQtv:0 -> #1
+ #0 := COMPILED {\a b c -> case a [c, b]}
+ #1 := Apply #0 [a, b, c]
+ #2 := \a:0 b:0 c:0 -> #1
 
 ANF Annotations:
  #0 := Demanded (Id 2) 1

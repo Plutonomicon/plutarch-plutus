@@ -52,7 +52,6 @@ import Plutarch.Backend.PosTree (
   PosTree (
     PCase,
     PCompose,
-    PHere,
     PMany,
     POne,
     PTwo
@@ -82,10 +81,10 @@ import Plutarch.Backend.VarMap (
   VarMap,
   vmEmpty,
   vmExtend,
+  vmFirst,
   vmFold,
   vmMap,
   vmMerge,
-  vmSingleton,
  )
 import Plutarch.Helpers.Backend (getFresh)
 import Plutarch.Helpers.Pretty (
@@ -270,7 +269,8 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
     go = \case
       RVar _ _ -> do
         let structuralHash = hash (0 :: Int)
-        mkHashed structuralHash (\h -> ASTLeaf . LVar h $ h)
+        (uniq, _) <- asks vmFirst
+        mkHashed structuralHash (\h -> ASTLeaf . LVar h . mkVarHash $ uniq)
       RConstant _ c -> do
         let structuralHash = hash (1 :: Int, c)
         mkHashed structuralHash (\h -> ASTLeaf (LConstant h c))
@@ -373,7 +373,7 @@ fromRawTerm t = snd . fst . evalRWS (go t) vmEmpty $ 0
                 let structuralHash = hash (structuralHashBody, mpt)
                  in (structuralHash, NEVector.cons mbv bvs, body'')
               _ ->
-                let structuralHash = hash (11 :: Int, mbv, structuralHashBody)
+                let structuralHash = hash (11 :: Int, structuralHashBody)
                  in (structuralHash, NEVector.singleton mbv, body')
         case fullBody of
           -- If our body is an application, we want to check that the arguments
@@ -503,7 +503,7 @@ separateCase acc@(scrutVM, handlerVMs) k = \case
       Just t -> vmExtend k t vm
 
 mkVarHash :: Word64 -> Hash
-mkVarHash fresh = Hash (hash (hash (0 :: Int), vmSingleton fresh PHere))
+mkVarHash = Hash . hash
 
 astLeafAnn :: forall (ann :: Type). Leaf ann -> ann
 astLeafAnn = \case

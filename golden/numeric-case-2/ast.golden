@@ -1,13 +1,9 @@
-<\oOLG13GvP3nN fDjhdb6tHhr -> 
+<\a b -> 
   <Apply
     <AddInteger>@m5XKL3leqWoN
     [
-      <Apply
-        <MultiplyInteger>@vjMEhbkCp9cN [oOLG13GvP3nN, oOLG13GvP3nN]
-      >@yI8DIugRYDcN, 
-      <Apply
-        <MultiplyInteger>@vjMEhbkCp9cN [fDjhdb6tHhr, fDjhdb6tHhr]
-      >@fJUSkp3b4BnN
+      <Apply<MultiplyInteger>@vjMEhbkCp9cN [a, a]>@yI8DIugRYDcN, 
+      <Apply<MultiplyInteger>@vjMEhbkCp9cN [b, b]>@fJUSkp3b4BnN
     ]
   >@lT9yD6VtIlz
->@kkt04h1BYioN
+>@hvE02Y2KgSjN

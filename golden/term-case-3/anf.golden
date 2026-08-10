@@ -3,25 +3,21 @@ ANF Hashes:
  #1 := qjJx7b4Msxl
  #2 := vyRIuwDii3A
  #3 := eJ2sVwlfY1m
- #4 := gMmkqEpKUjs
+ #4 := vI00VyRQS6A
  #5 := nAyEnYBEW9k
- #6 := kSkBGgYWngn
- #7 := qURW0sYOiSx
- #8 := lQjZsAqhYno
- #9 := ofkSqfsbj7l
- #10 := h8xf9FoC7xiN
- #11 := omfk6xACYUC
+ #6 := jlZgYE9Z2Si
+ #7 := ofkSqfsbj7l
+ #8 := dPDj36DsUvgN
+ #9 := vHYZgfj1lfD
 
 ANF Binds:
  #0 := AddInteger
  #1 := 2 :: Integer
  #2 := 1 :: Integer
- #3 := Case oOLG13GvP3nN [#1, #2]
- #4 := \oOLG13GvP3nN:0 -> #3
+ #3 := Case a [#1, #2]
+ #4 := \a:0 -> #3
  #5 := True :: Bool
  #6 := Apply #4 [#5]
- #7 := Case fDjhdb6tHhr [#1, #2]
- #8 := \fDjhdb6tHhr:0 -> #7
- #9 := False :: Bool
- #10 := Apply #8 [#9]
- #11 := Apply #0 [#6, #10]
+ #7 := False :: Bool
+ #8 := Apply #4 [#7]
+ #9 := Apply #0 [#6, #8]

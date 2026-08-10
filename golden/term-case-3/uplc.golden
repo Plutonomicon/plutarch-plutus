@@ -1,9 +1,3 @@
-AddInteger
-# (
-    (\oOLG13GvP3nN -> case oOLG13GvP3nN [(2 :: Integer), (1 :: Integer)])
-    # (True :: Bool)
-  )
-# (
-    (\fDjhdb6tHhr -> case fDjhdb6tHhr [(2 :: Integer), (1 :: Integer)])
-    # (False :: Bool)
-  )
+\ ->
+  let bind_g = \a -> case a [(2 :: Integer), (1 :: Integer)]
+  in AddInteger # (bind_g # (True :: Bool)) # (bind_g # (False :: Bool))

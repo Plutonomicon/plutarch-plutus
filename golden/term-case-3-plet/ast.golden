@@ -1,19 +1,19 @@
 <Apply
-  <\oOLG13GvP3nN -> 
+  <\a -> 
     <Apply
       <AddInteger>@m5XKL3leqWoN
       [
-        <ApplyoOLG13GvP3nN [<True :: Bool>@nAyEnYBEW9k]>@wj8vzaLdVfD, 
-        <ApplyoOLG13GvP3nN [<False :: Bool>@ofkSqfsbj7l]>@huztKtBZQBsN
+        <Applya [<True :: Bool>@nAyEnYBEW9k]>@wj8vzaLdVfD, 
+        <Applya [<False :: Bool>@ofkSqfsbj7l]>@huztKtBZQBsN
       ]
     >@oj3jx1vQEvgN
-  >@khSJvfxAcJqN
+  >@c5uny6G6mtmN
   [
-    <\fDjhdb6tHhr -> 
+    <\b -> 
       <case
-        fDjhdb6tHhr 
+        b 
         [<2 :: Integer>@qjJx7b4Msxl, <1 :: Integer>@vyRIuwDii3A]
       >@qURW0sYOiSx
-    >@lQjZsAqhYno
+    >@vI00VyRQS6A
   ]
->@h3SLfsEjIP
+>@j9nk6CV3AimN
