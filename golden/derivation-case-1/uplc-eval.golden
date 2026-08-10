@@ -1,16 +1,19 @@
 \a b ->
-  let bind_c = \unused_o -> (False :: Bool)
-  let bind_d = \unused_m unused_n -> (False :: Bool)
+  let bind_c = \unused_p unused_q -> (False :: Bool)
   in case a
-       [ \e -> case b [\f -> EqualsInteger # e # f, bind_c, bind_d]
-       , \g -> case b [bind_c, \h -> EqualsInteger # g # h, bind_d]
-       , \i j ->
+       [ \d ->
            case b
-             [ bind_c
-             , bind_c
-             , \k l ->
+             [\e -> EqualsInteger # d # e, \unused_f -> (False :: Bool), bind_c]
+       , \g ->
+           case b
+             [\unused_h -> (False :: Bool), \i -> EqualsInteger # g # i, bind_c]
+       , \j k ->
+           case b
+             [ \unused_l -> (False :: Bool)
+             , \unused_m -> (False :: Bool)
+             , \n o ->
                  case 
-                   (EqualsInteger # j # l)
-                   [(False :: Bool), EqualsInteger # i # k]
+                   (EqualsInteger # k # o)
+                   [(False :: Bool), EqualsInteger # j # n]
              ]
        ]

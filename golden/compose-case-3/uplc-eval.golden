@@ -1,5 +1,4 @@
 \a ->
-  let compArg_b = a
-  let c = (\d -> AddInteger # d # (2 :: Integer))
-          # ((\e -> AddInteger # e # (2 :: Integer)) # compArg_b)
-  in AddInteger # c # (2 :: Integer)
+  AddInteger
+  # (AddInteger # (AddInteger # a # (2 :: Integer)) # (2 :: Integer))
+  # (2 :: Integer)

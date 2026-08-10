@@ -1,26 +1,18 @@
 \a b ->
   case 
     (EqualsInteger # a # (0 :: Integer))
-    [ (\c ->
-        (\mArg_d -> mArg_d # mArg_d)
-        # (\functionalArg_e ->
-            (\f g h ->
-              case 
-                (EqualsInteger # h # (0 :: Integer))
-                [ (\i -> f # i # (ModInteger # g # i)) # h
-                , (\j ->
-                    case 
-                      (LessThanEqualsInteger # j # (0 :: Integer))
-                      [j, (\k -> SubtractInteger # (0 :: Integer) # k) # j]
-                  )
-                  # g
-                ]
-            )
-            # (functionalArg_e # functionalArg_e)
+    [ (\mArg_c -> case (constr 0 [mArg_c, a, b]) [mArg_c])
+      # (\functionalArg_d ->
+          (\e f g ->
+            case 
+              (EqualsInteger # g # (0 :: Integer))
+              [ e # g # (ModInteger # f # g)
+              , case 
+                  (LessThanEqualsInteger # f # (0 :: Integer))
+                  [f, SubtractInteger # (0 :: Integer) # f]
+              ]
           )
-        # c
-        # b
-      )
-      # a
+          # (functionalArg_d # functionalArg_d)
+        )
     , b
     ]

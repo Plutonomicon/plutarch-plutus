@@ -1,1 +1,1 @@
-\a b c -> case (constr 0 [a, b, c]) [\d e f -> case d [f, e]]
+\a b c -> case a [c, b]

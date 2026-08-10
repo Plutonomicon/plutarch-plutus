@@ -1,4 +1,1 @@
-\oOLG13GvP3nN fDjhdb6tHhr ->
-  AddInteger
-  # (MultiplyInteger # oOLG13GvP3nN # oOLG13GvP3nN)
-  # (MultiplyInteger # fDjhdb6tHhr # fDjhdb6tHhr)
+\uc vc -> AddInteger # (MultiplyInteger # uc # uc) # (MultiplyInteger # vc # vc)

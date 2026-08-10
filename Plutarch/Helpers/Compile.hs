@@ -11,7 +11,12 @@ import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term (Term), TermEnv, TermError)
+import Plutarch.Backend.Term (
+  OptimizationMode (InternalExternal, OnlyInternal),
+  Term (Term),
+  TermEnv (TermEnv),
+  TermError,
+ )
 import Plutarch.Backend.UPLC (UPLCTerm)
 
 -- | @since wip
@@ -28,4 +33,6 @@ termToUPLC ::
   TermEnv ->
   (forall (s :: S). Term s a) ->
   Either TermError UPLCTerm
-termToUPLC env t = toUPLCTerm . analyzeDemand . fromHashedAST . fromRawTerm <$> compileTerm env t
+termToUPLC env@(TermEnv _ opt) t = do
+  let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+  toUPLCTerm optAsBool . analyzeDemand . fromHashedAST . fromRawTerm <$> compileTerm env t

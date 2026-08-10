@@ -1,4 +1,1 @@
-\a ->
-  let compArg_b = a
-  let c = (\d -> AddInteger # d # (2 :: Integer)) # compArg_b
-  in MultiplyInteger # c # c
+\a -> let b = AddInteger # a # (2 :: Integer) in MultiplyInteger # b # b

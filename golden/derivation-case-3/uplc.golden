@@ -1,40 +1,37 @@
-\oOLG13GvP3nN fDjhdb6tHhr ->
-  let bind_f = \unused_a -> (False :: Bool)
-  let bind_g = \unused_a unused_a -> (False :: Bool)
+\mx nx ->
+  let bind_ox = \unused_by unused_cy -> (False :: Bool)
   in case 
        (constr 0
-         [ \datZyZxDQtv ->
+         [ \px ->
              case 
                (constr 0
-                 [ \lZmjiLE9xtw -> EqualsInteger # datZyZxDQtv # lZmjiLE9xtw
-                 , bind_f
-                 , bind_g
+                 [ \qx -> EqualsInteger # px # qx
+                 , \unused_rx -> (False :: Bool)
+                 , bind_ox
                  ]
                )
-               [fDjhdb6tHhr]
-         , \p4sXwS8SsCb ->
+               [nx]
+         , \sx ->
              case 
                (constr 0
-                 [ bind_f
-                 , \gj5npqULRul -> EqualsInteger # p4sXwS8SsCb # gj5npqULRul
-                 , bind_g
+                 [ \unused_tx -> (False :: Bool)
+                 , \ux -> EqualsInteger # sx # ux
+                 , bind_ox
                  ]
                )
-               [fDjhdb6tHhr]
-         , \gkpA63EOvxy o4D79O2oigpN ->
+               [nx]
+         , \vx wx ->
              case 
                (constr 0
-                 [ bind_f
-                 , bind_f
-                 , \fafl0TrfiamN yaX1WGBRrzw ->
+                 [ \unused_xx -> (False :: Bool)
+                 , \unused_yx -> (False :: Bool)
+                 , \zx ay ->
                      case 
-                       (EqualsInteger # o4D79O2oigpN # yaX1WGBRrzw)
-                       [ (False :: Bool)
-                       , EqualsInteger # gkpA63EOvxy # fafl0TrfiamN
-                       ]
+                       (EqualsInteger # wx # ay)
+                       [(False :: Bool), EqualsInteger # vx # zx]
                  ]
                )
-               [fDjhdb6tHhr]
+               [nx]
          ]
        )
-       [oOLG13GvP3nN]
+       [mx]

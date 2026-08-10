@@ -18,8 +18,9 @@ import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
+  OptimizationMode (InternalExternal, OnlyInternal),
   Term,
-  TermEnv,
+  TermEnv (TermEnv),
   TermError,
   debugTermEnv,
   releaseTermEnv,
@@ -79,7 +80,7 @@ plutarchGoldenWith ::
   String ->
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGoldenWith env testDescription testName t =
+plutarchGoldenWith env@(TermEnv _ opt) testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
@@ -90,7 +91,8 @@ plutarchGoldenWith env testDescription testName t =
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
       withDemand = analyzeDemand <$> asANF
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
-      asUPLC = toUPLCTerm <$> withDemand
+      optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+      asUPLC = toUPLCTerm optAsBool <$> withDemand
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
    in testGroup
         (testName <> ": " <> testDescription)

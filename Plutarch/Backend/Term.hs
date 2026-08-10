@@ -805,7 +805,7 @@ pcompiled ::
   (forall (s' :: S). Term s' a) ->
   Term s a
 pcompiled t = Term $ do
-  env <- ask
+  env@(TermEnv _ opt) <- ask
   case runRWS (runExceptT . asRawTerm $ t) env 0 of
     -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
     -- here, as otherwise, we would get a dependency loop.
@@ -816,7 +816,8 @@ pcompiled t = Term $ do
         let ast = fromRawTerm rt
         let anf = fromHashedAST ast
         let analyzedANF = analyzeDemand anf
-        pure (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+        let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+        pure (vmEmpty, RCompiled () . toUPLCTerm optAsBool $ analyzedANF)
 
 {- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
 to be closed, but this won't be checked.
