@@ -7,15 +7,14 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Primitive.Bool (PBool, pnot, por)
 import Plutarch.Primitive.Function ((:-->))
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGoldenAll)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Bool"
-    [ plutarchGolden "\\x y -> or (not x) y" "Bool Case 1" case1
-    , plutarchGoldenEval "\\x y -> or (not x) y" "Bool Case 1" case1
+    [ plutarchGoldenAll "\\x y -> or (not x) y" "Bool Case 1" case1
     ]
 
 -- Cases

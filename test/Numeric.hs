@@ -11,27 +11,20 @@ import Plutarch.Primitive.Apply ((#))
 import Plutarch.Primitive.BuiltinFun (paddInteger, pmultiplyInteger)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGoldenAll)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Numeric"
-    [ plutarchGolden "\\x y -> addInteger x y" "Numeric Case 1" case1
-    , plutarchGoldenEval "\\x y -> addInteger x y" "Numeric Case 1" case1
-    , plutarchGolden
+    [ plutarchGoldenAll "\\x y -> addInteger x y" "Numeric Case 1" case1
+    , plutarchGoldenAll
         "\\x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)"
         "Numeric Case 2"
         case2
-    , plutarchGoldenEval
-        "\\x y -> addInteger (multiplyInteger x x) (multiplyInteger y y)"
-        "Numeric Case 2"
-        case2
-    , plutarchGolden "ppowNatural @PInteger" "Numeric Case 3" (ppowNatural @PInteger)
-    , plutarchGoldenEval "ppowNatural @PInteger" "Numeric Case 3" (ppowNatural @PInteger)
-    , plutarchGolden "pgcd @PInteger" "Numeric Case 4" (pgcd @PInteger)
-    , plutarchGoldenEval "pgcd @PInteger" "Numeric Case 4" (pgcd @PInteger)
+    , plutarchGoldenAll "ppowNatural @PInteger" "Numeric Case 3" (ppowNatural @PInteger)
+    , plutarchGoldenAll "pgcd @PInteger" "Numeric Case 4" (pgcd @PInteger)
     ]
 
 -- Cases

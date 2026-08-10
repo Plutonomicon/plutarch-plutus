@@ -3,6 +3,7 @@
 module Plutarch.Test.Golden (
   plutarchGolden,
   plutarchGoldenEval,
+  plutarchGoldenAll,
 ) where
 
 import Control.Exception (Exception, throwIO)
@@ -94,11 +95,7 @@ the last will produce an error if the compiled 'Term' fails to evaluate.
 = Important note
 
 The caveats regarding naming given for 'plutarchGolden' also apply to this
-function. If you have both a 'plutarchGolden' and a 'plutarchGoldenEval'
-based on the same 'Term' with the same test name, these are designed not to
-clash: however, if you have /different/ 'Term's with the same test name, one
-as a 'plutarchGolden' and another as a 'plutarchGoldenEval', these /will/
-clash.
+function.
 
 @since wip
 -}
@@ -123,6 +120,45 @@ plutarchGoldenEval testDescription testName t =
         (testName <> ": " <> testDescription <> " (eval)")
         [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
         , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr compiled)
+        , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)
+        ]
+
+{- | A combination of all the tests from both 'plutarchGolden' and
+'plutarchGoldenEval'.
+
+@since wip
+-}
+plutarchGoldenAll ::
+  forall (a :: S -> Type).
+  -- | A description for the test. This is what you will see when the test runs.
+  String ->
+  -- | A name for the test, which should be unique (as described above).
+  String ->
+  -- | A closed 'Term'.
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenAll testDescription testName t =
+  let folderName = toFolderName testName
+      goldenFolderFP = "golden" </> folderName
+      termGoldenFP = goldenFolderFP </> "term" <.> "golden"
+      compiled = compileTerm t
+      asAST = fromRawTerm <$> compiled
+      astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
+      asANF = fromHashedAST <$> asAST
+      anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
+      withDemand = analyzeDemand <$> asANF
+      demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
+      asUPLC = toUPLCTerm <$> withDemand
+      uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
+      evaluated = evalUPLC maxBudget <$> asUPLC
+      uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
+   in testGroup
+        (testName <> ": " <> testDescription)
+        [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
+        , goldenVsString "AST" astGoldenFP (toLazyBSOrErr asAST)
+        , goldenVsString "ANF" anfGoldenFP (toLazyBSOrErr asANF)
+        , goldenVsString "ANF with demand analysis" demandGoldenFP (toLazyBSOrErr withDemand)
+        , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr asUPLC)
         , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)
         ]
 
