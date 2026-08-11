@@ -77,7 +77,7 @@ import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Data.Word (Word64)
 import GHC.Stack (CallStack, HasCallStack, callStack)
-import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.PosTree (
@@ -749,7 +749,7 @@ pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
     Right (_, rt) ->
       let ast = fromRawTerm rt
           anf = fromHashedAST ast
-          analyzedANF = analyzeDemand anf
+          analyzedANF = fullPipeline anf
        in Term . pure $ (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
 
 {- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed

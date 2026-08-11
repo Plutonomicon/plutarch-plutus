@@ -11,7 +11,7 @@ import Data.Char (isSpace, isUpperCase, toLower)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text.Lazy.Encoding (encodeUtf8)
-import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
@@ -67,7 +67,7 @@ plutarchGolden testDescription testName t =
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
-      withDemand = analyzeDemand <$> asANF
+      withDemand = fullPipeline <$> asANF
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
       asUPLC = toUPLCTerm <$> withDemand
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"

@@ -6,7 +6,7 @@ module Plutarch.Helpers.Compile (
 import Control.Monad.Except (runExceptT)
 import Control.Monad.RWS.CPS (runRWS)
 import Data.Kind (Type)
-import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.RawTerm (RawTerm)
@@ -26,4 +26,4 @@ termToUPLC ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   Either TermError UPLCTerm
-termToUPLC t = toUPLCTerm . analyzeDemand . fromHashedAST . fromRawTerm <$> compileTerm t
+termToUPLC t = toUPLCTerm . fullPipeline . fromHashedAST . fromRawTerm <$> compileTerm t

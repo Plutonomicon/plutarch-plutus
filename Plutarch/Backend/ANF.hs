@@ -21,8 +21,9 @@ module Plutarch.Backend.ANF (
   ANF (..),
   Demand (..),
   fromHashedAST,
-  analyzeDemand,
+  -- analyzeDemand,
   getANFBindAnn,
+  fullPipeline,
 ) where
 
 import Control.Monad.ST (ST, runST)
@@ -409,6 +410,12 @@ data Demand
 instance Pretty Demand where
   pretty = viaShow
 
+-- | @since wip
+fullPipeline :: forall (ann :: Type). ANF ann -> ANF Demand
+fullPipeline = analyzeDemand
+
+-- Helpers
+
 analyzeDemand :: forall (ann :: Type). ANF ann -> ANF Demand
 analyzeDemand (ANF bm binds) = runST $ do
   let len = NEVector.length binds
@@ -570,8 +577,6 @@ hashToCount :: Hash -> Ref -> Sum Word
 hashToCount h = \case
   AVar h' -> if h == h' then Sum 1 else mempty
   AnId _ -> mempty
-
--- Pretty Printer Helpers
 
 prettyANFBinds :: forall ann1 ann2. ANF ann1 -> Doc ann2
 prettyANFBinds (ANF _ binds) = vcat . NEVector.toList $ NEVector.imap (\(Id -> i) b -> mkBind i b) binds
