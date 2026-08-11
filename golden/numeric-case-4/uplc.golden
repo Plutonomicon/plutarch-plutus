@@ -1,18 +1,36 @@
-\jp kp ->
+\oOLG13GvP3nN fDjhdb6tHhr ->
   case 
-    (EqualsInteger # jp # (0 :: Integer))
-    [ (\mArg_lp -> case (constr 0 [mArg_lp, jp, kp]) [mArg_lp])
-      # (\functionalArg_mp ->
-          (\np op pp ->
-            case 
-              (EqualsInteger # pp # (0 :: Integer))
-              [ np # pp # (ModInteger # op # pp)
-              , case 
-                  (LessThanEqualsInteger # op # (0 :: Integer))
-                  [op, SubtractInteger # (0 :: Integer) # op]
-              ]
+    (EqualsInteger # oOLG13GvP3nN # (0 :: Integer))
+    [ (\datZyZxDQtv ->
+        (\mArg_a -> mArg_a # mArg_a)
+        # (\functionalArg_b ->
+            (\lZmjiLE9xtw eCBOolj7xId bUiGidwO3Fh ->
+              case 
+                (EqualsInteger # bUiGidwO3Fh # (0 :: Integer))
+                [ (\ti6ipqViMlsN ->
+                    lZmjiLE9xtw
+                    # ti6ipqViMlsN
+                    # (ModInteger # eCBOolj7xId # ti6ipqViMlsN)
+                  )
+                  # bUiGidwO3Fh
+                , (\p4sXwS8SsCb ->
+                    case 
+                      (LessThanEqualsInteger # p4sXwS8SsCb # (0 :: Integer))
+                      [ p4sXwS8SsCb
+                      , (\yWumnJg3ddDN ->
+                          SubtractInteger # (0 :: Integer) # yWumnJg3ddDN
+                        )
+                        # p4sXwS8SsCb
+                      ]
+                  )
+                  # eCBOolj7xId
+                ]
+            )
+            # (functionalArg_b # functionalArg_b)
           )
-          # (functionalArg_mp # functionalArg_mp)
-        )
-    , kp
+        # datZyZxDQtv
+        # fDjhdb6tHhr
+      )
+      # oOLG13GvP3nN
+    , fDjhdb6tHhr
     ]

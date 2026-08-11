@@ -1,1 +1,5 @@
-\ad -> let bd = AddInteger # ad # (2 :: Integer) in MultiplyInteger # bd # bd
+\oOLG13GvP3nN ->
+  let compArg_a = oOLG13GvP3nN
+  let fDjhdb6tHhr = (\datZyZxDQtv -> AddInteger # datZyZxDQtv # (2 :: Integer))
+                    # compArg_a
+  in MultiplyInteger # fDjhdb6tHhr # fDjhdb6tHhr

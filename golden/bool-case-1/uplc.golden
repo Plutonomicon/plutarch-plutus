@@ -1,1 +1,4 @@
-\uc vc -> case uc [(True :: Bool), vc]
+\oOLG13GvP3nN fDjhdb6tHhr ->
+  case 
+    (case oOLG13GvP3nN [(True :: Bool), (False :: Bool)])
+    [fDjhdb6tHhr, (True :: Bool)]

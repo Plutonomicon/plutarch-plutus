@@ -132,19 +132,23 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       compileState = CompileState Map.empty Map.empty
       -- Use our demand analysis to compile everything.
       compiled = runCompileM compile compileEnv compileState
-   in if runExternalOpts
-        then case evalUPLC maxBudget compiled of
-          (res, _, _) -> case res of
-            Left err -> error $ "Pre-evaluation errored. If you see this, report a bug: " <> show err
-            Right res' ->
-              let (UPLCTerm asTerm) = case res' of
-                    Left c -> uplcConstant c
-                    Right t -> t
-               in case PLC.runQuoteT . UPLC.optimizeTerm UPLC.defaultOptimizeOpts def $ asTerm of
-                    Left err -> error $ "Optimization errored. If you see this, report a bug: " <> show @UPLC.FreeVariableError err
-                    Right optimized -> UPLCTerm optimized
-        else compiled
+   in if
+        | not runExternalOpts -> compiled
+        -- If there are no `let`-binds, we can pre-evaluate safely
+        | isAffine binds -> uplcOptimize . preEval $ compiled
+        -- Only run UPLC optimizations
+        | otherwise -> uplcOptimize compiled
   where
+    preEval :: UPLCTerm -> UPLCTerm
+    preEval t = case evalUPLC maxBudget t of
+      (res, _, _) -> case res of
+        Left err -> error $ "Pre-evaluation errored. If you see this, report a bug: " <> show err
+        Right (Left c) -> uplcConstant c
+        Right (Right t) -> t
+    uplcOptimize :: UPLCTerm -> UPLCTerm
+    uplcOptimize (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm UPLC.defaultOptimizeOpts def $ t of
+      Left err -> error $ "Optimization errored. If you see this, report a bug: " <> show @UPLC.FreeVariableError err
+      Right optimized -> UPLCTerm optimized
     collectVarName :: Set Int -> ANFBind ann -> Set Int
     collectVarName acc = \case
       ANFLeaf _ -> acc
@@ -170,6 +174,15 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       pure (mkName "bind" fresh, bind)
 
 -- Helpers
+
+isAffine :: NonEmptyVector (ANFBind Demand) -> Bool
+isAffine = NEVector.all (go . getANFBindAnn)
+  where
+    go :: Demand -> Bool
+    go = \case
+      NeverDemanded -> True
+      Demanded _ useCount -> useCount == 1
+      Trivial -> True
 
 fixPrecompiled ::
   NonEmptyVector (ANFBind Demand) ->
