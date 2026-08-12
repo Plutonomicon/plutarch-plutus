@@ -3,6 +3,7 @@ module Trace (goldens) where
 import Data.Text (Text)
 import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
+  OptimizationMode (OnlyInternal),
   Term,
   TermEnv (TermEnv),
   TracingMode (DebugTracing, ErrorTracing, NoTracing),
@@ -43,10 +44,10 @@ case3 = ptraceError (punsafeConstant . PLC.someValue @Text $ "foo") case1
 -- Helpers
 
 noTraceEnv :: TermEnv
-noTraceEnv = TermEnv NoTracing
+noTraceEnv = TermEnv NoTracing OnlyInternal
 
 errorEnv :: TermEnv
-errorEnv = TermEnv ErrorTracing
+errorEnv = TermEnv ErrorTracing OnlyInternal
 
 debugEnv :: TermEnv
-debugEnv = TermEnv DebugTracing
+debugEnv = TermEnv DebugTracing OnlyInternal
