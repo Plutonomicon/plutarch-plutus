@@ -1,33 +1,29 @@
-<\oOLG13GvP3nN fDjhdb6tHhr -> 
+<\a b -> 
   <case
-    oOLG13GvP3nN 
+    a 
     [
-      <\datZyZxDQtv -> 
+      <\c -> 
         <case
-          fDjhdb6tHhr 
+          b 
           [
-            <\lZmjiLE9xtw -> 
-              <Apply
-                <EqualsInteger>@dr5yy9ULU5j [datZyZxDQtv, lZmjiLE9xtw]
-              >@hTZyTFV7cmhN
-            >@iFfLE4uR5YuN, 
-            <\_ -> <False :: Bool>@ofkSqfsbj7l>@wlLU94G0EHoN
+            <\d -> 
+              <Apply<EqualsInteger>@dr5yy9ULU5j [c, d]>@hTZyTFV7cmhN
+            >@e0lWZl47L8oN, 
+            <\_ -> <False :: Bool>@ofkSqfsbj7l>@uEIIWb896Im
           ]
-        >@whFfkUK35tpN
-      >@uIpZDptwLlq, 
-      <\bUiGidwO3Fh -> 
+        >@nBDhzPkvqxf
+      >@sBRQAFPQ4X, 
+      <\f -> 
         <case
-          fDjhdb6tHhr 
+          b 
           [
-            <\_ -> <False :: Bool>@ofkSqfsbj7l>@wlLU94G0EHoN, 
-            <\p4sXwS8SsCb -> 
-              <Apply
-                <EqualsInteger>@dr5yy9ULU5j [bUiGidwO3Fh, p4sXwS8SsCb]
-              >@scSQTdZE1qu
-            >@ungZwe05WWl
+            <\_ -> <False :: Bool>@ofkSqfsbj7l>@uEIIWb896Im, 
+            <\h -> 
+              <Apply<EqualsInteger>@dr5yy9ULU5j [f, h]>@scSQTdZE1qu
+            >@dQwcyS8r8zzN
           ]
-        >@jCwM2FEk0xsN
-      >@rufnnPYQ33y
+        >@jtAGCAmnnJqN
+      >@h79Vr7yiSyh
     ]
-  >@fbXrbAdqJ2
->@iaGtvzpphkt
+  >@kpnwwRZCnmj
+>@lrESA2Tso4t

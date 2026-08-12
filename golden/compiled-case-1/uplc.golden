@@ -1,6 +1,6 @@
-\oOLG13GvP3nN fDjhdb6tHhr datZyZxDQtv ->
+\a b c ->
   case 
-    (constr 0 [oOLG13GvP3nN, fDjhdb6tHhr, datZyZxDQtv])
-    [ \uQOxoKCrGneN h1rDw1Bq6ps hA2LWQPFqipN ->
-        case uQOxoKCrGneN [hA2LWQPFqipN, h1rDw1Bq6ps]
+    (constr 0 [a, b, c])
+    [ \nnA02PIDu8z uLdzf3fTGAn iEw9qyZezohN ->
+        case nnA02PIDu8z [iEw9qyZezohN, uLdzf3fTGAn]
     ]

@@ -1,10 +1,4 @@
-\oOLG13GvP3nN ->
-  let compArg_a = oOLG13GvP3nN
-  let fDjhdb6tHhr = (\datZyZxDQtv -> AddInteger # datZyZxDQtv # (2 :: Integer))
-                    # (
-                        (\lZmjiLE9xtw ->
-                          AddInteger # lZmjiLE9xtw # (2 :: Integer)
-                        )
-                        # compArg_a
-                      )
-  in AddInteger # fDjhdb6tHhr # (2 :: Integer)
+\a ->
+  let bind_h = \b -> AddInteger # b # (2 :: Integer)
+  let compArg_c = a
+  in bind_h # (bind_h # (bind_h # compArg_c))

@@ -1,0 +1,23 @@
+<Apply
+  <AddInteger>@m5XKL3leqWoN
+  [
+    <Apply
+      <\a -> 
+        <case
+          a 
+          [<2 :: Integer>@qjJx7b4Msxl, <1 :: Integer>@vyRIuwDii3A]
+        >@eJ2sVwlfY1m
+      >@vI00VyRQS6A
+      [<True :: Bool>@nAyEnYBEW9k]
+    >@jlZgYE9Z2Si, 
+    <Apply
+      <\b -> 
+        <case
+          b 
+          [<2 :: Integer>@qjJx7b4Msxl, <1 :: Integer>@vyRIuwDii3A]
+        >@qURW0sYOiSx
+      >@vI00VyRQS6A
+      [<False :: Bool>@ofkSqfsbj7l]
+    >@dPDj36DsUvgN
+  ]
+>@vHYZgfj1lfD

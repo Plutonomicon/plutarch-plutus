@@ -1,24 +1,24 @@
-<\oOLG13GvP3nN -> 
+<\a -> 
   <Apply
     <Compose
       [
-        <\fDjhdb6tHhr -> 
+        <\b -> 
           <Apply
-            <AddInteger>@m5XKL3leqWoN [fDjhdb6tHhr, <2 :: Integer>@qjJx7b4Msxl]
+            <AddInteger>@m5XKL3leqWoN [b, <2 :: Integer>@qjJx7b4Msxl]
           >@i8py2W1iKkz
-        >@lwtfqdLnzLwN, 
-        <\datZyZxDQtv -> 
+        >@tdePJZnjEPB, 
+        <\c -> 
           <Apply
-            <AddInteger>@m5XKL3leqWoN [datZyZxDQtv, <2 :: Integer>@qjJx7b4Msxl]
+            <AddInteger>@m5XKL3leqWoN [c, <2 :: Integer>@qjJx7b4Msxl]
           >@sQnIXlhM1Ik
-        >@hJb5m3l0IRbN, 
-        <\lZmjiLE9xtw -> 
+        >@tdePJZnjEPB, 
+        <\d -> 
           <Apply
-            <AddInteger>@m5XKL3leqWoN [lZmjiLE9xtw, <2 :: Integer>@qjJx7b4Msxl]
+            <AddInteger>@m5XKL3leqWoN [d, <2 :: Integer>@qjJx7b4Msxl]
           >@hLjyGBI2DHlN
-        >@nJ7qEPyB0Lu
+        >@tdePJZnjEPB
       ]
-    >@dqgydrqWvtb
-    [oOLG13GvP3nN]
-  >@vy24sWzhjJuN
->@symab48wp9n
+    >@rM6bXY4gfnq
+    [a]
+  >@v68sfbrnJijN
+>@lGUax0rDest
