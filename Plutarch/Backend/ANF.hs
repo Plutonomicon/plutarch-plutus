@@ -26,6 +26,7 @@ module Plutarch.Backend.ANF (
   fullPipeline,
 ) where
 
+import Control.Monad (when)
 import Control.Monad.ST (ST, runST)
 import Control.Monad.State.Strict (
   MonadState,
@@ -35,7 +36,7 @@ import Control.Monad.State.Strict (
   modify,
   runState,
  )
-import Data.Bifunctor (bimap)
+import Data.Bifunctor (bimap, first)
 import Data.Bimap (Bimap)
 import Data.Bimap qualified as Bimap
 import Data.Foldable (fold, for_, traverse_)
@@ -412,10 +413,165 @@ instance Pretty Demand where
 
 -- | @since wip
 fullPipeline :: forall (ann :: Type). ANF ann -> ANF Demand
-fullPipeline = analyzeDemand
+fullPipeline anf =
+  let labelled = labelTransitiveDeps anf
+      counted = countUses anf
+      withReqVars = collectRequiredVars anf
+      bindSites = determineBindSites anf
+   in analyzeDemand labelled counted withReqVars bindSites anf
 
 -- Helpers
 
+analyzeDemand ::
+  forall (ann :: Type).
+  ANF (Set Id) ->
+  ANF (Maybe Word) ->
+  ANF (Set Hash) ->
+  Map Hash Id ->
+  ANF ann ->
+  ANF Demand
+analyzeDemand labelled counted withReqVars bindSites (ANF bm binds) = _
+
+determineBindSites :: forall (ann :: Type). ANF ann -> Map Hash Id
+determineBindSites (ANF _ binds) = NEVector.ifoldl' go Map.empty binds
+  where
+    go :: Map Hash Id -> Int -> ANFBind ann -> Map Hash Id
+    go acc i = \case
+      ANFLam _ bvs _ ->
+        NEVector.foldl' (\acc' bv -> maybe acc' (\(BoundVar h _) -> Map.insert h (Id i) acc') bv) acc bvs
+      ANFFix _ (BoundVar h _) _ -> Map.insert h (Id i) acc
+
+labelTransitiveDeps :: forall (ann :: Type). ANF ann -> ANF (Set Id)
+labelTransitiveDeps (ANF bm binds) = runST $ do
+  let len = NEVector.length binds
+  tdMV <- MVector.generate len $ \i -> Set.empty <$ binds NEVector.! i
+  for_ [0, 1 .. len - 1] $ \i -> do
+    bind <- MVector.read tdMV i
+    case bind of
+      ANFLeaf _ -> pure ()
+      ANFForce _ r -> updateDeps tdMV i r
+      ANFDelay _ r -> updateDeps tdMV i r
+      ANFLam _ _ body -> updateDeps tdMV i body
+      ANFFix _ _ body -> updateDeps tdMV i body
+      ANFApply _ f xs -> do
+        updateDeps tdMV i f
+        traverse_ (updateDeps tdMV i) xs
+      ANFConstr _ _ fields -> traverse_ (updateDeps tdMV i) fields
+      ANFCase _ scrut handlers -> do
+        updateDeps tdMV i scrut
+        traverse_ (updateDeps tdMV i) handlers
+      ANFCompose _ components -> traverse_ (updateDeps tdMV i) components
+  ANF bm . NEVector.unsafeFromVector <$> Vector.unsafeFreeze tdMV
+  where
+    updateDeps ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (ANFBind (Set Id)) ->
+      Int ->
+      Ref ->
+      m ()
+    updateDeps mv i = \case
+      AnId (Id j) -> do
+        deps <- getANFBindAnn <$> MVector.read mv j
+        MVector.modify mv (fmap (Set.union (Set.insert (Id j) deps))) i
+      AVar _ -> pure ()
+
+-- `Nothing` means trivial
+countUses :: forall (ann :: Type). ANF ann -> ANF (Maybe Word)
+countUses (ANF bm binds) = runST $ do
+  let len = NEVector.length binds
+  countMV <- MVector.generate len $ \i -> Just 0 <$ binds NEVector.! i
+  for_ [0, 1 .. len - 1] $ \i -> do
+    bind <- MVector.read countMV i
+    case bind of
+      ANFLeaf ell -> case ell of
+        LConstant _ c -> when (smallEnoughToInline c) (MVector.modify countMV (Nothing <$) i)
+        LBuiltin _ _ -> MVector.modify countMV (Nothing <$) i
+        LError _ -> MVector.modify countMV (Nothing <$) i
+        _ -> pure ()
+      ANFForce _ r -> updateCountAt countMV r
+      ANFDelay _ r -> updateCountAt countMV r
+      ANFLam _ _ body -> updateCountAt countMV body
+      ANFFix _ _ body -> updateCountAt countMV body
+      ANFApply _ f xs -> do
+        updateCountAt countMV f
+        traverse_ (updateCountAt countMV) xs
+      ANFConstr _ _ fields -> traverse_ (updateCountAt countMV) fields
+      ANFCase _ scrut handlers -> do
+        updateCountAt countMV scrut
+        traverse_ (updateCountAt countMV) handlers
+      ANFCompose _ components -> traverse_ (updateCountAt countMV) components
+  ANF bm . NEVector.unsafeFromVector <$> Vector.unsafeFreeze countMV
+  where
+    smallEnoughToInline :: Some (ValueOf PLC.DefaultUni) -> Bool
+    smallEnoughToInline = \case
+      Some (ValueOf PLC.DefaultUniBool _) -> True
+      Some (ValueOf PLC.DefaultUniUnit _) -> True
+      Some (ValueOf PLC.DefaultUniInteger n) -> abs n < 256
+      _ -> False
+    updateCountAt ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (ANFBind (Maybe Word)) -> Ref -> m ()
+    updateCountAt mv = \case
+      AnId (Id i) -> MVector.modify mv (fmap (fmap (+ 1))) i
+      AVar _ -> pure ()
+
+collectRequiredVars :: forall (ann :: Type). ANF ann -> ANF (Set Hash)
+collectRequiredVars (ANF bm binds) = runST $ do
+  let len = NEVector.length binds
+  varMV <- MVector.generate len $ \i -> Set.empty <$ binds NEVector.! i
+  for_ [0, 1 .. len - 1] $ \i -> do
+    bind <- MVector.read varMV i
+    case bind of
+      ANFLeaf ell -> pure ()
+      ANFForce _ r -> updateWithDeps varMV i r
+      ANFDelay _ r -> updateWithDeps varMV i r
+      -- As lambdas are binding sites, they do not depend on the variables they
+      -- themselves bind.
+      ANFLam _ bvs body -> do
+        let boundHashes = NEVector.foldl' (\acc -> \case Nothing -> acc; Just (BoundVar h _) -> Set.insert h acc) Set.empty bvs
+        deps <- getDeps varMV body
+        let actualDeps = Set.difference deps boundHashes
+        MVector.modify varMV (actualDeps <$) i
+      -- As a fixpoint binds its `self` argument, it does not itself depend on
+      -- it.
+      ANFFix _ (BoundVar h _) body -> do
+        let boundHashes = Set.singleton h
+        deps <- getDeps varMV body
+        let actualDeps = Set.difference deps boundHashes
+        MVector.modify varMV (actualDeps <$) i
+      ANFApply _ f xs -> do
+        updateWithDeps varMV i f
+        traverse_ (updateWithDeps varMV i) xs
+      ANFConstr _ _ fields -> traverse_ (updateWithDeps varMV i) fields
+      ANFCase _ scrut handlers -> do
+        updateWithDeps varMV i scrut
+        traverse_ (updateWithDeps varMV i) handlers
+      ANFCompose _ components -> traverse_ (updateWithDeps varMV i) components
+  ANF bm . NEVector.unsafeFromVector <$> Vector.unsafeFreeze varMV
+  where
+    updateWithDeps ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (ANFBind (Set Hash)) ->
+      Int ->
+      Ref ->
+      m ()
+    updateWithDeps mv i r = do
+      deps <- getDeps mv r
+      MVector.modify mv (fmap (Set.union deps)) i
+    getDeps ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (ANFBind (Set Hash)) ->
+      Ref ->
+      m (Set Hash)
+    getDeps mv = \case
+      AnId (Id i) -> getANFBindAnn <$> MVector.read mv i
+      AVar varHash -> pure . Set.singleton $ varHash
+
+{-
 analyzeDemand :: forall (ann :: Type). ANF ann -> ANF Demand
 analyzeDemand (ANF bm binds) = runST $ do
   let len = NEVector.length binds
@@ -546,6 +702,7 @@ analyzeDemand (ANF bm binds) = runST $ do
           neededComponents <- traverse (getNeededFrom neededVarsMV) components
           MVector.write countMV i 0
           MVector.write neededVarsMV i . fold $ neededComponents
+-}
 
 bvWithMultiplicity ::
   forall (a :: Type) (m :: Type -> Type).
