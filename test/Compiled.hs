@@ -10,18 +10,14 @@ import Plutarch.Primitive.Apply ((#))
 import Plutarch.Primitive.Bool (PBool, pif)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGoldenAll)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Compiled"
-    [ plutarchGolden
-        "\\cond ifT ifF -> (compiled (\\cond' ifT' ifF' -> if cond' ifT' ifF') cond ifT ifF"
-        "Compiled Case 1"
-        case1
-    , plutarchGoldenEval
+    [ plutarchGoldenAll
         "\\cond ifT ifF -> (compiled (\\cond' ifT' ifF' -> if cond' ifT' ifF') cond ifT ifF"
         "Compiled Case 1"
         case1
