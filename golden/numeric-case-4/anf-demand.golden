@@ -34,25 +34,25 @@ ANF Binds:
  #4 := ModInteger
  #5 := Apply #4 [e, g]
  #6 := Apply d [g, #5]
- #7 := \g:1 -> #6
+ #7 := \g:2 -> #6
  #8 := Apply #7 [f]
  #9 := LessThanEqualsInteger
  #10 := Apply #9 [h, #1]
  #11 := SubtractInteger
  #12 := Apply #11 [#1, i]
- #13 := \i:0 -> #12
+ #13 := \i:1 -> #12
  #14 := Apply #13 [h]
  #15 := Case #10 [h, #14]
- #16 := \h:2 -> #15
+ #16 := \h:3 -> #15
  #17 := Apply #16 [e]
  #18 := Case #3 [#8, #17]
  #19 := \e:2 f:2 -> #18
  #20 := Fix[d:1] #19
  #21 := Apply #20 [c, b]
- #22 := \c:0 -> #21
+ #22 := \c:1 -> #21
  #23 := Apply #22 [a]
  #24 := Case #2 [#23, b]
- #25 := \a:2 b:1 -> #24
+ #25 := \a:2 b:2 -> #24
 
 ANF Annotations:
  #0 := Trivial

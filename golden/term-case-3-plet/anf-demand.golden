@@ -23,7 +23,7 @@ ANF Binds:
  #7 := 2 :: Integer
  #8 := 1 :: Integer
  #9 := Case b [#7, #8]
- #10 := \b:0 -> #9
+ #10 := \b:1 -> #9
  #11 := Apply #6 [#10]
 
 ANF Annotations:
