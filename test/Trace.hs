@@ -11,7 +11,7 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Trace (ptraceDebug, ptraceError)
-import Plutarch.Test.Golden (plutarchGoldenEvalWith, plutarchGoldenWith)
+import Plutarch.Test.Golden (plutarchGoldenAllWith)
 import PlutusCore qualified as PLC
 import Test.Tasty (TestTree, testGroup)
 
@@ -19,24 +19,15 @@ goldens :: TestTree
 goldens =
   testGroup
     "Trace"
-    [ plutarchGoldenWith noTraceEnv "10" "Trace Case 1 no trace" case1
-    , plutarchGoldenEvalWith noTraceEnv "10" "Trace Case 1 no trace" case1
-    , plutarchGoldenWith noTraceEnv "traceDebug \"foo\" 10" "Trace Case 2 no trace" case2
-    , plutarchGoldenEvalWith noTraceEnv "traceDebug \"foo\" 10" "Trace Case 2 no trace" case2
-    , plutarchGoldenWith noTraceEnv "traceError \"foo\" 10" "Trace Case 3 no trace" case3
-    , plutarchGoldenEvalWith noTraceEnv "traceError \"foo\" 10" "Trace Case 3 no trace" case3
-    , plutarchGoldenWith errorEnv "10" "Trace Case 1 error trace" case1
-    , plutarchGoldenEvalWith errorEnv "10" "Trace Case 1 error trace" case1
-    , plutarchGoldenWith errorEnv "traceDebug \"foo\" 10" "Trace Case 2 error trace" case2
-    , plutarchGoldenEvalWith errorEnv "traceDebug \"foo\" 10" "Trace Case 2 error trace" case2
-    , plutarchGoldenWith errorEnv "traceError \"foo\" 10" "Trace Case 3 error trace" case3
-    , plutarchGoldenEvalWith errorEnv "traceError \"foo\" 10" "Trace Case 3 error trace" case3
-    , plutarchGoldenWith debugEnv "10" "Trace Case 1 debug trace" case1
-    , plutarchGoldenEvalWith debugEnv "10" "Trace Case 1 debug trace" case1
-    , plutarchGoldenWith debugEnv "traceDebug \"foo\" 10" "Trace Case 2 debug trace" case2
-    , plutarchGoldenEvalWith debugEnv "traceDebug \"foo\" 10" "Trace Case 2 debug trace" case2
-    , plutarchGoldenWith debugEnv "traceError \"foo\" 10" "Trace Case 3 debug trace" case3
-    , plutarchGoldenEvalWith debugEnv "traceError \"foo\" 10" "Trace Case 3 debug trace" case3
+    [ plutarchGoldenAllWith noTraceEnv "10" "Trace Case 1 no trace" case1
+    , plutarchGoldenAllWith noTraceEnv "traceDebug \"foo\" 10" "Trace Case 2 no trace" case2
+    , plutarchGoldenAllWith noTraceEnv "traceError \"foo\" 10" "Trace Case 3 no trace" case3
+    , plutarchGoldenAllWith errorEnv "10" "Trace Case 1 error trace" case1
+    , plutarchGoldenAllWith errorEnv "traceDebug \"foo\" 10" "Trace Case 2 error trace" case2
+    , plutarchGoldenAllWith errorEnv "traceError \"foo\" 10" "Trace Case 3 error trace" case3
+    , plutarchGoldenAllWith debugEnv "10" "Trace Case 1 debug trace" case1
+    , plutarchGoldenAllWith debugEnv "traceDebug \"foo\" 10" "Trace Case 2 debug trace" case2
+    , plutarchGoldenAllWith debugEnv "traceError \"foo\" 10" "Trace Case 3 debug trace" case3
     ]
 
 -- Cases

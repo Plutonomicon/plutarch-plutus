@@ -1,19 +1,17 @@
-<\oOLG13GvP3nN -> 
+<\a -> 
   <Apply
     <Compose
       [
-        <\fDjhdb6tHhr -> 
+        <\b -> 
+          <Apply<MultiplyInteger>@vjMEhbkCp9cN [b, b]>@fJUSkp3b4BnN
+        >@gqkffdFA6vnN, 
+        <\c -> 
           <Apply
-            <MultiplyInteger>@vjMEhbkCp9cN [fDjhdb6tHhr, fDjhdb6tHhr]
-          >@fJUSkp3b4BnN
-        >@scRClULtExy, 
-        <\datZyZxDQtv -> 
-          <Apply
-            <AddInteger>@m5XKL3leqWoN [datZyZxDQtv, <2 :: Integer>@qjJx7b4Msxl]
+            <AddInteger>@m5XKL3leqWoN [c, <2 :: Integer>@qjJx7b4Msxl]
           >@sQnIXlhM1Ik
-        >@hJb5m3l0IRbN
+        >@tdePJZnjEPB
       ]
-    >@vVBP4tEOL8DN
-    [oOLG13GvP3nN]
-  >@irSKQrKKY8y
->@muPSy9aPcviN
+    >@raPTEyQyFUn
+    [a]
+  >@rrFlSlCL4op
+>@mEmT8Olc9MqN

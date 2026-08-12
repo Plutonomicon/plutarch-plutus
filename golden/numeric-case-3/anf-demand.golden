@@ -15,36 +15,36 @@ ANF Hashes:
  #13 := smkDB23mVKfN
  #14 := jmtcjBojUkdN
  #15 := tbak4tM3q4m
- #16 := dSDLXI2AqLrN
- #17 := qIlqxlCbDTsN
- #18 := ygpCJXqcK7p
- #19 := pzGgO57CRMz
- #20 := yBcJHEiWRjf
- #21 := wsd3Ga1GKRs
+ #16 := sSe8g6y6fcd
+ #17 := m5vrss997TCN
+ #18 := cV8IAnffpQb
+ #19 := wPYiwTMcL1dN
+ #20 := kVqYMhmALclN
+ #21 := x2MHfToEJzu
 
 ANF Binds:
  #0 := EqualsInteger
  #1 := 0 :: Integer
- #2 := Apply #0 [#1, fDjhdb6tHhr]
+ #2 := Apply #0 [#1, b]
  #3 := 1 :: Integer
- #4 := Apply #0 [eCBOolj7xId, #3]
+ #4 := Apply #0 [e, #3]
  #5 := RemainderInteger
  #6 := 2 :: Integer
- #7 := Apply #5 [eCBOolj7xId, #6]
+ #7 := Apply #5 [e, #6]
  #8 := MultiplyInteger
  #9 := QuotientInteger
- #10 := Apply #9 [eCBOolj7xId, #6]
- #11 := Apply lZmjiLE9xtw [#10]
+ #10 := Apply #9 [e, #6]
+ #11 := Apply d [#10]
  #12 := Apply #8 [#11, #11]
- #13 := Apply #8 [#12, datZyZxDQtv]
+ #13 := Apply #8 [#12, c]
  #14 := Case #7 [#12, #13]
- #15 := Case #4 [#14, datZyZxDQtv]
- #16 := \eCBOolj7xId:3 -> #15
- #17 := Fix[lZmjiLE9xtw:1] #16
- #18 := \datZyZxDQtv:2 -> #17
- #19 := Apply #18 [oOLG13GvP3nN, fDjhdb6tHhr]
+ #15 := Case #4 [#14, c]
+ #16 := \e:3 -> #15
+ #17 := Fix[d:1] #16
+ #18 := \c:2 -> #17
+ #19 := Apply #18 [a, b]
  #20 := Case #2 [#19, #3]
- #21 := \oOLG13GvP3nN:1 fDjhdb6tHhr:2 -> #20
+ #21 := \a:1 b:2 -> #20
 
 ANF Annotations:
  #0 := Trivial

@@ -1,26 +1,28 @@
-\uenjiLE9xtw venjiLE9xtw ->
+\a b ->
   case 
-    (EqualsInteger # (0 :: Integer) # venjiLE9xtw)
-    [ (\mArg_wenjiLE9xtw -> mArg_wenjiLE9xtw # mArg_wenjiLE9xtw # venjiLE9xtw)
-      # (\functionalArg_xenjiLE9xtw ->
-          (\yenjiLE9xtw zenjiLE9xtw ->
-            (\bind_afnjiLE9xtw ->
-              (\bind_bfnjiLE9xtw ->
-                case 
-                  (EqualsInteger # zenjiLE9xtw # (1 :: Integer))
-                  [ case 
-                      (RemainderInteger # zenjiLE9xtw # (2 :: Integer))
-                      [ bind_bfnjiLE9xtw
-                      , MultiplyInteger # bind_bfnjiLE9xtw # uenjiLE9xtw
-                      ]
-                  , uenjiLE9xtw
-                  ]
+    (EqualsInteger # (0 :: Integer) # b)
+    [ (\c ->
+        (\mArg_f -> mArg_f # mArg_f)
+        # (\functionalArg_g ->
+            (\d e ->
+              (\bind_t ->
+                (\bind_u ->
+                  case 
+                    (EqualsInteger # e # (1 :: Integer))
+                    [ case 
+                        (RemainderInteger # e # (2 :: Integer))
+                        [bind_u, MultiplyInteger # bind_u # c]
+                    , c
+                    ]
+                )
+                # (MultiplyInteger # bind_t # bind_t)
               )
-              # (MultiplyInteger # bind_afnjiLE9xtw # bind_afnjiLE9xtw)
+              # (d # (QuotientInteger # e # (2 :: Integer)))
             )
-            # (yenjiLE9xtw # (QuotientInteger # zenjiLE9xtw # (2 :: Integer)))
+            # (functionalArg_g # functionalArg_g)
           )
-          # (functionalArg_xenjiLE9xtw # functionalArg_xenjiLE9xtw)
-        )
+      )
+      # a
+      # b
     , (1 :: Integer)
     ]

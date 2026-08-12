@@ -1,1 +1,1 @@
-\a -> a
+\a -> let bind_b = \c -> c in a
