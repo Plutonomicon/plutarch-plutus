@@ -18,19 +18,17 @@ ANF Hashes:
  #16 := x3z68WbeDAB
  #17 := knPV8JelUIcN
  #18 := swg3mCrqa6yN
- #19 := nwLXQjnYFUyN
+ #19 := wG3amaxKV8zN
  #20 := kq3kmmKulbi
  #21 := uB44BucK0eA
  #22 := vT9XgGQd7Qs
  #23 := q4l3DHnjzvh
- #24 := lFjtFpCOYlm
- #25 := uQybLiCbutrN
- #26 := rob151hhwRv
- #27 := n275PtZtdlc
- #28 := iSLMyFX2lEj
- #29 := yFWbY3OdWrc
- #30 := l9Xou7jGAwyN
- #31 := kew5v3aLyPnN
+ #24 := lvHhiipb1Rp
+ #25 := n275PtZtdlc
+ #26 := iSLMyFX2lEj
+ #27 := dWtCXT0twKx
+ #28 := bkh80U1yc7N
+ #29 := xdPq43IVeQN
 
 ANF Binds:
  #0 := AppendString
@@ -51,7 +49,7 @@ ANF Binds:
  #15 := D :: String
  #16 := E :: String
  #17 := F :: String
- #18 := Case oOLG13GvP3nN [ #2
+ #18 := Case a [ #2
         , #3
         , #4
         , #5
@@ -67,31 +65,14 @@ ANF Binds:
         , #15
         , #16
         , #17 ]
- #19 := \oOLG13GvP3nN:0 -> #18
+ #19 := \a:1 -> #18
  #20 := QuotientInteger
  #21 := 31 :: Integer
  #22 := 16 :: Integer
  #23 := Apply #20 [#21, #22]
  #24 := Apply #19 [#23]
- #25 := Case fDjhdb6tHhr [ #2
-        , #3
-        , #4
-        , #5
-        , #6
-        , #7
-        , #8
-        , #9
-        , #10
-        , #11
-        , #12
-        , #13
-        , #14
-        , #15
-        , #16
-        , #17 ]
- #26 := \fDjhdb6tHhr:0 -> #25
- #27 := RemainderInteger
- #28 := Apply #27 [#21, #22]
- #29 := Apply #26 [#28]
- #30 := Apply #0 [#24, #29]
- #31 := Apply #0 [#1, #30]
+ #25 := RemainderInteger
+ #26 := Apply #25 [#21, #22]
+ #27 := Apply #19 [#26]
+ #28 := Apply #0 [#24, #27]
+ #29 := Apply #0 [#1, #28]

@@ -11,23 +11,17 @@ import Plutarch.Primitive.Debug (pshow)
 import Plutarch.Primitive.Liftable (pconstant)
 import Plutarch.Primitive.Numeric (PByte, PInteger)
 import Plutarch.Primitive.String (PString)
-import Plutarch.Test.Golden (
-  plutarchGoldenEvalWith,
-  plutarchGoldenWith,
- )
+import Plutarch.Test.Golden (plutarchGoldenAllWith)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Debug"
-    [ plutarchGoldenWith debugTermEnv "pshow Bool" "Debug Case 1" case1
-    , plutarchGoldenEvalWith debugTermEnv "pshow Bool" "Debug Case 1" case1
-    , plutarchGoldenWith releaseTermEnv "pshow Bool" "Debug Case 1 tracing off" case1
-    , plutarchGoldenEvalWith releaseTermEnv "pshow Bool" "Debug Case 1 tracing off" case1
-    , plutarchGoldenWith debugTermEnv "pshow Integer" "Debug Case 2" case2
-    , --    , plutarchGoldenEvalWith debugTermEnv "pshow Integer" "Debug Case 2" case2
-      plutarchGoldenWith debugTermEnv "pshow Byte" "Debug Case 3" case3
+    [ plutarchGoldenAllWith debugTermEnv "pshow Bool" "Debug Case 1" case1
+    , plutarchGoldenAllWith releaseTermEnv "pshow Bool" "Debug Case 1 tracing off" case1
+    , plutarchGoldenAllWith debugTermEnv "pshow Integer" "Debug Case 2" case2
+    , plutarchGoldenAllWith debugTermEnv "pshow Byte" "Debug Case 3" case3
     ]
 
 -- Cases

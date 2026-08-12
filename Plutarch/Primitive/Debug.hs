@@ -211,7 +211,7 @@ pshow ::
   PDebug a =>
   Term s a -> Term s PString
 pshow t = pdebug t $ \asString -> Term $ do
-  TermEnv tracing <- ask
+  TermEnv tracing _ <- ask
   asRawTerm $ case tracing of
     NoTracing -> sc ""
     _ -> asString
