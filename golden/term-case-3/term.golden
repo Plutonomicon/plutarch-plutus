@@ -1,0 +1,3 @@
+AddInteger
+# ((\a -> case a [2 :: Integer, 1 :: Integer]) # True :: Bool)
+# ((\b -> case b [2 :: Integer, 1 :: Integer]) # False :: Bool)

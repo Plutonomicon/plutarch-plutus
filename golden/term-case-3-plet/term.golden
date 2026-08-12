@@ -1,0 +1,2 @@
+let b_letBound = \a -> case a [2 :: Integer, 1 :: Integer]
+in AddInteger # (b_letBound # True :: Bool) # (b_letBound # False :: Bool)
