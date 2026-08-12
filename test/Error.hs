@@ -17,19 +17,16 @@ import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.BuiltinFun (paddInteger)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGoldenAll)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Error"
-    [ plutarchGolden "\\x y -> addInteger x error (addInteger x error)" "Error Case 1" case1
-    , plutarchGoldenEval "\\x y -> addInteger x error (addInteger x error)" "Error Case 1" case1
-    , plutarchGolden "\\x -> constr 0 [x, error]" "Error Case 2" case2
-    , plutarchGoldenEval "\\x -> constr 0 [x, error]" "Error Case 2" case2
-    , plutarchGolden "\\x -> case error of [x]" "Error Case 3" case3
-    , plutarchGoldenEval "\\x -> case error of [x]" "Error Case 3" case3
+    [ plutarchGoldenAll "\\x y -> addInteger x error (addInteger x error)" "Error Case 1" case1
+    , plutarchGoldenAll "\\x -> constr 0 [x, error]" "Error Case 2" case2
+    , plutarchGoldenAll "\\x -> case error of [x]" "Error Case 3" case3
     ]
 
 -- Cases

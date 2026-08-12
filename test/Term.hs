@@ -11,15 +11,14 @@ import Plutarch.Backend.Term (
 import Plutarch.Primitive.Apply ((#))
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenAll)
 import Test.Tasty (TestTree, testGroup)
 
 goldens :: TestTree
 goldens =
   testGroup
     "Term"
-    [ plutarchGolden "\\x -> (\\y -> y) ((\\z -> z) x)" "Term Case 1" case1
-    , plutarchGoldenEval "\\x -> (\\y -> y) ((\\z -> z) x)" "Term Case 1" case1
+    [ plutarchGoldenAll "\\x -> (\\y -> y) ((\\z -> z) x)" "Term Case 1" case1
     , plutarchGolden "\\x -> force (delay x)" "Term Case 2" case2
     ]
 
