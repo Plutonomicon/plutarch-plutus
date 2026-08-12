@@ -549,8 +549,8 @@ bvWithMultiplicity r h = case r of
     if h' == h
       then pure . BoundVar h . Multiplicity $ 1
       else error "Argument claimed as used, but body shows it as unused. If you see this, report a bug."
-  AnId (Id i) -> do
-    (existingBinds, _) <- gets (IntMap.split i . snd)
+  AnId _ -> do
+    existingBinds <- gets snd
     let (Sum mult) = foldMap countOccurrence existingBinds
     pure . BoundVar h . Multiplicity $ mult
     where

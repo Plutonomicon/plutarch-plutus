@@ -1,28 +1,28 @@
-\oOLG13GvP3nN fDjhdb6tHhr ->
+\a b ->
   case 
-    (EqualsInteger # (0 :: Integer) # fDjhdb6tHhr)
-    [ (\datZyZxDQtv ->
-        (\mArg_a -> mArg_a # mArg_a)
-        # (\functionalArg_b ->
-            (\lZmjiLE9xtw eCBOolj7xId ->
-              (\bind_o ->
-                (\bind_p ->
+    (EqualsInteger # (0 :: Integer) # b)
+    [ (\c ->
+        (\mArg_f -> mArg_f # mArg_f)
+        # (\functionalArg_g ->
+            (\d e ->
+              (\bind_t ->
+                (\bind_u ->
                   case 
-                    (EqualsInteger # eCBOolj7xId # (1 :: Integer))
+                    (EqualsInteger # e # (1 :: Integer))
                     [ case 
-                        (RemainderInteger # eCBOolj7xId # (2 :: Integer))
-                        [bind_p, MultiplyInteger # bind_p # datZyZxDQtv]
-                    , datZyZxDQtv
+                        (RemainderInteger # e # (2 :: Integer))
+                        [bind_u, MultiplyInteger # bind_u # c]
+                    , c
                     ]
                 )
-                # (MultiplyInteger # bind_o # bind_o)
+                # (MultiplyInteger # bind_t # bind_t)
               )
-              # (lZmjiLE9xtw # (QuotientInteger # eCBOolj7xId # (2 :: Integer)))
+              # (d # (QuotientInteger # e # (2 :: Integer)))
             )
-            # (functionalArg_b # functionalArg_b)
+            # (functionalArg_g # functionalArg_g)
           )
       )
-      # oOLG13GvP3nN
-      # fDjhdb6tHhr
+      # a
+      # b
     , (1 :: Integer)
     ]

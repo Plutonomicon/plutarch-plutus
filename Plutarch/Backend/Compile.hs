@@ -20,6 +20,7 @@ import Control.Monad.RWS.CPS (
 import Control.Monad.Reader (MonadReader)
 import Control.Monad.ST (runST)
 import Control.Monad.State.Strict (gets, put, runStateT)
+import Data.Default (def)
 import Data.Foldable (foldl', for_)
 import Data.Kind (Type)
 import Data.List.NonEmpty qualified as NEList
@@ -65,7 +66,7 @@ import Plutarch.Backend.AST (
   Hash (Hash),
  )
 import Plutarch.Backend.UPLC (
-  UPLCTerm,
+  UPLCTerm (UPLCTerm),
   rewriteUniques,
   uplcApply,
   uplcApply1,
@@ -83,7 +84,9 @@ import Plutarch.Backend.UPLC (
   uplcVar,
  )
 import Plutarch.Helpers.Backend (getFresh)
+import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
 import PlutusCore qualified as PLC
+import UntypedPlutusCore qualified as UPLC
 
 {- | Given an ANF, compile it into UPLC. This compilation also applies automatic
 @let@-bindings of any unique (up to alpha-equivalence) computation that is
@@ -91,8 +94,8 @@ used more than once.
 
 @since wip
 -}
-toUPLCTerm :: ANF Demand -> UPLCTerm
-toUPLCTerm (ANF _ binds) =
+toUPLCTerm :: Bool -> ANF Demand -> UPLCTerm
+toUPLCTerm runExternalOpts (ANF _ binds) =
   -- We use the hashes of any variable as its `Unique`. To ensure we don't
   -- accidentally ever alias them, we collect all the ones we use. As we know
   -- they can't collide, we don't perform any rehashing.
@@ -127,9 +130,25 @@ toUPLCTerm (ANF _ binds) =
       -- Set up our compilation environment with everything we just put together
       compileEnv = CompileEnv namedBinds fixpointNameMap compositionNameMap unusedParamName mIdentity
       compileState = CompileState Map.empty Map.empty
-   in -- Use our demand analysis to compile everything.
-      runCompileM compile compileEnv compileState
+      -- Use our demand analysis to compile everything.
+      compiled = runCompileM compile compileEnv compileState
+   in if
+        | not runExternalOpts -> compiled
+        -- If there are no `let`-binds, we can pre-evaluate safely
+        | isAffine binds -> uplcOptimize . preEval $ compiled
+        -- Only run UPLC optimizations
+        | otherwise -> uplcOptimize compiled
   where
+    preEval :: UPLCTerm -> UPLCTerm
+    preEval t = case evalUPLC maxBudget t of
+      (res, _, _) -> case res of
+        Left err -> error $ "Pre-evaluation errored. If you see this, report a bug: " <> show err
+        Right (Left c) -> uplcConstant c
+        Right (Right t) -> t
+    uplcOptimize :: UPLCTerm -> UPLCTerm
+    uplcOptimize (UPLCTerm t) = case PLC.runQuoteT . UPLC.optimizeTerm UPLC.defaultOptimizeOpts def $ t of
+      Left err -> error $ "Optimization errored. If you see this, report a bug: " <> show @UPLC.FreeVariableError err
+      Right optimized -> UPLCTerm optimized
     collectVarName :: Set Int -> ANFBind ann -> Set Int
     collectVarName acc = \case
       ANFLeaf _ -> acc
@@ -155,6 +174,15 @@ toUPLCTerm (ANF _ binds) =
       pure (mkName "bind" fresh, bind)
 
 -- Helpers
+
+isAffine :: NonEmptyVector (ANFBind Demand) -> Bool
+isAffine = NEVector.all (go . getANFBindAnn)
+  where
+    go :: Demand -> Bool
+    go = \case
+      NeverDemanded -> True
+      Demanded _ useCount -> useCount == 1
+      Trivial -> True
 
 fixPrecompiled ::
   NonEmptyVector (ANFBind Demand) ->

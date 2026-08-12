@@ -24,7 +24,7 @@ ptraceDebug ::
   Term s a ->
   Term s a
 ptraceDebug msg t = Term $ do
-  TermEnv mode <- ask
+  TermEnv mode _ <- ask
   asRawTerm $ case mode of
     DebugTracing -> ptrace # msg # t
     _ -> t
@@ -37,7 +37,7 @@ ptraceError ::
   Term s a ->
   Term s a
 ptraceError msg t = Term $ do
-  TermEnv mode <- ask
+  TermEnv mode _ <- ask
   asRawTerm $ case mode of
     NoTracing -> t
     _ -> ptrace # msg # t

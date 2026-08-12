@@ -24,6 +24,7 @@ which describes the \'@ST@ trick\'
 -}
 module Plutarch.Backend.Term (
   TracingMode (..),
+  OptimizationMode (..),
   TermEnv (..),
   debugTermEnv,
   releaseTermEnv,
@@ -158,19 +159,57 @@ data TracingMode
       Show
     )
 
+{- | Whether to use external optimizations on the generated code or not.
+
+Currently, \'external optimizations\' consist of the following:
+
+* Pre-evaluation of the generated code; followed by
+* The UPLC optimizer provided in Plutus Core.
+
+These are labelled as \'external\' as Plutarch does not control them.
+
+@since wip
+-}
+data OptimizationMode = OnlyInternal | InternalExternal
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
 {- | A configuration environment for 'Term's and their compilation.
 
 @since wip
 -}
-newtype TermEnv = TermEnv TracingMode
+data TermEnv = TermEnv TracingMode OptimizationMode
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
 
--- | @since wip
+{- | An environment suitable for debugging. This currently means the following:
+
+* Tracing enabled at the most verbose level ('DebugTracing'); and
+* External optimizations disabled ('OnlyInternal).
+
+@since wip
+-}
 debugTermEnv :: TermEnv
-debugTermEnv = TermEnv DebugTracing
+debugTermEnv = TermEnv DebugTracing OnlyInternal
 
--- | @since wip
+{- | An environment suitable for final production. This currently means the
+following:
+
+* Tracing turned off ('NoTracing'); and
+* External optimizations enabled ('InternalExternal').
+
+@since wip
+-}
 releaseTermEnv :: TermEnv
-releaseTermEnv = TermEnv NoTracing
+releaseTermEnv = TermEnv NoTracing InternalExternal
 
 {- | Various errors that can arise during 'Term' construction.
 
@@ -766,7 +805,7 @@ pcompiled ::
   (forall (s' :: S). Term s' a) ->
   Term s a
 pcompiled t = Term $ do
-  env <- ask
+  env@(TermEnv _ opt) <- ask
   case runRWS (runExceptT . asRawTerm $ t) env 0 of
     -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
     -- here, as otherwise, we would get a dependency loop.
@@ -777,7 +816,8 @@ pcompiled t = Term $ do
         let ast = fromRawTerm rt
         let anf = fromHashedAST ast
         let analyzedANF = analyzeDemand anf
-        pure (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+        let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+        pure (vmEmpty, RCompiled () . toUPLCTerm optAsBool $ analyzedANF)
 
 {- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
 to be closed, but this won't be checked.

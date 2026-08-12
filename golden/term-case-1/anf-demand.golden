@@ -1,20 +1,17 @@
 ANF Hashes:
- #0 := bhU9rS8A7HDN
- #1 := kQd5RPvg0ZD
- #2 := vhAc8DCdZow
- #3 := jExUk9PkCSbN
- #4 := u0rukLBp3ke
+ #0 := iOyZofoEVXk
+ #1 := udObOLwhetpN
+ #2 := nOMGcadCrWlN
+ #3 := tokb4XlhzidN
 
 ANF Binds:
- #0 := \fDjhdb6tHhr:1 -> fDjhdb6tHhr
- #1 := \datZyZxDQtv:1 -> datZyZxDQtv
- #2 := Apply #1 [oOLG13GvP3nN]
- #3 := Apply #0 [#2]
- #4 := \oOLG13GvP3nN:1 -> #3
+ #0 := \b:1 -> b
+ #1 := Apply #0 [a]
+ #2 := Apply #0 [#1]
+ #3 := \a:1 -> #2
 
 ANF Annotations:
- #0 := Demanded (Id 4) 1
- #1 := Demanded (Id 4) 1
- #2 := Demanded (Id 4) 1
- #3 := Demanded (Id 4) 1
- #4 := NeverDemanded
+ #0 := Demanded (Id 3) 2
+ #1 := Demanded (Id 3) 1
+ #2 := Demanded (Id 3) 1
+ #3 := NeverDemanded
