@@ -8,7 +8,7 @@ module Plutarch.Backend.Evaluate (
 import Control.Monad.Except (throwError)
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.Term (Term, TermError, releaseTermEnv)
 import Plutarch.Backend.UPLC (UPLCTerm)
 import Plutarch.Helpers.Compile (termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
@@ -29,7 +29,7 @@ peval ::
   forall (a :: S -> Type).
   (forall (s :: S). Term s a) ->
   Either EvalError (Either (PLC.Some (PLC.ValueOf PLC.DefaultUni)) UPLCTerm)
-peval t = case termToUPLC t of
+peval t = case termToUPLC releaseTermEnv t of
   Left err -> throwError . ATermError $ err
   Right t -> case evalUPLC maxBudget t of
     (res, _, _) -> case res of

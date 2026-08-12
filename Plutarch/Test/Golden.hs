@@ -2,8 +2,11 @@
 
 module Plutarch.Test.Golden (
   plutarchGolden,
+  plutarchGoldenWith,
   plutarchGoldenEval,
+  plutarchGoldenEvalWith,
   plutarchGoldenAll,
+  plutarchGoldenAllWith,
 ) where
 
 import Control.Exception (Exception, throwIO)
@@ -16,7 +19,13 @@ import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.Term (
+  Term,
+  TermEnv,
+  TermError,
+  debugTermEnv,
+  releaseTermEnv,
+ )
 import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
 import Plutarch.Helpers.Compile (compileTerm, termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
@@ -38,7 +47,7 @@ will generate golden files of each of the following:
 * The resulting UPLC.
 
 All but the first of these will produce an error if the 'Term' fails to
-compile.
+compile. This uses 'debugTermEnv' for clarity.
 
 = Important note
 
@@ -59,11 +68,24 @@ plutarchGolden ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGolden testDescription testName t =
+plutarchGolden = plutarchGoldenWith debugTermEnv
+
+{- | As 'plutarchGolden', but allows specifying the 'TermEnv' to compile with.
+
+@since wip
+-}
+plutarchGoldenWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = compileTerm t
+      compiled = compileTerm env t
       asAST = fromRawTerm <$> compiled
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
@@ -92,6 +114,8 @@ following:
 All but the first will produce an error if the 'Term' fails to compile, and
 the last will produce an error if the compiled 'Term' fails to evaluate.
 
+This uses 'releaseTermEnv', as this produces the best possible code.
+
 = Important note
 
 The caveats regarding naming given for 'plutarchGolden' also apply to this
@@ -108,11 +132,25 @@ plutarchGoldenEval ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGoldenEval testDescription testName t =
+plutarchGoldenEval = plutarchGoldenEvalWith releaseTermEnv
+
+{- | As 'plutarchGoldenEval', but allows specifying the 'TermEnv' to compile
+with.
+
+@since wip
+-}
+plutarchGoldenEvalWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenEvalWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = termToUPLC t
+      compiled = termToUPLC env t
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
       evaluated = evalUPLC maxBudget <$> compiled
       uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
@@ -124,7 +162,7 @@ plutarchGoldenEval testDescription testName t =
         ]
 
 {- | A combination of all the tests from both 'plutarchGolden' and
-'plutarchGoldenEval'.
+'plutarchGoldenEval'. Uses the same configuration 'plutarchGolden' would use.
 
 @since wip
 -}
@@ -137,11 +175,25 @@ plutarchGoldenAll ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGoldenAll testDescription testName t =
+plutarchGoldenAll = plutarchGoldenAllWith debugTermEnv
+
+{- | As 'plutarchGoldenAll', but allows specifying the 'TermEnv' to compile
+with.
+
+@since wip
+-}
+plutarchGoldenAllWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenAllWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = compileTerm t
+      compiled = compileTerm env t
       asAST = fromRawTerm <$> compiled
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST

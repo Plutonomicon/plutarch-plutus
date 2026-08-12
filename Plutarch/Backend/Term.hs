@@ -23,7 +23,10 @@ which describes the \'@ST@ trick\'
 @since wip
 -}
 module Plutarch.Backend.Term (
+  TracingMode (..),
   TermEnv (..),
+  debugTermEnv,
+  releaseTermEnv,
   Term (..),
   SomeTerm,
   toSomeTerm,
@@ -140,12 +143,34 @@ import PlutusCore qualified as PLC
 import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))
 import Universe (Some (Some), ValueOf (ValueOf))
 
-{- | A configuration environment for 'Term's and their compilation. Currently
-unused.
+{- | What level of tracing to use in a compiled result.
 
 @since wip
 -}
-data TermEnv = TermEnv
+data TracingMode
+  = NoTracing
+  | ErrorTracing
+  | DebugTracing
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+{- | A configuration environment for 'Term's and their compilation.
+
+@since wip
+-}
+newtype TermEnv = TermEnv TracingMode
+
+-- | @since wip
+debugTermEnv :: TermEnv
+debugTermEnv = TermEnv DebugTracing
+
+-- | @since wip
+releaseTermEnv :: TermEnv
+releaseTermEnv = TermEnv NoTracing
 
 {- | Various errors that can arise during 'Term' construction.
 
@@ -217,7 +242,7 @@ instance Pretty (Term s a) where
   pretty = prettyTerm
 
 prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
-prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
+prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
   (res, _, _) -> case res of
     Left e -> "Encountered an error when attempting to pretty print a term: " <> pretty (show e)
     Right (varMap, term) -> case runRWS (withVarMap varMap $ go term) mempty 0 of
@@ -740,17 +765,19 @@ pcompiled ::
   forall (a :: S -> Type) (s :: S).
   (forall (s' :: S). Term s' a) ->
   Term s a
-pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
-  -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
-  -- here, as otherwise, we would get a dependency loop.
-  (res, _, _) -> case res of
-    Left err -> Term . throwError $ err
-    -- We know that we have a closed term, so we can ignore the varmap.
-    Right (_, rt) ->
-      let ast = fromRawTerm rt
-          anf = fromHashedAST ast
-          analyzedANF = analyzeDemand anf
-       in Term . pure $ (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+pcompiled t = Term $ do
+  env <- ask
+  case runRWS (runExceptT . asRawTerm $ t) env 0 of
+    -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
+    -- here, as otherwise, we would get a dependency loop.
+    (res, _, _) -> case res of
+      Left err -> throwError err
+      -- We know the term is closed, so we can ignore the varmap.
+      Right (_, rt) -> do
+        let ast = fromRawTerm rt
+        let anf = fromHashedAST ast
+        let analyzedANF = analyzeDemand anf
+        pure (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
 
 {- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
 to be closed, but this won't be checked.
