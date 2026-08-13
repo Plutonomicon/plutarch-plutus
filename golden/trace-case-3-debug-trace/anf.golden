@@ -8,6 +8,6 @@ ANF Hashes:
 ANF Binds:
  #0 := Trace
  #1 := Force #0
- #2 := foo :: String
+ #2 := "foo" :: String
  #3 := 10 :: Integer
  #4 := Apply #1 [#2, #3]

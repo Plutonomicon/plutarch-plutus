@@ -36,6 +36,7 @@ import Prettyprinter (
   align,
   angles,
   brackets,
+  dquotes,
   encloseSep,
   flatAlt,
   group,
@@ -82,7 +83,7 @@ prettyValueOf uni x = case prettyUni uni of
     prettyUni = \case
       DefaultUniInteger -> ("Integer", pretty)
       DefaultUniByteString -> ("Bytestring", viaShow)
-      DefaultUniString -> ("String", pretty)
+      DefaultUniString -> ("String", dquotes . pretty)
       DefaultUniUnit -> ("()", pretty)
       DefaultUniBool -> ("Bool", pretty)
       (DefaultUniProtoPair `DefaultUniApply` tX `DefaultUniApply` tY) ->

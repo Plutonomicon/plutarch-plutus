@@ -1,1 +1,1 @@
-!Trace # (foo :: String) # (10 :: Integer)
+!Trace # ("foo" :: String) # (10 :: Integer)

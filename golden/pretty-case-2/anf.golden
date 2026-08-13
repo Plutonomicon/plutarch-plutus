@@ -3,5 +3,5 @@ ANF Hashes:
  #1 := xJXGegXmhvd
 
 ANF Binds:
- #0 := "a_free # b_free" :: String
+ #0 := ""a_free # b_free"" :: String
  #1 := \_ _ -> #0
