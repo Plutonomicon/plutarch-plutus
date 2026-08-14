@@ -2,7 +2,11 @@
 
 module Plutarch.Test.Golden (
   plutarchGolden,
+  plutarchGoldenWith,
   plutarchGoldenEval,
+  plutarchGoldenEvalWith,
+  plutarchGoldenAll,
+  plutarchGoldenAllWith,
 ) where
 
 import Control.Exception (Exception, throwIO)
@@ -15,7 +19,14 @@ import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.Term (
+  OptimizationMode (InternalExternal, OnlyInternal),
+  Term,
+  TermEnv (TermEnv),
+  TermError,
+  debugTermEnv,
+  releaseTermEnv,
+ )
 import Plutarch.Backend.UPLC (UPLCTerm, uplcConstant)
 import Plutarch.Helpers.Compile (compileTerm, termToUPLC)
 import Plutarch.Helpers.Evaluate (evalUPLC, maxBudget)
@@ -37,7 +48,7 @@ will generate golden files of each of the following:
 * The resulting UPLC.
 
 All but the first of these will produce an error if the 'Term' fails to
-compile.
+compile. This uses 'debugTermEnv' for clarity.
 
 = Important note
 
@@ -58,18 +69,32 @@ plutarchGolden ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGolden testDescription testName t =
+plutarchGolden = plutarchGoldenWith debugTermEnv
+
+{- | As 'plutarchGolden', but allows specifying the 'TermEnv' to compile with.
+
+@since wip
+-}
+plutarchGoldenWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenWith env@(TermEnv _ opt) testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = compileTerm t
+      compiled = compileTerm env t
       asAST = fromRawTerm <$> compiled
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
       withDemand = fullPipeline <$> asANF
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
-      asUPLC = toUPLCTerm <$> withDemand
+      optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+      asUPLC = toUPLCTerm optAsBool <$> withDemand
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
    in testGroup
         (testName <> ": " <> testDescription)
@@ -91,14 +116,12 @@ following:
 All but the first will produce an error if the 'Term' fails to compile, and
 the last will produce an error if the compiled 'Term' fails to evaluate.
 
+This uses 'releaseTermEnv', as this produces the best possible code.
+
 = Important note
 
 The caveats regarding naming given for 'plutarchGolden' also apply to this
-function. If you have both a 'plutarchGolden' and a 'plutarchGoldenEval'
-based on the same 'Term' with the same test name, these are designed not to
-clash: however, if you have /different/ 'Term's with the same test name, one
-as a 'plutarchGolden' and another as a 'plutarchGoldenEval', these /will/
-clash.
+function.
 
 @since wip
 -}
@@ -111,11 +134,25 @@ plutarchGoldenEval ::
   -- | A closed 'Term'.
   (forall (s :: S). Term s a) ->
   TestTree
-plutarchGoldenEval testDescription testName t =
+plutarchGoldenEval = plutarchGoldenEvalWith releaseTermEnv
+
+{- | As 'plutarchGoldenEval', but allows specifying the 'TermEnv' to compile
+with.
+
+@since wip
+-}
+plutarchGoldenEvalWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenEvalWith env testDescription testName t =
   let folderName = toFolderName testName
       goldenFolderFP = "golden" </> folderName
       termGoldenFP = goldenFolderFP </> "term" <.> "golden"
-      compiled = termToUPLC t
+      compiled = termToUPLC env t
       uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
       evaluated = evalUPLC maxBudget <$> compiled
       uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
@@ -123,6 +160,60 @@ plutarchGoldenEval testDescription testName t =
         (testName <> ": " <> testDescription <> " (eval)")
         [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
         , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr compiled)
+        , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)
+        ]
+
+{- | A combination of all the tests from both 'plutarchGolden' and
+'plutarchGoldenEval'. Uses the same configuration 'plutarchGolden' would use.
+
+@since wip
+-}
+plutarchGoldenAll ::
+  forall (a :: S -> Type).
+  -- | A description for the test. This is what you will see when the test runs.
+  String ->
+  -- | A name for the test, which should be unique (as described above).
+  String ->
+  -- | A closed 'Term'.
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenAll = plutarchGoldenAllWith debugTermEnv
+
+{- | As 'plutarchGoldenAll', but allows specifying the 'TermEnv' to compile
+with.
+
+@since wip
+-}
+plutarchGoldenAllWith ::
+  forall (a :: S -> Type).
+  TermEnv ->
+  String ->
+  String ->
+  (forall (s :: S). Term s a) ->
+  TestTree
+plutarchGoldenAllWith env@(TermEnv _ opt) testDescription testName t =
+  let folderName = toFolderName testName
+      goldenFolderFP = "golden" </> folderName
+      termGoldenFP = goldenFolderFP </> "term" <.> "golden"
+      compiled = compileTerm env t
+      asAST = fromRawTerm <$> compiled
+      astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
+      asANF = fromHashedAST <$> asAST
+      anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
+      withDemand = fullPipeline <$> asANF
+      demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
+      optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+      asUPLC = toUPLCTerm optAsBool <$> withDemand
+      uplcGoldenFP = goldenFolderFP </> "uplc" <.> "golden"
+      evaluated = evalUPLC maxBudget <$> asUPLC
+      uplcEvalGoldenFP = goldenFolderFP </> "uplc-eval" <.> "golden"
+   in testGroup
+        (testName <> ": " <> testDescription)
+        [ goldenVsString "Term" termGoldenFP (pure . toLazyBS $ t)
+        , goldenVsString "AST" astGoldenFP (toLazyBSOrErr asAST)
+        , goldenVsString "ANF" anfGoldenFP (toLazyBSOrErr asANF)
+        , goldenVsString "ANF with demand analysis" demandGoldenFP (toLazyBSOrErr withDemand)
+        , goldenVsString "UPLC" uplcGoldenFP (toLazyBSOrErr asUPLC)
         , goldenVsString "UPLC (evaluated)" uplcEvalGoldenFP (toLazyBSEvaluated evaluated)
         ]
 

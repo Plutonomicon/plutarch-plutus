@@ -15,7 +15,7 @@ import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Primitive.Pair (PBPair)
 import Plutarch.Primitive.String (PString)
-import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenEval)
+import Plutarch.Test.Golden (plutarchGoldenAll)
 import PlutusCore qualified as PLC
 import Prettyprinter (Pretty (pretty), defaultLayoutOptions, layoutSmart)
 import Prettyprinter.Render.String (renderString)
@@ -25,13 +25,8 @@ goldens :: TestTree
 goldens =
   testGroup
     "Pretty"
-    [ plutarchGolden "[[(2, 3)]]" "Pretty Case 1" case1
-    , plutarchGoldenEval "[[(2, 3)]]" "Pretty Case 1" case1
-    , plutarchGolden
-        "\\f x -> let lol = toPrettyString (f # x) in pconstant (T.pack . show $ lol)"
-        "Pretty Case 2"
-        case2
-    , plutarchGoldenEval
+    [ plutarchGoldenAll "[[(2, 3)]]" "Pretty Case 1" case1
+    , plutarchGoldenAll
         "\\f x -> let lol = toPrettyString (f # x) in pconstant (T.pack . show $ lol)"
         "Pretty Case 2"
         case2

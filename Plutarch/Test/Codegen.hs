@@ -7,7 +7,7 @@ import Data.Kind (Type)
 import Data.Tagged (Tagged (Tagged))
 import Data.Text (Text)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term, TermError)
+import Plutarch.Backend.Term (Term, TermError, releaseTermEnv)
 import Plutarch.Helpers.Compile (termToUPLC)
 import Prettyprinter (defaultLayoutOptions, layoutSmart, pretty)
 import Prettyprinter.Render.Text (renderStrict)
@@ -23,6 +23,8 @@ import Type.Reflection (Typeable)
 {- | Checks that the two given closed 'Term's compile to identical UPLC. If they
 do not, produces a diff between them as the error message. If either 'Term'
 does not compile, the test will instead fail and display the error.
+
+This uses 'releaseTermEnv' as this gives the most optimized code.
 
 @since wip
 -}
@@ -67,4 +69,4 @@ toPrettyUPLC t =
   renderStrict
     . layoutSmart defaultLayoutOptions
     . pretty
-    <$> termToUPLC t
+    <$> termToUPLC releaseTermEnv t

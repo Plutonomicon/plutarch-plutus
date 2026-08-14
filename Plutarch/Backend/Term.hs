@@ -23,7 +23,11 @@ which describes the \'@ST@ trick\'
 @since wip
 -}
 module Plutarch.Backend.Term (
+  TracingMode (..),
+  OptimizationMode (..),
   TermEnv (..),
+  debugTermEnv,
+  releaseTermEnv,
   Term (..),
   SomeTerm,
   toSomeTerm,
@@ -140,12 +144,72 @@ import PlutusCore qualified as PLC
 import Prettyprinter (Doc, Pretty (pretty), align, angles, braces, brackets, group, viaShow, (<+>))
 import Universe (Some (Some), ValueOf (ValueOf))
 
-{- | A configuration environment for 'Term's and their compilation. Currently
-unused.
+{- | What level of tracing to use in a compiled result.
 
 @since wip
 -}
-data TermEnv = TermEnv
+data TracingMode
+  = NoTracing
+  | ErrorTracing
+  | DebugTracing
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+{- | Whether to use external optimizations on the generated code or not.
+
+Currently, \'external optimizations\' consist of the following:
+
+* Pre-evaluation of the generated code; followed by
+* The UPLC optimizer provided in Plutus Core.
+
+These are labelled as \'external\' as Plutarch does not control them.
+
+@since wip
+-}
+data OptimizationMode = OnlyInternal | InternalExternal
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+{- | A configuration environment for 'Term's and their compilation.
+
+@since wip
+-}
+data TermEnv = TermEnv TracingMode OptimizationMode
+  deriving stock
+    ( -- | @since wip
+      Eq
+    , -- | @since wip
+      Show
+    )
+
+{- | An environment suitable for debugging. This currently means the following:
+
+* Tracing enabled at the most verbose level ('DebugTracing'); and
+* External optimizations disabled ('OnlyInternal).
+
+@since wip
+-}
+debugTermEnv :: TermEnv
+debugTermEnv = TermEnv DebugTracing OnlyInternal
+
+{- | An environment suitable for final production. This currently means the
+following:
+
+* Tracing turned off ('NoTracing'); and
+* External optimizations enabled ('InternalExternal').
+
+@since wip
+-}
+releaseTermEnv :: TermEnv
+releaseTermEnv = TermEnv NoTracing InternalExternal
 
 {- | Various errors that can arise during 'Term' construction.
 
@@ -217,7 +281,7 @@ instance Pretty (Term s a) where
   pretty = prettyTerm
 
 prettyTerm :: forall (s :: S) (px :: S -> Type) (ann :: Type). Term s px -> Doc ann
-prettyTerm t = case runRWS (runExceptT (asRawTerm t)) TermEnv 0 of
+prettyTerm t = case runRWS (runExceptT (asRawTerm t)) debugTermEnv 0 of
   (res, _, _) -> case res of
     Left e -> "Encountered an error when attempting to pretty print a term: " <> pretty (show e)
     Right (varMap, term) -> case runRWS (withVarMap varMap $ go term) mempty 0 of
@@ -740,17 +804,20 @@ pcompiled ::
   forall (a :: S -> Type) (s :: S).
   (forall (s' :: S). Term s' a) ->
   Term s a
-pcompiled (Term t) = case runRWS (runExceptT t) TermEnv 0 of
-  -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
-  -- here, as otherwise, we would get a dependency loop.
-  (res, _, _) -> case res of
-    Left err -> Term . throwError $ err
-    -- We know that we have a closed term, so we can ignore the varmap.
-    Right (_, rt) ->
-      let ast = fromRawTerm rt
-          anf = fromHashedAST ast
-          analyzedANF = fullPipeline anf
-       in Term . pure $ (vmEmpty, RCompiled () . toUPLCTerm $ analyzedANF)
+pcompiled t = Term $ do
+  env@(TermEnv _ opt) <- ask
+  case runRWS (runExceptT . asRawTerm $ t) env 0 of
+    -- Note (Koz, 26/06/2026): We duplicate the same logic we use in other modules
+    -- here, as otherwise, we would get a dependency loop.
+    (res, _, _) -> case res of
+      Left err -> throwError err
+      -- We know the term is closed, so we can ignore the varmap.
+      Right (_, rt) -> do
+        let ast = fromRawTerm rt
+        let anf = fromHashedAST ast
+        let analyzedANF = fullPipeline anf
+        let optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
+        pure (vmEmpty, RCompiled () . toUPLCTerm optAsBool $ analyzedANF)
 
 {- | As 'pcompiled', but uses a 'UPLCTerm' directly. The 'UPLCTerm' is assumed
 to be closed, but this won't be checked.

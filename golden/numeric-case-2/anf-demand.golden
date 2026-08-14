@@ -4,15 +4,15 @@ ANF Hashes:
  #2 := yI8DIugRYDcN
  #3 := fJUSkp3b4BnN
  #4 := lT9yD6VtIlz
- #5 := kkt04h1BYioN
+ #5 := hvE02Y2KgSjN
 
 ANF Binds:
  #0 := AddInteger
  #1 := MultiplyInteger
- #2 := Apply #1 [oOLG13GvP3nN, oOLG13GvP3nN]
- #3 := Apply #1 [fDjhdb6tHhr, fDjhdb6tHhr]
+ #2 := Apply #1 [a, a]
+ #3 := Apply #1 [b, b]
  #4 := Apply #0 [#2, #3]
- #5 := \oOLG13GvP3nN:2 fDjhdb6tHhr:2 -> #4
+ #5 := \a:2 b:2 -> #4
 
 ANF Annotations:
  #0 := Trivial

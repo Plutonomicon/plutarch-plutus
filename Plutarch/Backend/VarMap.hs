@@ -23,6 +23,7 @@ module Plutarch.Backend.VarMap (
   vmMergeM,
   vmExtend,
   vmFold,
+  vmFirst,
 ) where
 
 import Data.Hashable (Hashable)
@@ -55,6 +56,15 @@ newtype VarMap = VarMap (Map Word64 PosTree)
 -}
 vmEmpty :: VarMap
 vmEmpty = VarMap Map.empty
+
+{- | Get the first element of a 'VarMap', as a key-value pair.
+
+Will error if given the empty 'VarMap'.
+
+@since wip
+-}
+vmFirst :: VarMap -> (Word64, PosTree)
+vmFirst (VarMap vm) = Map.findMin vm
 
 {- | Produce a variable map mapping a single unique identifier to a position
 tree.
