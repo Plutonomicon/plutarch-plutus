@@ -27,19 +27,18 @@ module Plutarch.Backend.ANF (
 ) where
 
 import Control.Monad (when)
-import Control.Monad.ST (ST, runST)
+import Control.Monad.ST (runST)
 import Control.Monad.State.Strict (
   MonadState,
   State,
-  execStateT,
   gets,
   modify,
   runState,
  )
-import Data.Bifunctor (bimap, first)
+import Data.Bifunctor (bimap)
 import Data.Bimap (Bimap)
 import Data.Bimap qualified as Bimap
-import Data.Foldable (fold, for_, traverse_)
+import Data.Foldable (for_, traverse_)
 import Data.IntMap.Strict (IntMap)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Kind (Type)
@@ -430,7 +429,96 @@ analyzeDemand ::
   Map Hash Id ->
   ANF ann ->
   ANF Demand
-analyzeDemand labelled counted withReqVars bindSites (ANF bm binds) = _
+analyzeDemand (ANF _ labelled) (ANF _ counted) (ANF _ withReqVars) bindSites (ANF bm binds) =
+  let len = NEVector.length binds
+      newBinds = NEVector.generate1 len $ \i ->
+        let oldBind = binds NEVector.! i
+            uses = counted NEVector.! i
+         in case getANFBindAnn uses of
+              Nothing -> Trivial <$ oldBind
+              Just 0 -> NeverDemanded <$ oldBind
+              Just 1 -> Demanded (Id i) 1 <$ oldBind
+              Just n ->
+                let neededVars = getANFBindAnn (withReqVars NEVector.! i)
+                    lastResort = Set.foldl' siteMin (len - 1) neededVars
+                 in Demanded (digDependency (Id i) lastResort) (fromIntegral n) <$ oldBind
+   in ANF bm newBinds
+  where
+    siteMin :: Int -> Hash -> Int
+    siteMin acc varHash = case Map.lookup varHash bindSites of
+      -- Technically impossible
+      Nothing -> acc
+      Just (Id site) -> min acc site
+    digDependency :: Id -> Int -> Id
+    digDependency target currId =
+      let currBind = binds NEVector.! currId
+       in case currBind of
+            -- We should absolutely never make it down here. Give it a default
+            -- for the completeness checker.
+            ANFLeaf _ -> Id currId
+            -- Binds with single descendants cannot be join points, so we can
+            -- always look 'through' them.
+            ANFForce _ r -> refToBindSite target (Id currId) r
+            ANFDelay _ r -> refToBindSite target (Id currId) r
+            ANFLam _ _ body -> refToBindSite target (Id currId) body
+            ANFFix _ _ body -> refToBindSite target (Id currId) body
+            -- If only one descendant of any of these requires `target` as a
+            -- transitive dep, we can descend into it. Otherwise, we stop
+            -- here.
+            ANFApply _ f xs ->
+              let start = refToJPR target f
+               in case NEVector.foldl' (combineJPRs target) start xs of
+                    -- This cannot happen.
+                    NoCandidateFound -> Id currId
+                    Ineligible -> Id currId
+                    Descend next -> digDependency target next
+            ANFConstr _ _ fields -> case Vector.uncons fields of
+              -- This cannot happen.
+              Nothing -> Id currId
+              Just (field, fields') -> case Vector.foldl' (combineJPRs target) (refToJPR target field) fields' of
+                -- This cannot happen.
+                NoCandidateFound -> Id currId
+                Ineligible -> Id currId
+                Descend next -> digDependency target next
+            ANFCase _ scrut handlers ->
+              let start = refToJPR target scrut
+               in case NEVector.foldl' (combineJPRs target) start handlers of
+                    -- This cannot happen.
+                    NoCandidateFound -> Id currId
+                    Ineligible -> Id currId
+                    Descend next -> digDependency target next
+            ANFCompose _ components -> case NEVector.uncons components of
+              (c, cs) -> case Vector.foldl' (combineJPRs target) (refToJPR target c) cs of
+                -- This cannot happen.
+                NoCandidateFound -> Id currId
+                Ineligible -> Id currId
+                Descend next -> digDependency target next
+    refToBindSite :: Id -> Id -> Ref -> Id
+    refToBindSite target curr = \case
+      AVar _ -> curr
+      AnId (Id i) -> digDependency target i
+    refToJPR :: Id -> Ref -> JoinPointResult
+    refToJPR target = \case
+      AVar _ -> NoCandidateFound
+      AnId (Id asInt) ->
+        let transDeps = getANFBindAnn (labelled NEVector.! asInt)
+         in if Set.member target transDeps
+              then Descend asInt
+              else NoCandidateFound
+    combineJPRs :: Id -> JoinPointResult -> Ref -> JoinPointResult
+    combineJPRs target acc r = case acc of
+      Ineligible -> Ineligible
+      NoCandidateFound -> case refToJPR target r of
+        Descend x -> Descend x
+        _ -> acc
+      Descend _ -> case refToJPR target r of
+        Descend _ -> Ineligible
+        _ -> acc
+
+data JoinPointResult
+  = NoCandidateFound
+  | Ineligible
+  | Descend Int
 
 determineBindSites :: forall (ann :: Type). ANF ann -> Map Hash Id
 determineBindSites (ANF _ binds) = NEVector.ifoldl' go Map.empty binds
@@ -440,6 +528,7 @@ determineBindSites (ANF _ binds) = NEVector.ifoldl' go Map.empty binds
       ANFLam _ bvs _ ->
         NEVector.foldl' (\acc' bv -> maybe acc' (\(BoundVar h _) -> Map.insert h (Id i) acc') bv) acc bvs
       ANFFix _ (BoundVar h _) _ -> Map.insert h (Id i) acc
+      _ -> acc
 
 labelTransitiveDeps :: forall (ann :: Type). ANF ann -> ANF (Set Id)
 labelTransitiveDeps (ANF bm binds) = runST $ do
@@ -524,7 +613,7 @@ collectRequiredVars (ANF bm binds) = runST $ do
   for_ [0, 1 .. len - 1] $ \i -> do
     bind <- MVector.read varMV i
     case bind of
-      ANFLeaf ell -> pure ()
+      ANFLeaf _ -> pure ()
       ANFForce _ r -> updateWithDeps varMV i r
       ANFDelay _ r -> updateWithDeps varMV i r
       -- As lambdas are binding sites, they do not depend on the variables they

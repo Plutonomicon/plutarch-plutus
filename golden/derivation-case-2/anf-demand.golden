@@ -30,15 +30,15 @@ ANF Binds:
 
 ANF Annotations:
  #0 := Trivial
- #1 := Demanded (Id 2) 1
- #2 := Demanded (Id 6) 1
+ #1 := Demanded (Id 1) 1
+ #2 := Demanded (Id 2) 1
  #3 := Trivial
- #4 := Demanded (Id 12) 2
- #5 := Demanded (Id 6) 1
- #6 := Demanded (Id 12) 1
- #7 := Demanded (Id 8) 1
- #8 := Demanded (Id 10) 1
- #9 := Demanded (Id 10) 1
- #10 := Demanded (Id 12) 1
- #11 := Demanded (Id 12) 1
+ #4 := Demanded (Id 11) 2
+ #5 := Demanded (Id 5) 1
+ #6 := Demanded (Id 6) 1
+ #7 := Demanded (Id 7) 1
+ #8 := Demanded (Id 8) 1
+ #9 := Demanded (Id 9) 1
+ #10 := Demanded (Id 10) 1
+ #11 := Demanded (Id 11) 1
  #12 := NeverDemanded

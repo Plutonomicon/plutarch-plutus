@@ -10,6 +10,6 @@ ANF Binds:
  #2 := \oOLG13GvP3nN:0 fDjhdb6tHhr:0 datZyZxDQtv:0 -> #1
 
 ANF Annotations:
- #0 := Demanded (Id 2) 1
- #1 := Demanded (Id 2) 1
+ #0 := Demanded (Id 0) 1
+ #1 := Demanded (Id 1) 1
  #2 := NeverDemanded

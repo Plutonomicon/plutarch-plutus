@@ -5,19 +5,21 @@
         (\mArg_a -> mArg_a # mArg_a)
         # (\functionalArg_b ->
             (\lZmjiLE9xtw eCBOolj7xId ->
-              (\bind_o ->
-                (\bind_p ->
-                  case 
-                    (EqualsInteger # eCBOolj7xId # (1 :: Integer))
-                    [ case 
-                        (RemainderInteger # eCBOolj7xId # (2 :: Integer))
-                        [bind_p, MultiplyInteger # bind_p # datZyZxDQtv]
-                    , datZyZxDQtv
-                    ]
-                )
-                # (MultiplyInteger # bind_o # bind_o)
-              )
-              # (lZmjiLE9xtw # (QuotientInteger # eCBOolj7xId # (2 :: Integer)))
+              case 
+                (EqualsInteger # eCBOolj7xId # (1 :: Integer))
+                [ (\bind_o ->
+                    case 
+                      (RemainderInteger # eCBOolj7xId # (2 :: Integer))
+                      [ bind_p
+                      , (\bind_p -> MultiplyInteger # bind_p # datZyZxDQtv)
+                        # (MultiplyInteger # bind_o # bind_o)
+                      ]
+                  )
+                  # (lZmjiLE9xtw
+                      # (QuotientInteger # eCBOolj7xId # (2 :: Integer))
+                    )
+                , datZyZxDQtv
+                ]
             )
             # (functionalArg_b # functionalArg_b)
           )

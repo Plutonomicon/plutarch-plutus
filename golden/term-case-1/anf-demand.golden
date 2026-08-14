@@ -13,8 +13,8 @@ ANF Binds:
  #4 := \oOLG13GvP3nN:1 -> #3
 
 ANF Annotations:
- #0 := Demanded (Id 4) 1
- #1 := Demanded (Id 4) 1
- #2 := Demanded (Id 4) 1
- #3 := Demanded (Id 4) 1
+ #0 := Demanded (Id 0) 1
+ #1 := Demanded (Id 1) 1
+ #2 := Demanded (Id 2) 1
+ #3 := Demanded (Id 3) 1
  #4 := NeverDemanded
