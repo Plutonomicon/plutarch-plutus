@@ -59,7 +59,7 @@ ANF Annotations:
  #9 := Trivial
  #10 := Demanded (Id 10) 1
  #11 := Demanded (Id 14) 2
- #12 := Demanded (Id 13) 2
+ #12 := Demanded (Id 14) 2
  #13 := Demanded (Id 13) 1
  #14 := Demanded (Id 14) 1
  #15 := Demanded (Id 15) 1

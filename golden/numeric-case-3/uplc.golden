@@ -8,12 +8,12 @@
               case 
                 (EqualsInteger # e # (1 :: Integer))
                 [ (\bind_t ->
-                    case 
-                      (RemainderInteger # e # (2 :: Integer))
-                      [ bind_u
-                      , (\bind_u -> MultiplyInteger # bind_u # c)
-                        # (MultiplyInteger # bind_t # bind_t)
-                      ]
+                    (\bind_u ->
+                      case 
+                        (RemainderInteger # e # (2 :: Integer))
+                        [bind_u, MultiplyInteger # bind_u # c]
+                    )
+                    # (MultiplyInteger # bind_t # bind_t)
                   )
                   # (d # (QuotientInteger # e # (2 :: Integer)))
                 , c

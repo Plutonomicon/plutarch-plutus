@@ -21,7 +21,6 @@ module Plutarch.Backend.ANF (
   ANF (..),
   Demand (..),
   fromHashedAST,
-  -- analyzeDemand,
   getANFBindAnn,
   fullPipeline,
 ) where
@@ -500,20 +499,18 @@ analyzeDemand (ANF _ labelled) (ANF _ counted) (ANF _ withReqVars) bindSites (AN
     refToJPR :: Id -> Ref -> JoinPointResult
     refToJPR target = \case
       AVar _ -> NoCandidateFound
-      AnId (Id asInt) ->
-        let transDeps = getANFBindAnn (labelled NEVector.! asInt)
-         in if Set.member target transDeps
-              then Descend asInt
-              else NoCandidateFound
+      AnId i@(Id asInt) ->
+        if
+          | i == target -> Ineligible
+          | Set.member target (getANFBindAnn (labelled NEVector.! asInt)) -> Descend asInt
+          | otherwise -> NoCandidateFound
     combineJPRs :: Id -> JoinPointResult -> Ref -> JoinPointResult
     combineJPRs target acc r = case acc of
       Ineligible -> Ineligible
-      NoCandidateFound -> case refToJPR target r of
-        Descend x -> Descend x
-        _ -> acc
+      NoCandidateFound -> refToJPR target r
       Descend _ -> case refToJPR target r of
-        Descend _ -> Ineligible
-        _ -> acc
+        NoCandidateFound -> acc
+        _ -> Ineligible
 
 data JoinPointResult
   = NoCandidateFound
@@ -659,139 +656,6 @@ collectRequiredVars (ANF bm binds) = runST $ do
     getDeps mv = \case
       AnId (Id i) -> getANFBindAnn <$> MVector.read mv i
       AVar varHash -> pure . Set.singleton $ varHash
-
-{-
-analyzeDemand :: forall (ann :: Type). ANF ann -> ANF Demand
-analyzeDemand (ANF bm binds) = runST $ do
-  let len = NEVector.length binds
-  countMV <- MVector.replicate len (0 :: Int)
-  neededVarsMV <- MVector.replicate len Set.empty
-  -- Collect 'raw' statistics on use count, needed variables and binding sites
-  bindingSites <- collectRawStatistics len countMV neededVarsMV
-  -- At this stage, we know:
-  --
-  -- 1. Every (useful) use count of every bind
-  -- 2. What variables must be in scope for any given bind to be meaningful
-  -- 3. For every variable, where that variable was bound
-  --
-  -- Knowing all these, we can now construct a brand-new ANF with full demand
-  -- analysis.
-  newBinds <- NEVector.generate1M len $ \i -> do
-    let oldBind = binds NEVector.! i
-    uses <- MVector.read countMV i
-    case uses of
-      (-1) -> pure (Trivial <$ oldBind)
-      0 -> pure (NeverDemanded <$ oldBind)
-      _ -> do
-        neededVars <- MVector.read neededVarsMV i
-        let lowestSite = Set.foldl' (siteMin bindingSites) (len - 1) neededVars
-        pure (Demanded (Id lowestSite) (fromIntegral uses) <$ oldBind)
-  pure . ANF bm $ newBinds
-  where
-    siteMin :: Map Hash Int -> Int -> Hash -> Int
-    siteMin bindingSites acc varHash = case Map.lookup varHash bindingSites of
-      -- Technically impossible
-      Nothing -> acc
-      Just site -> min acc site
-    smallEnoughToInline :: Some (ValueOf PLC.DefaultUni) -> Bool
-    smallEnoughToInline = \case
-      Some (ValueOf PLC.DefaultUniBool _) -> True
-      Some (ValueOf PLC.DefaultUniUnit _) -> True
-      Some (ValueOf PLC.DefaultUniInteger n) -> abs n < 256
-      _ -> False
-    updateCountAt ::
-      forall (m :: Type -> Type).
-      PrimMonad m =>
-      MVector (PrimState m) Int -> Ref -> m ()
-    updateCountAt mv = \case
-      AnId (Id i) -> MVector.modify mv (\case (-1) -> (-1); old -> old + 1) i
-      AVar _ -> pure ()
-    getNeededFrom ::
-      forall (m :: Type -> Type).
-      PrimMonad m =>
-      MVector (PrimState m) (Set Hash) -> Ref -> m (Set Hash)
-    getNeededFrom mv = \case
-      AnId (Id i) -> MVector.read mv i
-      AVar v -> pure . Set.singleton $ v
-    bvsToSet :: NonEmptyVector (Maybe BoundVar) -> Set Hash
-    bvsToSet = NEVector.foldl' go Set.empty
-    go :: Set Hash -> Maybe BoundVar -> Set Hash
-    go acc = \case
-      Nothing -> acc
-      Just (BoundVar h _) -> Set.insert h acc
-    collectRawStatistics ::
-      forall (s :: Type).
-      Int ->
-      MVector s Int ->
-      MVector s (Set Hash) ->
-      ST s (Map Hash Int)
-    collectRawStatistics len countMV neededVarsMV = flip execStateT Map.empty $
-      for_ [0, 1 .. len - 1] $ \i -> case binds NEVector.! i of
-        ANFLeaf ell -> MVector.write countMV i $ case ell of
-          LConstant _ c ->
-            if smallEnoughToInline c
-              then (-1)
-              else 0
-          LBuiltin _ _ -> (-1)
-          LError _ -> (-1)
-          _ -> 0
-        ANFForce _ r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFDelay _ r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFLam _ boundVars r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          -- Lambdas act as binding sites, so they only need variables bound
-          -- 'above' them. Thus, we remove any used bound vars, but also note
-          -- that this is where said variables get bound.
-          let bvAsSet = bvsToSet boundVars
-          let neededVars' = Set.difference neededVars bvAsSet
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars'
-          modify (\acc -> Set.foldr (`Map.insert` i) acc bvAsSet)
-        ANFFix _ (BoundVar varHash _) r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          -- Fixpoint self arguments aren't needed by fixes themselves. Thus, we
-          -- remove it from used vars, but also note that it was bound here.
-          let neededVars' = Set.delete varHash neededVars
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars'
-          modify (Map.insert varHash i)
-        ANFApply _ f xs -> do
-          updateCountAt countMV f
-          traverse_ (updateCountAt countMV) xs
-          neededF <- getNeededFrom neededVarsMV f
-          neededXs <- traverse (getNeededFrom neededVarsMV) xs
-          let neededVars = NEVector.foldl' Set.union neededF neededXs
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFConstr _ _ fields -> do
-          traverse_ (updateCountAt countMV) fields
-          neededFields <- traverse (getNeededFrom neededVarsMV) fields
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i . fold $ neededFields
-        ANFCase _ scrut handlers -> do
-          updateCountAt countMV scrut
-          traverse_ (updateCountAt countMV) handlers
-          neededScrut <- getNeededFrom neededVarsMV scrut
-          neededHandlers <- traverse (getNeededFrom neededVarsMV) handlers
-          let neededVars = NEVector.foldl' Set.union neededScrut neededHandlers
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFCompose _ components -> do
-          traverse_ (updateCountAt countMV) components
-          neededComponents <- traverse (getNeededFrom neededVarsMV) components
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i . fold $ neededComponents
--}
 
 bvWithMultiplicity ::
   forall (a :: Type) (m :: Type -> Type).
