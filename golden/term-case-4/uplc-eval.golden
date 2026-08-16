@@ -1,0 +1,15 @@
+\a ->
+  case a
+    [ (\b c ->
+        (\bind_d -> AddInteger # (bind_d # b) # (bind_d # c))
+        # (\e -> AddInteger # e # e)
+      )
+      # (10 :: Integer)
+      # (20 :: Integer)
+    , (\f g ->
+        (\bind_h -> AddInteger # (bind_h # f) # (bind_h # g))
+        # (\i -> MultiplyInteger # i # i)
+      )
+      # (10 :: Integer)
+      # (20 :: Integer)
+    ]

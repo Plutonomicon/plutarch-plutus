@@ -1,0 +1,65 @@
+ANF Hashes:
+ #0 := m5XKL3leqWoN
+ #1 := yAdcymrewDkN
+ #2 := dViasIdX6cAN
+ #3 := slqPW2p3QzrN
+ #4 := nA7l1g6grKvN
+ #5 := iR37VzyRyyBN
+ #6 := wdLCSeVn8mh
+ #7 := d9BTnRxpywy
+ #8 := hBvTlxVXYAD
+ #9 := oi8jxSP7coy
+ #10 := vjMEhbkCp9cN
+ #11 := iQxs37LJJtxN
+ #12 := gqkffdFA6vnN
+ #13 := viKUoLGoOUw
+ #14 := exWYLdJv1YbN
+ #15 := owbEYdEV4uDN
+ #16 := qAoihh9YcVhN
+ #17 := yQdEL0I1DuyN
+ #18 := qyY0w1U5l4jN
+ #19 := ifZFDzvSrdm
+
+ANF Binds:
+ #0 := AddInteger
+ #1 := Apply #0 [d, d]
+ #2 := \d:2 -> #1
+ #3 := Apply #2 [b]
+ #4 := Apply #2 [c]
+ #5 := Apply #0 [#3, #4]
+ #6 := \b:1 c:1 -> #5
+ #7 := 10 :: Integer
+ #8 := 20 :: Integer
+ #9 := Apply #6 [#7, #8]
+ #10 := MultiplyInteger
+ #11 := Apply #10 [h, h]
+ #12 := \h:2 -> #11
+ #13 := Apply #12 [f]
+ #14 := Apply #12 [g]
+ #15 := Apply #0 [#13, #14]
+ #16 := \f:1 g:1 -> #15
+ #17 := Apply #16 [#7, #8]
+ #18 := Case a [#9, #17]
+ #19 := \a:1 -> #18
+
+ANF Annotations:
+ #0 := Trivial
+ #1 := Demanded (Id 1) 1
+ #2 := Demanded (Id 5) 2
+ #3 := Demanded (Id 3) 1
+ #4 := Demanded (Id 4) 1
+ #5 := Demanded (Id 5) 1
+ #6 := Demanded (Id 6) 1
+ #7 := Trivial
+ #8 := Trivial
+ #9 := Demanded (Id 9) 1
+ #10 := Trivial
+ #11 := Demanded (Id 11) 1
+ #12 := Demanded (Id 15) 2
+ #13 := Demanded (Id 13) 1
+ #14 := Demanded (Id 14) 1
+ #15 := Demanded (Id 15) 1
+ #16 := Demanded (Id 16) 1
+ #17 := Demanded (Id 17) 1
+ #18 := Demanded (Id 18) 1
+ #19 := NeverDemanded
