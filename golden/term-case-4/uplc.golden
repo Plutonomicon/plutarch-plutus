@@ -1,0 +1,12 @@
+(\mArg_c -> mArg_c # mArg_c)
+# (\functionalArg_d ->
+    (\a b ->
+      case 
+        (EqualsInteger # b # (10 :: Integer))
+        [ AddInteger # b # (a # (AddInteger # b # (1 :: Integer)))
+        , (0 :: Integer)
+        ]
+    )
+    # (functionalArg_d # functionalArg_d)
+  )
+# (0 :: Integer)
