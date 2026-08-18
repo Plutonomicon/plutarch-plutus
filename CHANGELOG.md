@@ -2,6 +2,11 @@
 
 # UNRELEASED
 
+## Added
+
+- Support for CIP-156 (in `pmultiIndexArray`)
+- Support for the `policies` function from CIP-168 (in `ppolicies`)
+
 # 1.14.0 -- 26-05-2026
 
 ## Added

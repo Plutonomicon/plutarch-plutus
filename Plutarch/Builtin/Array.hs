@@ -3,6 +3,7 @@ module Plutarch.Builtin.Array (
   plengthOfArray,
   plistToArray,
   pindexArray,
+  pmultiIndexArray,
 ) where
 
 import Data.Kind (Type)
@@ -65,3 +66,13 @@ pindexArray ::
   forall (a :: S -> Type) (s :: S).
   Term s (PArray a :--> PInteger :--> a)
 pindexArray = phoistAcyclic $ pforce $ punsafeBuiltin PLC.IndexArray
+
+{- | Multi-index an array, as per
+[CIP-156](https://cips.cardano.org/cip/CIP-0156).
+
+@since 1.15.0
+-}
+pmultiIndexArray ::
+  forall (a :: S -> Type) (s :: S).
+  Term s (PArray a :--> PBuiltinList PInteger :--> PBuiltinList a)
+pmultiIndexArray = phoistAcyclic $ pforce $ punsafeBuiltin PLC.MultiIndexArray
