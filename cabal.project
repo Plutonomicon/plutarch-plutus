@@ -22,36 +22,12 @@ repository cardano-haskell-packages
     c00aae8461a256275598500ea0e187588c35a5d5d7454fb57eac18d9edb86a56
     d4a35cd3121aa00d18544bb0ac01c3e1691d618f462c46129271bccf39f7e8ee
 
-index-state: 2026-05-21T11:15:00Z
+index-state: 2026-08-07T15:03:01Z
 
 packages:
   ./.
   ./plutarch-*
 
-benchmarks: true
-tests: true
+benchmarks: True
+tests: True
 test-show-details: direct
-
--- Note (Koz, 15/08/2025): Added with the bump to `index-state` at
--- 2025-07-30T14:13:57Z. On next bump, we should try disabling all these 
--- and seeing if we still need them. 
-allow-newer:
-  -- https://github.com/tweag/HaskellR/pull/420
-  , inline-r:singletons-th
-  , inline-r:aeson
-  , inline-r:text
-  , inline-r:template-haskell
-  , inline-r:deepseq
-  , inline-r:bytestring
-  , inline-r:containers
-  , inline-r:primitive
-  -- https://github.com/phadej/vec/issues/121
-  , ral:QuickCheck
-  , fin:QuickCheck
-  , bin:QuickCheck
-  -- https://github.com/IntersectMBO/plutus/pull/7236
-  , turtle:optparse-applicative
-  -- Needed due to QuickCheck pin
-  , hedgehog-quickcheck:QuickCheck
-
-constraints: setup.optparse-applicative >=0.19.0.0
