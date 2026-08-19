@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## UNRELEASED
 
+### Added
+
+- Support for V4 ledger types
+
 ### Changed
 
 - QuickCheck is now pinned to a minimum of 2.18
