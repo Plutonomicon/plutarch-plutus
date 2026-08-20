@@ -41,7 +41,9 @@ import Plutarch.Builtin.Data (
  )
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque, popaque)
+import Plutarch.Builtin.Unit (PUnit)
 import Plutarch.Internal.Case (punsafeCase)
+import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData, pfromData)
 import Plutarch.Internal.Numeric (PPositive)
@@ -134,6 +136,20 @@ pparseData opq = pwithValidated @a opq . punsafeCoerce $ opq
 @since 1.12.0
 -}
 deriving via (Don'tValidate PData) instance PValidateData PData
+
+{- | Checks that we have a @Constr@ with tag @0@ and no fields.
+
+@since 1.15.0
+-}
+instance PValidateData PUnit where
+  pwithValidated opq res = plet (pasConstr # opq) $ \x -> pmatch x $ \(PBuiltinPair i xs) ->
+    pif
+      (i #== 0)
+      ( pmatch xs $ \case
+          PNil -> res
+          PCons _ _ -> perror
+      )
+      perror
 
 {- | Checks that we have an @I@.
 
