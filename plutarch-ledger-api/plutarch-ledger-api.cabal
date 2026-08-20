@@ -71,6 +71,7 @@ library
     Plutarch.LedgerApi.V2.Tx
     Plutarch.LedgerApi.V3.MintValue
     Plutarch.LedgerApi.V3.Tx
+    Plutarch.LedgerApi.V4.Address
     Plutarch.LedgerApi.Value.AssetClass
     Plutarch.LedgerApi.Value.CurrencySymbol
     Plutarch.LedgerApi.Value.Lovelace

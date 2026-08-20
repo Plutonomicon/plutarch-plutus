@@ -6,7 +6,7 @@ prelude. These should be imported qualified.
 -}
 module Plutarch.LedgerApi.V4 (
   -- * Accounts
-  PAccountId (..),
+  Address.PAccountId (..),
   PAccountBalanceInterval (..),
   PAccountBalanceIntervals (..),
 
@@ -55,7 +55,7 @@ module Plutarch.LedgerApi.V4 (
   Time.PPosixTime (..),
 
   -- ** Types for representing transactions
-  PAddress (..),
+  Address.PAddress (..),
   Crypto.PPubKeyHash (..),
   V3Tx.PTxId (..),
   PTxInfo (..),
@@ -125,82 +125,12 @@ import Plutarch.LedgerApi.V3.MintValue (PMintValue)
 import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
+import Plutarch.LedgerApi.V4.Address (PAccountId, PAddress)
+import Plutarch.LedgerApi.V4.Address qualified as Address
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLedgerValue, PLovelace)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import PlutusLedgerApi.V4 qualified as Plutus
-
--- | @since 3.8.0
-newtype PAccountId (s :: S) = PAccountId (Term s PCredential)
-  deriving stock
-    ( -- | @since 3.8.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.8.0
-      SOP.Generic
-    , -- | @since 3.8.0
-      PIsData
-    , -- | @since 3.8.0
-      PEq
-    , -- | @since 3.8.0
-      PShow
-    )
-  deriving
-    ( -- | @since 3.8.0
-      PlutusType
-    )
-    via (DeriveNewtypePlutusType PAccountId)
-  deriving
-    ( -- | @since 3.8.0
-      PValidateData
-    )
-    via (DeriveNewtypePValidateData PAccountId PCredential)
-
--- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PAccountId Plutus.AccountId
-  instance
-    PLiftable PAccountId
-
--- | @since 3.8.0
-instance PTryFrom PData (PAsData PAccountId)
-
--- | @since 3.8.0
-data PAddress (s :: S) = PAddress
-  { paddress'credential :: Term s (PAsData PCredential)
-  , paddress'stakingAccountId :: Term s (PMaybeData PAccountId)
-  }
-  deriving stock
-    ( -- | @since 3.8.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.8.0
-      SOP.Generic
-    , -- | @since 3.8.0
-      PIsData
-    , -- | @since 3.8.0
-      PEq
-    , -- | @since 3.8.0
-      PShow
-    )
-  deriving
-    ( -- | @since 3.8.0
-      PlutusType
-    , -- | @since 3.8.0
-      PValidateData
-    )
-    via (DeriveAsDataStruct PAddress)
-
--- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PAddress Plutus.Address
-  instance
-    PLiftable PAddress
-
--- | @since 3.8.0
-instance PTryFrom PData (PAsData PAddress)
 
 -- | @since 3.8.0
 data PTxOut (s :: S) = PTxOut
