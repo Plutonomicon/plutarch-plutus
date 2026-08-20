@@ -4,7 +4,7 @@ import Data.Kind (Type)
 import Plutarch.LedgerApi.V4 qualified as PLA
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerProperties)
-import Plutarch.Test.QuickCheck (propPTryFromRoundrip)
+import Plutarch.Test.QuickCheck (propPTryFromRoundtrip)
 import Plutarch.Test.Utils (fewerTests, typeName)
 import PlutusLedgerApi.V4.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
@@ -16,22 +16,22 @@ tests =
     [ testGroup
         (typeName @(S -> Type) @PLA.PAccountId)
         [ checkLedgerProperties @PLA.PAccountId
-        , propPTryFromRoundrip @PLA.PAccountId
+        , propPTryFromRoundtrip @PLA.PAccountId
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PAddress)
         [ checkLedgerProperties @PLA.PAddress
-        , propPTryFromRoundrip @PLA.PAddress
+        , propPTryFromRoundtrip @PLA.PAddress
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxOut)
         [ checkLedgerProperties @PLA.PTxOut
-        , propPTryFromRoundrip @PLA.PTxOut
+        , propPTryFromRoundtrip @PLA.PTxOut
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PAccountBalanceInterval)
         [ checkLedgerProperties @PLA.PAccountBalanceInterval
-        , propPTryFromRoundrip @PLA.PAccountBalanceInterval
+        , propPTryFromRoundtrip @PLA.PAccountBalanceInterval
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PAccountBalanceIntervals)
@@ -40,46 +40,46 @@ tests =
     , testGroup
         (typeName @(S -> Type) @PLA.PTxCert)
         [ checkLedgerProperties @PLA.PTxCert
-        , propPTryFromRoundrip @PLA.PTxCert
+        , propPTryFromRoundtrip @PLA.PTxCert
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PScriptPurpose)
         [ checkLedgerProperties @PLA.PScriptPurpose
-        , propPTryFromRoundrip @PLA.PScriptPurpose
+        , propPTryFromRoundtrip @PLA.PScriptPurpose
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxInInfo)
         [ checkLedgerProperties @PLA.PTxInInfo
-        , propPTryFromRoundrip @PLA.PTxInInfo
+        , propPTryFromRoundtrip @PLA.PTxInInfo
         ]
     , adjustOption (fewerTests 8) $
         testGroup
           (typeName @(S -> Type) @PLA.PTxInfo)
           [ checkLedgerProperties @PLA.PTxInfo
-          , propPTryFromRoundrip @PLA.PTxInfo
+          , propPTryFromRoundtrip @PLA.PTxInfo
           ]
     , adjustOption (fewerTests 8) $
         testGroup
           (typeName @(S -> Type) @PLA.PTopTxInfoSimplified)
           [ checkLedgerProperties @PLA.PTopTxInfoSimplified
-          , propPTryFromRoundrip @PLA.PTopTxInfoSimplified
+          , propPTryFromRoundtrip @PLA.PTopTxInfoSimplified
           ]
     , adjustOption (fewerTests 16) $
         testGroup
           (typeName @(S -> Type) @PLA.PTopTxInfo)
           [ checkLedgerProperties @PLA.PTopTxInfo
-          , propPTryFromRoundrip @PLA.PTopTxInfo
+          , propPTryFromRoundtrip @PLA.PTopTxInfo
           ]
     , adjustOption (fewerTests 16) $
         testGroup
           (typeName @(S -> Type) @PLA.PScriptInfo)
           [ checkLedgerProperties @PLA.PScriptInfo
-          , propPTryFromRoundrip @PLA.PScriptInfo
+          , propPTryFromRoundtrip @PLA.PScriptInfo
           ]
     , adjustOption (fewerTests 16) $
         testGroup
           (typeName @(S -> Type) @PLA.PScriptContext)
           [ checkLedgerProperties @PLA.PScriptContext
-          , propPTryFromRoundrip @PLA.PScriptContext
+          , propPTryFromRoundtrip @PLA.PScriptContext
           ]
     ]
