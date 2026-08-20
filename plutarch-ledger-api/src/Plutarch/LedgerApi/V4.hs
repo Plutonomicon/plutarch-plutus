@@ -10,34 +10,106 @@ module Plutarch.LedgerApi.V4 (
   PAccountBalanceInterval (..),
   PAccountBalanceIntervals (..),
 
-  -- * Other
-  PAddress (..),
-  PTxOut (..),
+  -- * Governance
+  Contexts.PColdCommitteeCredential (..),
+  Contexts.PHotCommitteeCredential (..),
+  Contexts.PDRepCredential (..),
+  Contexts.PDRep (..),
+  Contexts.PDelegatee (..),
   PTxCert (..),
-  PScriptPurpose (..),
-  PTxInfo (..),
-  PTopTxInfoSimplified (..),
-  PTopTxInfo (..),
-  PScriptInfo (..),
+  Contexts.PVoter (..),
+  Contexts.PVote (..),
+  Contexts.PGovernanceActionId (..),
+  Contexts.PCommittee (..),
+  Contexts.PConstitution (..),
+  Contexts.PProtocolVersion (..),
+  Contexts.PGovernanceAction (..),
+  Contexts.PChangedParameters (..),
+  Contexts.PProposalProcedure (..),
+
+  -- * Context types
   PScriptContext (..),
+  PScriptPurpose (..),
+  PScriptInfo (..),
+  PTopTxInfo (..),
+  PTopTxInfoSimplified (..),
+
+  -- * Supporting types
+
+  -- ** Credentials
+  Credential.PCredential (..),
+
+  -- ** Value
+  Value.PRawValue (..),
+  Value.PSortedValue,
+  Value.PLedgerValue,
+  Value.PCurrencySymbol (..),
+  Value.PTokenName (..),
+  Value.PLovelace (..),
+  MintValue.PMintValue,
+  MintValue.pemptyMintValue,
+  MintValue.psingletonMintValue,
+  MintValue.ptoMintValue,
+
+  -- ** Time
+  Time.PPosixTime (..),
+
+  -- ** Types for representing transactions
+  PAddress (..),
+  Crypto.PPubKeyHash (..),
+  V3Tx.PTxId (..),
+  PTxInfo (..),
+  PTxOut (..),
+  PTxOutRef (..),
+  PTxInInfo (..),
+  V2Tx.POutputDatum (..),
+
+  -- ** Intervals
+  Interval.PInterval (..),
+  Interval.PExtended (..),
+  Interval.PLowerBound (..),
+  Interval.PUpperBound (..),
+
+  -- ** Ratio
+  Utils.PRationalData (..),
+
+  -- ** Association maps
+  AssocMap.PAssocMap (..),
+  AssocMap.PUnsortedMap (..),
+  AssocMap.PSortedMap,
+
+  -- ** Newtypes and hash types
+  Scripts.PScriptHash (..),
+  Scripts.PRedeemer (..),
+  Scripts.PRedeemerHash (..),
+  Scripts.PDatum (..),
+  Scripts.PDatumHash (..),
 ) where
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
 import Plutarch.LedgerApi.AssocMap (PUnsortedMap)
+import Plutarch.LedgerApi.AssocMap qualified as AssocMap
 import Plutarch.LedgerApi.Interval (PInterval)
+import Plutarch.LedgerApi.Interval qualified as Interval
 import Plutarch.LedgerApi.Utils (PMaybeData)
+import Plutarch.LedgerApi.Utils qualified as Utils
 import Plutarch.LedgerApi.V1.Credential (PCredential)
+import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
+import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.Scripts (
   PDatum,
   PDatumHash,
   PRedeemer,
   PScriptHash,
  )
+import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time (PPosixTime)
+import Plutarch.LedgerApi.V1.Time qualified as Time
 import Plutarch.LedgerApi.V2.Tx (POutputDatum)
+import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts (
   PColdCommitteeCredential,
   PDRepCredential,
@@ -48,9 +120,13 @@ import Plutarch.LedgerApi.V3.Contexts (
   PVote,
   PVoter,
  )
+import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V3.MintValue (PMintValue)
+import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLedgerValue, PLovelace)
+import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import PlutusLedgerApi.V4 qualified as Plutus
 
