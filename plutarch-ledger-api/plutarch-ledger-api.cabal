@@ -72,6 +72,7 @@ library
     Plutarch.LedgerApi.V3.MintValue
     Plutarch.LedgerApi.V3.Tx
     Plutarch.LedgerApi.V4.Address
+    Plutarch.LedgerApi.V4.Contexts
     Plutarch.LedgerApi.V4.Tx
     Plutarch.LedgerApi.Value.AssetClass
     Plutarch.LedgerApi.Value.CurrencySymbol

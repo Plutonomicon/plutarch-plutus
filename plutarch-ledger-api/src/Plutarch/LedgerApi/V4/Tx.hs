@@ -1,3 +1,6 @@
+{-# OPTIONS_GHC -Wno-orphans #-}
+
+-- Mirrors the equivalent V4 module in plutus-ledger-api
 module Plutarch.LedgerApi.V4.Tx (
   PTxOut (..),
 ) where
