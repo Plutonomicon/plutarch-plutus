@@ -222,6 +222,11 @@ instance
   ) =>
   PLiftable (PUnsortedMap k v)
   where
+  -- Note (Koz, 21/08/2026): We have to use a manual instance due to a degree of
+  -- indirection avoidance. The `Data` encoding for `AssocMap.Map` uses the
+  -- `Map` constructor of `Data`, but to _do_ anything with them, this
+  -- constructor has to be pulled off. Thus, we use a list-of-pairs
+  -- representation to save ourselves a layer of indirection on all operations.
   type AsHaskell (PUnsortedMap k v) = PlutusMap.Map (AsHaskell k) (AsHaskell v)
   type PlutusRepr (PUnsortedMap k v) = [(Plutus.Data, Plutus.Data)]
   {-# INLINEABLE haskToRepr #-}

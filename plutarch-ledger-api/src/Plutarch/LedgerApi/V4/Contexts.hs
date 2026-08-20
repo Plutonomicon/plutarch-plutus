@@ -14,6 +14,7 @@ module Plutarch.LedgerApi.V4.Contexts (
   PScriptContext (..),
 ) where
 
+import Data.Bifunctor (bimap)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
@@ -45,7 +46,10 @@ import Plutarch.LedgerApi.V4.Address (PAccountId)
 import Plutarch.LedgerApi.V4.Tx (PTxOut)
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.Prelude
+import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
+import PlutusCore qualified as PLC
 import PlutusLedgerApi.V4 qualified as Plutus
+import PlutusTx.AssocMap qualified as PlutusMap
 
 -- | @since 3.8.0
 data PAccountBalanceInterval (s :: S)
@@ -95,8 +99,6 @@ newtype PAccountBalanceIntervals (s :: S)
     ( -- | @since 3.8.0
       SOP.Generic
     , -- | @since 3.8.0
-      PIsData
-    , -- | @since 3.8.0
       PShow
     )
   deriving
@@ -111,11 +113,25 @@ newtype PAccountBalanceIntervals (s :: S)
     via (DeriveNewtypePValidateData PAccountBalanceIntervals (PUnsortedMap PAccountId PAccountBalanceInterval))
 
 -- | @since 3.8.0
+instance PIsData PAccountBalanceIntervals where
+  pfromDataImpl x = punsafeCoerce $ pasMap # pforgetData x
+  pdataImpl x = punsafeBuiltin PLC.MapData # x
+
+-- | @since 3.8.0
 instance PLiftable PAccountBalanceIntervals where
   type AsHaskell PAccountBalanceIntervals = Plutus.AccountBalanceIntervals
-  type PlutusRepr PAccountBalanceIntervals = Plutus.Data
-  haskToRepr = Plutus.toData
-  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  type PlutusRepr PAccountBalanceIntervals = [(Plutus.Data, Plutus.Data)]
+  haskToRepr (Plutus.AccountBalanceIntervals m) =
+    fmap (bimap Plutus.toData Plutus.toData) . PlutusMap.toList $ m
+  reprToHask x =
+    Plutus.AccountBalanceIntervals . PlutusMap.unsafeFromList
+      <$> traverse
+        ( \(k, v) ->
+            (,)
+              <$> (maybe (Left CouldNotDecodeData) Right . Plutus.fromData) k
+              <*> (maybe (Left CouldNotDecodeData) Right . Plutus.fromData) v
+        )
+        x
   reprToPlut = reprToPlutUni
   plutToRepr = plutToReprUni
 

@@ -36,6 +36,7 @@ import Plutarch.Test.Suite.PlutarchLedgerApi.V2 qualified as V2
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3 qualified as V3
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3.Contexts qualified as V3.Contexts
 import Plutarch.Test.Suite.PlutarchLedgerApi.V3.Value qualified as V3.Value
+import Plutarch.Test.Suite.PlutarchLedgerApi.V4 qualified as V4
 import Plutarch.Test.Suite.PlutarchLedgerApi.Value.AssetClass qualified as AssetClass
 import Test.Tasty (adjustOption, defaultMain, testGroup)
 import Test.Tasty.QuickCheck (QuickCheckTests)
@@ -89,6 +90,7 @@ main = do
               , V3.tests
               , PLAParse.tests
               , V3.Value.tests
+              , V4.tests
               ]
         , adjustOption moreTests $
             testGroup "Regressions" Regressions.tests
