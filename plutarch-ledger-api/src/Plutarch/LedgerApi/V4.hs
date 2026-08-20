@@ -59,7 +59,7 @@ module Plutarch.LedgerApi.V4 (
   Crypto.PPubKeyHash (..),
   V3Tx.PTxId (..),
   PTxInfo (..),
-  PTxOut (..),
+  Tx.PTxOut (..),
   PTxOutRef (..),
   PTxInInfo (..),
   V2Tx.POutputDatum (..),
@@ -108,7 +108,6 @@ import Plutarch.LedgerApi.V1.Scripts (
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
 import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V1.Time qualified as Time
-import Plutarch.LedgerApi.V2.Tx (POutputDatum)
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts (
   PColdCommitteeCredential,
@@ -125,50 +124,14 @@ import Plutarch.LedgerApi.V3.MintValue (PMintValue)
 import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
-import Plutarch.LedgerApi.V4.Address (PAccountId, PAddress)
+import Plutarch.LedgerApi.V4.Address (PAccountId)
 import Plutarch.LedgerApi.V4.Address qualified as Address
-import Plutarch.LedgerApi.Value (PCurrencySymbol, PLedgerValue, PLovelace)
+import Plutarch.LedgerApi.V4.Tx (PTxOut)
+import Plutarch.LedgerApi.V4.Tx qualified as Tx
+import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.LedgerApi.Value qualified as Value
 import Plutarch.Prelude
 import PlutusLedgerApi.V4 qualified as Plutus
-
--- | @since 3.8.0
-data PTxOut (s :: S) = PTxOut
-  { ptxOut'address :: Term s (PAsData PAddress)
-  , ptxOut'value :: Term s (PAsData PLedgerValue)
-  , ptxOut'datum :: Term s (PAsData POutputDatum)
-  , ptxOut'referenceScript :: Term s (PMaybeData PScriptHash)
-  }
-  deriving stock
-    ( -- | @since 3.8.0
-      Generic
-    )
-  deriving anyclass
-    ( -- | @since 3.8.0
-      SOP.Generic
-    , -- | @since 3.8.0
-      PIsData
-    , -- | @since 3.8.0
-      PEq
-    , -- | @since 3.8.0
-      PShow
-    )
-  deriving
-    ( -- | @since 3.8.0
-      PlutusType
-    , -- | @since 3.8.0
-      PValidateData
-    )
-    via (DeriveAsDataStruct PTxOut)
-
--- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTxOut Plutus.TxOut
-  instance
-    PLiftable PTxOut
-
--- | @since 3.8.0
-instance PTryFrom PData (PAsData PTxOut)
 
 -- | @since 3.8.0
 data PAccountBalanceInterval (s :: S)
