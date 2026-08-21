@@ -6,7 +6,7 @@ author:
 
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.6.4
+tested-with:        GHC ==9.12.4
 
 common c
   default-language:   GHC2021
