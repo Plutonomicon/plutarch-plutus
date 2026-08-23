@@ -68,6 +68,7 @@ import Plutarch.Backend.AST (
 import Plutarch.Backend.UPLC (
   UPLCTerm (UPLCTerm),
   rewriteUniques,
+  substituteVarFor,
   uplcApply,
   uplcApply1,
   uplcBuiltin,
@@ -411,21 +412,38 @@ compileAndCache ix requiredLetBinds = \case
   ANFFix _ bv body -> do
     -- Might as well resolve `let`-binds _now_.
     bodyCode <- doLetBinds requiredLetBinds <$> checkCache body
-    -- We have to translate F to a lambda before doing the rest of the
-    -- transform.
-    let bodyLam = uplcLam1 (selfToName bv) bodyCode
+    -- We have to translate F to a lambda before doing the rest. This also
+    -- requires us to rewrite every use of the named variable in `bodyCode` to a
+    -- self-application of the named variable instead.
+    let fVarName = selfToName bv
+    let selfApp = uplcApply1 (uplcVar fVarName) (uplcVar fVarName)
+    let subbedBody = substituteVarFor fVarName selfApp bodyCode
+    let bodyLam = uplcLam1 fVarName subbedBody
     -- This cannot 'miss', as we checked before for all fixpoint sites and made
     -- a name pair for each.
-    (mArgName, functionalArgName) <- asks (fromJust . Map.lookup ix . ceFPNameMap)
+    (mArgName, _) <- asks (fromJust . Map.lookup ix . ceFPNameMap)
     -- `M = \x -> x x`, using the reserved name.
     let m = uplcMCombinator mArgName
-    -- `r`, using the reserved name.
-    let funcArg = uplcVar functionalArgName
-    -- `r r`
-    let funcSelfApp = uplcApply1 funcArg funcArg
-    -- Assemble everything.
-    let finalCode = uplcApply1 m . uplcLam1 functionalArgName . uplcApply1 bodyLam $ funcSelfApp
+    -- Assemble everything
+    let finalCode = uplcApply1 m bodyLam
     modify (writeToCache (Id ix) finalCode)
+  {-
+  -- We have to translate F to a lambda before doing the rest of the
+  -- transform.
+  let bodyLam = uplcLam1 (selfToName bv) bodyCode
+  -- This cannot 'miss', as we checked before for all fixpoint sites and made
+  -- a name pair for each.
+  (mArgName, functionalArgName) <- asks (fromJust . Map.lookup ix . ceFPNameMap)
+  -- `M = \x -> x x`, using the reserved name.
+  let m = uplcMCombinator mArgName
+  -- `r`, using the reserved name.
+  let funcArg = uplcVar functionalArgName
+  -- `r r`
+  let funcSelfApp = uplcApply1 funcArg funcArg
+  -- Assemble everything.
+  let finalCode = uplcApply1 m . uplcLam1 functionalArgName . uplcApply1 bodyLam $ funcSelfApp
+  modify (writeToCache (Id ix) finalCode)
+  -}
   ANFConstr _ tag fields -> do
     fieldCodes <- traverse checkCache fields
     modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcConstr tag $ fieldCodes)
