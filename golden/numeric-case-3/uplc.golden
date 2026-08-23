@@ -4,17 +4,17 @@
     [ (\c ->
         (\mArg_f -> mArg_f # mArg_f)
         # (\d e ->
-            (\bind_t ->
-              (\bind_u ->
+            (\bind_s ->
+              (\bind_t ->
                 case 
                   (EqualsInteger # e # (1 :: Integer))
                   [ case 
                       (RemainderInteger # e # (2 :: Integer))
-                      [bind_u, MultiplyInteger # bind_u # c]
+                      [bind_t, MultiplyInteger # bind_t # c]
                   , c
                   ]
               )
-              # (MultiplyInteger # bind_t # bind_t)
+              # (MultiplyInteger # bind_s # bind_s)
             )
             # (d # d # (QuotientInteger # e # (2 :: Integer)))
           )
