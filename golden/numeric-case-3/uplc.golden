@@ -3,23 +3,20 @@
     (EqualsInteger # (0 :: Integer) # b)
     [ (\c ->
         (\mArg_f -> mArg_f # mArg_f)
-        # (\functionalArg_g ->
-            (\d e ->
-              case 
-                (EqualsInteger # e # (1 :: Integer))
-                [ (\bind_t ->
-                    (\bind_u ->
-                      case 
-                        (RemainderInteger # e # (2 :: Integer))
-                        [bind_u, MultiplyInteger # bind_u # c]
-                    )
-                    # (MultiplyInteger # bind_t # bind_t)
+        # (\d e ->
+            case 
+              (EqualsInteger # e # (1 :: Integer))
+              [ (\bind_s ->
+                  (\bind_t ->
+                    case 
+                      (RemainderInteger # e # (2 :: Integer))
+                      [bind_t, MultiplyInteger # bind_t # c]
                   )
-                  # (d # (QuotientInteger # e # (2 :: Integer)))
-                , c
-                ]
-            )
-            # (functionalArg_g # functionalArg_g)
+                  # (MultiplyInteger # bind_s # bind_s)
+                )
+                # (d # d # (QuotientInteger # e # (2 :: Integer)))
+              , c
+              ]
           )
       )
       # a

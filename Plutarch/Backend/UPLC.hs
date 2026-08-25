@@ -21,6 +21,7 @@ module Plutarch.Backend.UPLC (
   uplcCase,
   uplcMCombinator,
   rewriteUniques,
+  substituteVarFor,
 ) where
 
 import Control.Monad.State.Strict (
@@ -210,6 +211,28 @@ rewriteUniques (UPLCTerm code) used = case runState (go code) (used, Map.empty) 
       UPLC.Error () -> pure . UPLC.Error $ ()
       UPLC.Constr () tag fields -> UPLC.Constr () tag <$> traverse go fields
       UPLC.Case () scrut handlers -> UPLC.Case () <$> go scrut <*> traverse go handlers
+
+-- | @since wip
+substituteVarFor :: UPLC.Name -> UPLCTerm -> UPLCTerm -> UPLCTerm
+substituteVarFor name (UPLCTerm toSub) (UPLCTerm t) = UPLCTerm . go $ t
+  where
+    go ::
+      UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun () ->
+      UPLC.Term UPLC.Name UPLC.DefaultUni UPLC.DefaultFun ()
+    go = \case
+      t@(UPLC.Var () name') ->
+        if name' == name
+          then toSub
+          else t
+      UPLC.LamAbs () name' body -> UPLC.LamAbs () name' (go body)
+      UPLC.Apply () f x -> UPLC.Apply () (go f) (go x)
+      UPLC.Force () body -> UPLC.Force () (go body)
+      UPLC.Delay () body -> UPLC.Delay () (go body)
+      t@(UPLC.Constant () _) -> t
+      t@(UPLC.Builtin () _) -> t
+      t@(UPLC.Error ()) -> t
+      UPLC.Constr () tag fields -> UPLC.Constr () tag (fmap go fields)
+      UPLC.Case () scrut handlers -> UPLC.Case () (go scrut) (fmap go handlers)
 
 doUntilM ::
   forall (a :: Type) (m :: Type -> Type).

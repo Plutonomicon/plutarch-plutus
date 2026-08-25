@@ -3,20 +3,17 @@
     (EqualsInteger # a # (0 :: Integer))
     [ (\c ->
         (\mArg_j -> mArg_j # mArg_j)
-        # (\functionalArg_k ->
-            (\d e f ->
-              case 
-                (EqualsInteger # f # (0 :: Integer))
-                [ (\g -> d # g # (ModInteger # e # g)) # f
-                , (\h ->
-                    case 
-                      (LessThanEqualsInteger # h # (0 :: Integer))
-                      [h, (\i -> SubtractInteger # (0 :: Integer) # i) # h]
-                  )
-                  # e
-                ]
-            )
-            # (functionalArg_k # functionalArg_k)
+        # (\d e f ->
+            case 
+              (EqualsInteger # f # (0 :: Integer))
+              [ (\g -> d # d # g # (ModInteger # e # g)) # f
+              , (\h ->
+                  case 
+                    (LessThanEqualsInteger # h # (0 :: Integer))
+                    [h, (\i -> SubtractInteger # (0 :: Integer) # i) # h]
+                )
+                # e
+              ]
           )
         # c
         # b

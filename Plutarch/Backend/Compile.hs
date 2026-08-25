@@ -68,6 +68,7 @@ import Plutarch.Backend.AST (
 import Plutarch.Backend.UPLC (
   UPLCTerm (UPLCTerm),
   rewriteUniques,
+  substituteVarFor,
   uplcApply,
   uplcApply1,
   uplcBuiltin,
@@ -109,12 +110,14 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       fixpoints = doFixpointAnalysis rewrittenBinds
       -- To compile a fixpoint, we take its functional (of the form `F = \self ->
       -- body`) and transform it into `M (\r -> F (r r))`. As M is small, it's
-      -- cheaper to inline than bind it. Thus, each unique fixpoint (up to
-      -- alpha-equivalent functionals) requires two unique names:
+      -- cheaper to inline than bind it.
       --
-      -- - The argument to its copy of M; and
-      -- - The variable name `r` for the transformed functional.
-      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointNames Map.empty . Set.toList $ fixpoints) usedNames 0
+      -- Since every fixpoint node already contains a (unique) name for the
+      -- `self` argument, we can re-use it for `r` in the above construction.
+      -- Since we are inlining M, and fixpoints may contain more nested
+      -- fixpoints, we need a unique name for each fixpoint we're going to
+      -- compile.
+      (fixpointNameMap, lastFresh, _) = runRWS (foldM mkFixpointName Map.empty . Set.toList $ fixpoints) usedNames 0
       -- Check how many compositions we have and where they are.
       compositions = doCompositionAnalysis rewrittenBinds
       -- To compile a composition of the form `[f_1, f_2, ... , f_k]`, we want
@@ -123,7 +126,8 @@ toUPLCTerm runExternalOpts (ANF _ binds) =
       (compositionNameMap, lastFresh', _) = runRWS (foldM mkCompositionName Map.empty . Set.toList $ compositions) usedNames lastFresh
       -- Make a unique name for any unused arguments. As lambdas in UPLC are all
       -- arity 1, and we will never use an unused argument, we can generate just
-      -- a single name. It's cheaper to do this speculatively.
+      -- a single name. It's cheaper to do this speculatively that to scan for
+      -- unused function parameters.
       (unusedParamName, lastFresh'', _) = runRWS mkUnusedName usedNames lastFresh'
       -- Name every bind, avoiding any names of existing variables.
       namedBinds = fst . evalRWS (NEVector.mapM nameBind rewrittenBinds) usedNames $ lastFresh''
@@ -241,15 +245,14 @@ doFixpointAnalysis = NEVector.ifoldl' go Set.empty
       ANFFix {} -> Set.insert pos acc
       _ -> acc
 
-mkFixpointNames ::
-  Map Int (PLC.Name, PLC.Name) ->
+mkFixpointName ::
+  Map Int PLC.Name ->
   Int ->
-  RWS (Set Int) () Int (Map Int (PLC.Name, PLC.Name))
-mkFixpointNames acc i = do
-  freshForM <- untilM getFresh (asks . Set.notMember)
-  freshForFunctional <- untilM getFresh (asks . Set.notMember)
-  let names = (mkName "mArg" freshForM, mkName "functionalArg" freshForFunctional)
-  pure . Map.insert i names $ acc
+  RWS (Set Int) () Int (Map Int PLC.Name)
+mkFixpointName acc i = do
+  fresh <- untilM getFresh (asks . Set.notMember)
+  let name = mkName "mArg" fresh
+  pure . Map.insert i name $ acc
 
 -- Check every bind to see if it's a composition, and if it is, record its
 -- position.
@@ -281,8 +284,8 @@ mkCompositionName acc i = do
 data CompileEnv = CompileEnv
   { -- All ANF binds, with demand analysis, together with their unique names
     ceBinds :: NonEmptyVector (PLC.Name, ANFBind Demand)
-  , -- Unique name pairs for each fixpoint we have to compile
-    ceFPNameMap :: Map Int (PLC.Name, PLC.Name)
+  , -- Unique names for each fixpoint we have to compile
+    ceFPNameMap :: Map Int PLC.Name
   , -- A unique name for each composition we have to compile
     ceCompNameMap :: Map Int PLC.Name
   , -- A unique name for unused function parameters
@@ -398,33 +401,44 @@ compileAndCache ix requiredLetBinds = \case
   ANFDelay _ body -> do
     bodyCode <- checkCache body
     modify (writeToCache (Id ix) . doLetBinds requiredLetBinds . uplcDelay $ bodyCode)
-  -- Fixpoint nodes require considerable additional work. Given the body `F`, we
-  -- want to generate `M (\r -> F (r r))`. We have two names set aside for this:
-  -- one for the argument of `M`, the other for `r`. As `M` is small, it's
-  -- cheaper to inline than `let`-bind it. We also don't bother `let`-binding
-  -- `(\r -> F (r r))`: it is a small computation, and if `F` is unique (up to
-  -- alpha renaming), so is `(\r -> F (r r))`.
+  -- An `ANFFix` node contains two (relevant) pieces of information:
   --
-  -- Furthermore, `let`-bind requirements have to be done carefully. Like with
-  -- lambdas, our analysis detects _binding_ sites, which means that we have to
-  -- resolve `let`-bindings required here 'around' `F`, not the result!
+  -- \* A name for the `self` argument; and
+  -- \* A lambda-like body using the `self` argument.
+  --
+  -- Let this body be `F`, and the named variable be `self`. In order to compile
+  -- the fixed point, we must do the following steps:
+  --
+  -- 1. Perform the substitution `F{self -> self self}`; namely, replace every
+  --    use of `self` with an application of `self` to `self`. Name this `F'`.
+  -- 2. Transform `F'` into `\self -> F'`.
+  -- 3. Compile the `M` combinator (\x -> x x). To do this, we have a variable
+  --    specifically set aside for each fixed point in the ANF.
+  -- 4. Construct (and compile) `M (\self -> F')`.
+  --
+  -- As `M` is quite small, inlining it at every use site is much cheaper than
+  -- trying to `let`-bind it. Furthermore, inlining `M` everywhere is safe, as
+  -- it is a closed subcomputation, and if `F` is unique up to alpha
+  -- equivalence, so is `F'`, `\self -> F'` and `M (\self -> F')` by the same
+  -- reasoning.
   ANFFix _ bv body -> do
     -- Might as well resolve `let`-binds _now_.
     bodyCode <- doLetBinds requiredLetBinds <$> checkCache body
-    -- We have to translate F to a lambda before doing the rest of the
-    -- transform.
-    let bodyLam = uplcLam1 (selfToName bv) bodyCode
+    -- We have to translate F to a lambda before doing the rest. This also
+    -- requires us to rewrite every use of the named variable in `bodyCode` to a
+    -- self-application of the named variable instead.
+    let fVarName = selfToName bv
+    let selfApp = uplcApply1 (uplcVar fVarName) (uplcVar fVarName)
+    let subbedBody = substituteVarFor fVarName selfApp bodyCode
+    -- `F' = F{self -> self self}`
+    let bodyLam = uplcLam1 fVarName subbedBody
     -- This cannot 'miss', as we checked before for all fixpoint sites and made
-    -- a name pair for each.
-    (mArgName, functionalArgName) <- asks (fromJust . Map.lookup ix . ceFPNameMap)
+    -- a name for each.
+    mArgName <- asks (fromJust . Map.lookup ix . ceFPNameMap)
     -- `M = \x -> x x`, using the reserved name.
     let m = uplcMCombinator mArgName
-    -- `r`, using the reserved name.
-    let funcArg = uplcVar functionalArgName
-    -- `r r`
-    let funcSelfApp = uplcApply1 funcArg funcArg
-    -- Assemble everything.
-    let finalCode = uplcApply1 m . uplcLam1 functionalArgName . uplcApply1 bodyLam $ funcSelfApp
+    -- Assemble everything
+    let finalCode = uplcApply1 m bodyLam
     modify (writeToCache (Id ix) finalCode)
   ANFConstr _ tag fields -> do
     fieldCodes <- traverse checkCache fields

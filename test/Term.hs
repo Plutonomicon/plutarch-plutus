@@ -5,6 +5,7 @@ import Plutarch.Backend.S (S)
 import Plutarch.Backend.Term (
   Term,
   pdelay,
+  pfix,
   pforce,
   plam',
   plet,
@@ -12,9 +13,9 @@ import Plutarch.Backend.Term (
  )
 import Plutarch.Numeric.Additive ((#+))
 import Plutarch.Numeric.Multiplicative ((#*))
-import Plutarch.Primitive.Apply ((#))
+import Plutarch.Primitive.Apply ((#), (#$))
 import Plutarch.Primitive.Bool (PBool, pfalse, pif, ptrue)
-import Plutarch.Primitive.BuiltinFun (paddInteger)
+import Plutarch.Primitive.BuiltinFun (paddInteger, pequalsInteger)
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Numeric (PInteger)
 import Plutarch.Test.Golden (plutarchGolden, plutarchGoldenAll)
@@ -30,6 +31,7 @@ goldens =
     , plutarchGolden "(pif false 1 2) + (pif true 1 2)" "Term Case 3" case3
     , plutarchGolden "(pif false 1 2) + (pif true 1 2)" "Term Case 3 plet" case3Plet
     , plutarchGoldenAll "pif a then (b c) else (d e)" "Term Case 4" case4
+    , plutarchGoldenAll "sum 0 .. 9" "Term Case 5" case5
     ]
 
 -- Cases
@@ -62,6 +64,16 @@ case4 = plam' $ \b -> pif b (squares # ic 10 # ic 20) (sums # ic 10 # ic 20)
     square = plam' $ \x -> x #* x
     double :: Term s (PInteger :--> PInteger)
     double = plam' $ \x -> x #+ x
+
+case5 :: forall (s :: S). Term s PInteger
+case5 = go # ic 0
+  where
+    go :: Term s (PInteger :--> PInteger)
+    go = pfix $ \self -> plam' $ \i ->
+      pif
+        (pequalsInteger # i # ic 10)
+        (ic 0)
+        (paddInteger # i #$ self #$ paddInteger # i # ic 1)
 
 -- Helpers
 

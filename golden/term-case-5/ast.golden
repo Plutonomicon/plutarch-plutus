@@ -1,0 +1,30 @@
+<Apply
+  <Fix
+    [a]
+    <\b -> 
+      <case
+        <Apply
+          <EqualsInteger>@dr5yy9ULU5j [b, <10 :: Integer>@d9BTnRxpywy]
+        >@aqRKgS66iZpN 
+        [
+          <Apply
+            <AddInteger>@m5XKL3leqWoN
+            [
+              b, 
+              <Apply
+                a
+                [
+                  <Apply
+                    <AddInteger>@m5XKL3leqWoN [b, <1 :: Integer>@vyRIuwDii3A]
+                  >@kYhABZ6eYVbN
+                ]
+              >@wjBWCvxJa2dN
+            ]
+          >@pd26HDFcm2sN, 
+          <0 :: Integer>@mqE7eqJLvgvN
+        ]
+      >@fj9soe5KwBc
+    >@pAwiorAeSvN
+  >@xOQgy6PHLUx
+  [<0 :: Integer>@mqE7eqJLvgvN]
+>@taajMpzZaRb
