@@ -137,8 +137,8 @@ instance PDebug PByteString where
       go = pfix $ \self -> plam' $ \bs -> plam' $ \lim -> plam' $ \i ->
         pif
           (pequalsInteger # lim # i)
-          (renderHexDigit # pgeneralize (pindexByteString # bs # punsafeSpecialize i))
-          ( let rendered = renderHexDigit # pgeneralize (pindexByteString # bs # punsafeSpecialize i)
+          (pshow $ pindexByteString # bs # punsafeSpecialize i)
+          ( let rendered = pshow $ pindexByteString # bs # punsafeSpecialize i
              in pappendString # rendered #$ pappendString # sc ", " #$ self # bs # lim #$ paddInteger # i # ic 1
           )
 

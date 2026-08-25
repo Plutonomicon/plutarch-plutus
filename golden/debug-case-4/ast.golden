@@ -1,0 +1,241 @@
+<case
+  <Apply
+    <EqualsInteger>@dr5yy9ULU5j
+    [
+      <Apply
+        <LengthOfByteString>@dEUK13sdXzs
+        [<"cat goes nya" :: Bytestring>@pXqm9kzJAimN]
+      >@yHOfVzauSUxN, 
+      <0 :: Integer>@mqE7eqJLvgvN
+    ]
+  >@ygKK6EkTb7kN 
+  [
+    <Apply
+      <AppendString>@p7qYeALXKVC
+      [
+        <"[" :: String>@cDpRPlTVLte, 
+        <Apply
+          <AppendString>@p7qYeALXKVC
+          [
+            <Apply
+              <Fix
+                [a]
+                <\b c d -> 
+                  <case
+                    <Apply<EqualsInteger>@dr5yy9ULU5j [c, d]>@hTZyTFV7cmhN 
+                    [
+                      <Apply
+                        <AppendString>@p7qYeALXKVC
+                        [
+                          <Apply
+                            <AppendString>@p7qYeALXKVC
+                            [
+                              <"0x" :: String>@tdiaC1B3uRC, 
+                              <Apply
+                                <AppendString>@p7qYeALXKVC
+                                [
+                                  <Apply
+                                    <\e -> 
+                                      <case
+                                        e 
+                                        [
+                                          <"0" :: String>@csDJobL38ReN, 
+                                          <"1" :: String>@xcoGmOiC8HiN, 
+                                          <"2" :: String>@mSGXrSlhOzoN, 
+                                          <"3" :: String>@zBbVugCAuKb, 
+                                          <"4" :: String>@c8j19kUVGIf, 
+                                          <"5" :: String>@dSu76OoYQVw, 
+                                          <"6" :: String>@qoj0eYQE55l, 
+                                          <"7" :: String>@dWf9bSLUCJAN, 
+                                          <"8" :: String>@nqMwP3WtHczN, 
+                                          <"9" :: String>@tT7TcSLpins, 
+                                          <"A" :: String>@k445oVkHpQg, 
+                                          <"B" :: String>@kt1FkeQSdE, 
+                                          <"C" :: String>@uUuKSQb3bJDN, 
+                                          <"D" :: String>@wLjtDqApIvb, 
+                                          <"E" :: String>@x3z68WbeDAB, 
+                                          <"F" :: String>@knPV8JelUIcN
+                                        ]
+                                      >@lM49pzuKxoz
+                                    >@wG3amaxKV8zN
+                                    [
+                                      <Apply
+                                        <QuotientInteger>@kq3kmmKulbi
+                                        [
+                                          <Apply
+                                            <IndexByteString>@zfqBEnIn0Tt [b, d]
+                                          >@c6uyneU4TrgN, 
+                                          <16 :: Integer>@vT9XgGQd7Qs
+                                        ]
+                                      >@oawyi6zjPZw
+                                    ]
+                                  >@bOIs8BqULkxN, 
+                                  <Apply
+                                    <\f -> 
+                                      <case
+                                        f 
+                                        [
+                                          <"0" :: String>@csDJobL38ReN, 
+                                          <"1" :: String>@xcoGmOiC8HiN, 
+                                          <"2" :: String>@mSGXrSlhOzoN, 
+                                          <"3" :: String>@zBbVugCAuKb, 
+                                          <"4" :: String>@c8j19kUVGIf, 
+                                          <"5" :: String>@dSu76OoYQVw, 
+                                          <"6" :: String>@qoj0eYQE55l, 
+                                          <"7" :: String>@dWf9bSLUCJAN, 
+                                          <"8" :: String>@nqMwP3WtHczN, 
+                                          <"9" :: String>@tT7TcSLpins, 
+                                          <"A" :: String>@k445oVkHpQg, 
+                                          <"B" :: String>@kt1FkeQSdE, 
+                                          <"C" :: String>@uUuKSQb3bJDN, 
+                                          <"D" :: String>@wLjtDqApIvb, 
+                                          <"E" :: String>@x3z68WbeDAB, 
+                                          <"F" :: String>@knPV8JelUIcN
+                                        ]
+                                      >@r4DXoVI5SxB
+                                    >@wG3amaxKV8zN
+                                    [
+                                      <Apply
+                                        <RemainderInteger>@n275PtZtdlc
+                                        [
+                                          <Apply
+                                            <IndexByteString>@zfqBEnIn0Tt [b, d]
+                                          >@c6uyneU4TrgN, 
+                                          <16 :: Integer>@vT9XgGQd7Qs
+                                        ]
+                                      >@cguPWydcucp
+                                    ]
+                                  >@j9eWiGWVinN
+                                ]
+                              >@gtY014C1TrdN
+                            ]
+                          >@dLqBbQFgZxc, 
+                          <Apply
+                            <AppendString>@p7qYeALXKVC
+                            [
+                              <", " :: String>@t3U4h8CsxbeN, 
+                              <Apply
+                                a
+                                [
+                                  b, 
+                                  c, 
+                                  <Apply
+                                    <AddInteger>@m5XKL3leqWoN
+                                    [d, <1 :: Integer>@vyRIuwDii3A]
+                                  >@u91PwOEtU0eN
+                                ]
+                              >@iM1mZWSECAs
+                            ]
+                          >@uFp2deOC2opN
+                        ]
+                      >@wFyvaezBxxwN, 
+                      <Apply
+                        <AppendString>@p7qYeALXKVC
+                        [
+                          <"0x" :: String>@tdiaC1B3uRC, 
+                          <Apply
+                            <AppendString>@p7qYeALXKVC
+                            [
+                              <Apply
+                                <\g -> 
+                                  <case
+                                    g 
+                                    [
+                                      <"0" :: String>@csDJobL38ReN, 
+                                      <"1" :: String>@xcoGmOiC8HiN, 
+                                      <"2" :: String>@mSGXrSlhOzoN, 
+                                      <"3" :: String>@zBbVugCAuKb, 
+                                      <"4" :: String>@c8j19kUVGIf, 
+                                      <"5" :: String>@dSu76OoYQVw, 
+                                      <"6" :: String>@qoj0eYQE55l, 
+                                      <"7" :: String>@dWf9bSLUCJAN, 
+                                      <"8" :: String>@nqMwP3WtHczN, 
+                                      <"9" :: String>@tT7TcSLpins, 
+                                      <"A" :: String>@k445oVkHpQg, 
+                                      <"B" :: String>@kt1FkeQSdE, 
+                                      <"C" :: String>@uUuKSQb3bJDN, 
+                                      <"D" :: String>@wLjtDqApIvb, 
+                                      <"E" :: String>@x3z68WbeDAB, 
+                                      <"F" :: String>@knPV8JelUIcN
+                                    ]
+                                  >@eg3RrS5yeHfN
+                                >@wG3amaxKV8zN
+                                [
+                                  <Apply
+                                    <QuotientInteger>@kq3kmmKulbi
+                                    [
+                                      <Apply
+                                        <IndexByteString>@zfqBEnIn0Tt [b, d]
+                                      >@c6uyneU4TrgN, 
+                                      <16 :: Integer>@vT9XgGQd7Qs
+                                    ]
+                                  >@oawyi6zjPZw
+                                ]
+                              >@bOIs8BqULkxN, 
+                              <Apply
+                                <\h -> 
+                                  <case
+                                    h 
+                                    [
+                                      <"0" :: String>@csDJobL38ReN, 
+                                      <"1" :: String>@xcoGmOiC8HiN, 
+                                      <"2" :: String>@mSGXrSlhOzoN, 
+                                      <"3" :: String>@zBbVugCAuKb, 
+                                      <"4" :: String>@c8j19kUVGIf, 
+                                      <"5" :: String>@dSu76OoYQVw, 
+                                      <"6" :: String>@qoj0eYQE55l, 
+                                      <"7" :: String>@dWf9bSLUCJAN, 
+                                      <"8" :: String>@nqMwP3WtHczN, 
+                                      <"9" :: String>@tT7TcSLpins, 
+                                      <"A" :: String>@k445oVkHpQg, 
+                                      <"B" :: String>@kt1FkeQSdE, 
+                                      <"C" :: String>@uUuKSQb3bJDN, 
+                                      <"D" :: String>@wLjtDqApIvb, 
+                                      <"E" :: String>@x3z68WbeDAB, 
+                                      <"F" :: String>@knPV8JelUIcN
+                                    ]
+                                  >@d9Z5vOro2ko
+                                >@wG3amaxKV8zN
+                                [
+                                  <Apply
+                                    <RemainderInteger>@n275PtZtdlc
+                                    [
+                                      <Apply
+                                        <IndexByteString>@zfqBEnIn0Tt [b, d]
+                                      >@c6uyneU4TrgN, 
+                                      <16 :: Integer>@vT9XgGQd7Qs
+                                    ]
+                                  >@cguPWydcucp
+                                ]
+                              >@j9eWiGWVinN
+                            ]
+                          >@gtY014C1TrdN
+                        ]
+                      >@dLqBbQFgZxc
+                    ]
+                  >@ho4uxmyUFcv
+                >@eGtgsSv3VUi
+              >@j12JrshycxcN
+              [
+                <"cat goes nya" :: Bytestring>@pXqm9kzJAimN, 
+                <Apply
+                  <SubtractInteger>@lAuuiZ9AppE
+                  [
+                    <Apply
+                      <LengthOfByteString>@dEUK13sdXzs
+                      [<"cat goes nya" :: Bytestring>@pXqm9kzJAimN]
+                    >@yHOfVzauSUxN, 
+                    <1 :: Integer>@vyRIuwDii3A
+                  ]
+                >@wBB4ZDaEJJsN, 
+                <0 :: Integer>@mqE7eqJLvgvN
+              ]
+            >@vZaC9DuBAzb, 
+            <"]" :: String>@dQCqSxBto5wN
+          ]
+        >@kcEUXU02wRnN
+      ]
+    >@go8Jo9Z2pEBN, 
+    <"[]" :: String>@amtPr1eo5ctN
+  ]
+>@fu07uilMhtq
