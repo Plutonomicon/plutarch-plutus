@@ -27,6 +27,10 @@ module Plutarch.Helpers.TH (
   conToFieldTypes,
   mkPLam,
   mkAnonPLam,
+  PType (..),
+  PTypeSum (..),
+  PTypeProduct (..),
+  consToPTypeSum,
 ) where
 
 import Data.Foldable (foldl', for_)
@@ -329,3 +333,54 @@ mkPLam f = do
 -- | @since wip
 mkAnonPLam :: Q Exp -> Q Exp
 mkAnonPLam f = AppE (VarE 'plam') . LamE [WildP] <$> f
+
+-- | @since wip
+data PType
+  = PTypeData Type
+  | PTypeNotData Type
+
+-- | @since wip
+newtype PTypeSum = PTypeSum (Vector PTypeProduct)
+
+-- | @since wip
+newtype PTypeProduct = PTypeProduct (Vector PType)
+
+-- | @since wip
+consToPTypeSum :: Vector Con -> Q PTypeSum
+consToPTypeSum v = PTypeSum <$> traverse conToPTypeProduct v
+
+-- Helpers
+
+conToPTypeProduct :: Con -> Q PTypeProduct
+conToPTypeProduct =
+  fmap PTypeProduct . \case
+    NormalC name fields -> traverse (go name) . Vector.fromList $ fields
+    RecC name fields -> traverse (goNamed name) . Vector.fromList $ fields
+    InfixC lhs name rhs ->
+      (<>)
+        <$> traverse (go name) (Vector.singleton lhs)
+        <*> traverse (go name) (Vector.singleton rhs)
+    ForallC {} -> fail "Derivation does not work on nested foralls."
+    GadtC {} -> fail "Derivation does not work on GADTs."
+    RecGadtC {} -> fail "Derivation does not work on GADTs."
+  where
+    go :: Name -> (Bang, Type) -> Q PType
+    go conName (_, t) =
+      let errMsg = "Constructor " <> show conName <> " has a field whose type is not wrapped in 'Term'."
+       in dig errMsg t
+    goNamed :: Name -> (Name, Bang, Type) -> Q PType
+    goNamed conName (fieldName, _, t) =
+      let errMsg = "Constructor " <> show conName <> " has a field " <> show fieldName <> " whose type is not wrapped in 'Term'."
+       in dig errMsg t
+    dig :: String -> Type -> Q PType
+    dig errMsg = \case
+      AppT (AppT (ConT n) _) x ->
+        if n == ''Term
+          then pure $ case x of
+            AppT (ConT n') y ->
+              if n' == ''PAsData
+                then PTypeData y
+                else PTypeNotData x
+            _ -> PTypeNotData x
+          else fail errMsg
+      _ -> fail errMsg
