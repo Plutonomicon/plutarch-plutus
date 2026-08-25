@@ -1,0 +1,10 @@
+(
+  fix (\a_self b ->
+        case 
+          (EqualsInteger # b # 10 :: Integer)
+          [ AddInteger # b # (a_self # (AddInteger # b # 1 :: Integer))
+          , 0 :: Integer
+          ]
+      )
+)
+# 0 :: Integer
