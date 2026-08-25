@@ -40,16 +40,16 @@
                           <case
                             d 
                             [
-                              <0 :: String>@csDJobL38ReN, 
-                              <1 :: String>@xcoGmOiC8HiN, 
-                              <2 :: String>@mSGXrSlhOzoN, 
-                              <3 :: String>@zBbVugCAuKb, 
-                              <4 :: String>@c8j19kUVGIf, 
-                              <5 :: String>@dSu76OoYQVw, 
-                              <6 :: String>@qoj0eYQE55l, 
-                              <7 :: String>@dWf9bSLUCJAN, 
-                              <8 :: String>@nqMwP3WtHczN, 
-                              <9 :: String>@tT7TcSLpins
+                              <"0" :: String>@csDJobL38ReN, 
+                              <"1" :: String>@xcoGmOiC8HiN, 
+                              <"2" :: String>@mSGXrSlhOzoN, 
+                              <"3" :: String>@zBbVugCAuKb, 
+                              <"4" :: String>@c8j19kUVGIf, 
+                              <"5" :: String>@dSu76OoYQVw, 
+                              <"6" :: String>@qoj0eYQE55l, 
+                              <"7" :: String>@dWf9bSLUCJAN, 
+                              <"8" :: String>@nqMwP3WtHczN, 
+                              <"9" :: String>@tT7TcSLpins
                             ]
                           >@tuOOnXqnQ6y
                         >@cUA55Lq3VP
@@ -62,16 +62,16 @@
                       <case
                         e 
                         [
-                          <0 :: String>@csDJobL38ReN, 
-                          <1 :: String>@xcoGmOiC8HiN, 
-                          <2 :: String>@mSGXrSlhOzoN, 
-                          <3 :: String>@zBbVugCAuKb, 
-                          <4 :: String>@c8j19kUVGIf, 
-                          <5 :: String>@dSu76OoYQVw, 
-                          <6 :: String>@qoj0eYQE55l, 
-                          <7 :: String>@dWf9bSLUCJAN, 
-                          <8 :: String>@nqMwP3WtHczN, 
-                          <9 :: String>@tT7TcSLpins
+                          <"0" :: String>@csDJobL38ReN, 
+                          <"1" :: String>@xcoGmOiC8HiN, 
+                          <"2" :: String>@mSGXrSlhOzoN, 
+                          <"3" :: String>@zBbVugCAuKb, 
+                          <"4" :: String>@c8j19kUVGIf, 
+                          <"5" :: String>@dSu76OoYQVw, 
+                          <"6" :: String>@qoj0eYQE55l, 
+                          <"7" :: String>@dWf9bSLUCJAN, 
+                          <"8" :: String>@nqMwP3WtHczN, 
+                          <"9" :: String>@tT7TcSLpins
                         ]
                       >@yzELtbQC1cvN
                     >@cUA55Lq3VP
@@ -92,13 +92,13 @@
             >@zMvoWqVW2fwN
           ]
         >@bvnedBDeXTeN, 
-        <0 :: String>@csDJobL38ReN
+        <"0" :: String>@csDJobL38ReN
       ]
     >@lLQSiSY3v1AN, 
     <Apply
       <AppendString>@p7qYeALXKVC
       [
-        <- :: String>@nB6vG8uH1md, 
+        <"-" :: String>@nB6vG8uH1md, 
         <case
           <Apply
             <EqualsInteger>@dr5yy9ULU5j
@@ -142,16 +142,16 @@
                               <case
                                 i 
                                 [
-                                  <0 :: String>@csDJobL38ReN, 
-                                  <1 :: String>@xcoGmOiC8HiN, 
-                                  <2 :: String>@mSGXrSlhOzoN, 
-                                  <3 :: String>@zBbVugCAuKb, 
-                                  <4 :: String>@c8j19kUVGIf, 
-                                  <5 :: String>@dSu76OoYQVw, 
-                                  <6 :: String>@qoj0eYQE55l, 
-                                  <7 :: String>@dWf9bSLUCJAN, 
-                                  <8 :: String>@nqMwP3WtHczN, 
-                                  <9 :: String>@tT7TcSLpins
+                                  <"0" :: String>@csDJobL38ReN, 
+                                  <"1" :: String>@xcoGmOiC8HiN, 
+                                  <"2" :: String>@mSGXrSlhOzoN, 
+                                  <"3" :: String>@zBbVugCAuKb, 
+                                  <"4" :: String>@c8j19kUVGIf, 
+                                  <"5" :: String>@dSu76OoYQVw, 
+                                  <"6" :: String>@qoj0eYQE55l, 
+                                  <"7" :: String>@dWf9bSLUCJAN, 
+                                  <"8" :: String>@nqMwP3WtHczN, 
+                                  <"9" :: String>@tT7TcSLpins
                                 ]
                               >@xychxf8RUSv
                             >@cUA55Lq3VP
@@ -164,16 +164,16 @@
                           <case
                             j 
                             [
-                              <0 :: String>@csDJobL38ReN, 
-                              <1 :: String>@xcoGmOiC8HiN, 
-                              <2 :: String>@mSGXrSlhOzoN, 
-                              <3 :: String>@zBbVugCAuKb, 
-                              <4 :: String>@c8j19kUVGIf, 
-                              <5 :: String>@dSu76OoYQVw, 
-                              <6 :: String>@qoj0eYQE55l, 
-                              <7 :: String>@dWf9bSLUCJAN, 
-                              <8 :: String>@nqMwP3WtHczN, 
-                              <9 :: String>@tT7TcSLpins
+                              <"0" :: String>@csDJobL38ReN, 
+                              <"1" :: String>@xcoGmOiC8HiN, 
+                              <"2" :: String>@mSGXrSlhOzoN, 
+                              <"3" :: String>@zBbVugCAuKb, 
+                              <"4" :: String>@c8j19kUVGIf, 
+                              <"5" :: String>@dSu76OoYQVw, 
+                              <"6" :: String>@qoj0eYQE55l, 
+                              <"7" :: String>@dWf9bSLUCJAN, 
+                              <"8" :: String>@nqMwP3WtHczN, 
+                              <"9" :: String>@tT7TcSLpins
                             ]
                           >@xPSDoP6Ie4BN
                         >@cUA55Lq3VP
@@ -212,7 +212,7 @@
                 >@bUefn0FZ4cuN
               ]
             >@fE0t79pPqdwN, 
-            <0 :: String>@csDJobL38ReN
+            <"0" :: String>@csDJobL38ReN
           ]
         >@xi8E8poQ0vg
       ]

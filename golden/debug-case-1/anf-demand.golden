@@ -6,8 +6,8 @@ ANF Hashes:
 
 ANF Binds:
  #0 := True :: Bool
- #1 := false :: String
- #2 := true :: String
+ #1 := "false" :: String
+ #2 := "true" :: String
  #3 := Case #0 [#1, #2]
 
 ANF Annotations:

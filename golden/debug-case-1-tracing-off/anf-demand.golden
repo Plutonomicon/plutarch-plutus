@@ -2,7 +2,7 @@ ANF Hashes:
  #0 := gIg3UbFCBfe
 
 ANF Binds:
- #0 :=  :: String
+ #0 := "" :: String
 
 ANF Annotations:
  #0 := NeverDemanded

@@ -15,32 +15,32 @@ case
                     # (
                         (\d ->
                           case d
-                            [ 0 :: String
-                            , 1 :: String
-                            , 2 :: String
-                            , 3 :: String
-                            , 4 :: String
-                            , 5 :: String
-                            , 6 :: String
-                            , 7 :: String
-                            , 8 :: String
-                            , 9 :: String
+                            [ "0" :: String
+                            , "1" :: String
+                            , "2" :: String
+                            , "3" :: String
+                            , "4" :: String
+                            , "5" :: String
+                            , "6" :: String
+                            , "7" :: String
+                            , "8" :: String
+                            , "9" :: String
                             ]
                         )
                         # c
                       )
                   , (\e ->
                       case e
-                        [ 0 :: String
-                        , 1 :: String
-                        , 2 :: String
-                        , 3 :: String
-                        , 4 :: String
-                        , 5 :: String
-                        , 6 :: String
-                        , 7 :: String
-                        , 8 :: String
-                        , 9 :: String
+                        [ "0" :: String
+                        , "1" :: String
+                        , "2" :: String
+                        , "3" :: String
+                        , "4" :: String
+                        , "5" :: String
+                        , "6" :: String
+                        , "7" :: String
+                        , "8" :: String
+                        , "9" :: String
                         ]
                     )
                     # c
@@ -49,10 +49,10 @@ case
         )
         # (QuotientInteger # -12345 :: Integer # 10 :: Integer)
         # (RemainderInteger # -12345 :: Integer # 10 :: Integer)
-      , 0 :: String
+      , "0" :: String
       ]
   , AppendString
-    # - :: String
+    # "-" :: String
     # (case 
         (
           EqualsInteger
@@ -72,32 +72,32 @@ case
                       # (
                           (\i ->
                             case i
-                              [ 0 :: String
-                              , 1 :: String
-                              , 2 :: String
-                              , 3 :: String
-                              , 4 :: String
-                              , 5 :: String
-                              , 6 :: String
-                              , 7 :: String
-                              , 8 :: String
-                              , 9 :: String
+                              [ "0" :: String
+                              , "1" :: String
+                              , "2" :: String
+                              , "3" :: String
+                              , "4" :: String
+                              , "5" :: String
+                              , "6" :: String
+                              , "7" :: String
+                              , "8" :: String
+                              , "9" :: String
                               ]
                           )
                           # h
                         )
                     , (\j ->
                         case j
-                          [ 0 :: String
-                          , 1 :: String
-                          , 2 :: String
-                          , 3 :: String
-                          , 4 :: String
-                          , 5 :: String
-                          , 6 :: String
-                          , 7 :: String
-                          , 8 :: String
-                          , 9 :: String
+                          [ "0" :: String
+                          , "1" :: String
+                          , "2" :: String
+                          , "3" :: String
+                          , "4" :: String
+                          , "5" :: String
+                          , "6" :: String
+                          , "7" :: String
+                          , "8" :: String
+                          , "9" :: String
                           ]
                       )
                       # h
@@ -114,7 +114,7 @@ case
               # (SubtractInteger # 0 :: Integer # -12345 :: Integer)
               # 10 :: Integer
             )
-        , 0 :: String
+        , "0" :: String
         ]
       )
   ]
