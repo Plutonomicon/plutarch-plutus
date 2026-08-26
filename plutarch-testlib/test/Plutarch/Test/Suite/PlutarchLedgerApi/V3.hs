@@ -4,7 +4,7 @@ import Data.Kind (Type)
 import Plutarch.LedgerApi.V3 qualified as PLA
 import Plutarch.Prelude
 import Plutarch.Test.Laws (checkLedgerProperties)
-import Plutarch.Test.QuickCheck (propPTryFromRoundrip)
+import Plutarch.Test.QuickCheck (propPTryFromRoundtrip)
 import Plutarch.Test.Utils (fewerTests, typeName)
 import PlutusLedgerApi.V3.Orphans ()
 import Test.Tasty (TestTree, adjustOption, testGroup)
@@ -17,89 +17,89 @@ tests =
         testGroup
           (typeName @(S -> Type) @PLA.PScriptContext)
           [ checkLedgerProperties @PLA.PScriptContext
-          , propPTryFromRoundrip @PLA.PScriptContext
+          , propPTryFromRoundtrip @PLA.PScriptContext
           ]
     , adjustOption (fewerTests 16) $
         testGroup
           (typeName @(S -> Type) @PLA.PTxInfo)
           [ checkLedgerProperties @PLA.PTxInfo
-          , propPTryFromRoundrip @PLA.PTxInfo
+          , propPTryFromRoundtrip @PLA.PTxInfo
           ]
     , testGroup
         (typeName @(S -> Type) @PLA.PScriptInfo)
         [ checkLedgerProperties @PLA.PScriptInfo
-        , propPTryFromRoundrip @PLA.PScriptInfo
+        , propPTryFromRoundtrip @PLA.PScriptInfo
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PScriptPurpose)
         [ checkLedgerProperties @PLA.PScriptPurpose
-        , propPTryFromRoundrip @PLA.PScriptPurpose
+        , propPTryFromRoundtrip @PLA.PScriptPurpose
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxOutRef)
         [ checkLedgerProperties @PLA.PTxOutRef
-        , propPTryFromRoundrip @PLA.PTxOutRef
+        , propPTryFromRoundtrip @PLA.PTxOutRef
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxId)
         [ checkLedgerProperties @PLA.PTxId
-        , propPTryFromRoundrip @PLA.PTxId
+        , propPTryFromRoundtrip @PLA.PTxId
         ]
     , adjustOption (fewerTests 4) $
         testGroup
           (typeName @(S -> Type) @PLA.PTxInInfo)
           [ checkLedgerProperties @PLA.PTxInInfo
-          , propPTryFromRoundrip @PLA.PTxInInfo
+          , propPTryFromRoundtrip @PLA.PTxInInfo
           ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxCert)
         [ checkLedgerProperties @PLA.PTxCert
-        , propPTryFromRoundrip @PLA.PTxCert
+        , propPTryFromRoundtrip @PLA.PTxCert
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PDelegatee)
         [ checkLedgerProperties @PLA.PDelegatee
-        , propPTryFromRoundrip @PLA.PDelegatee
+        , propPTryFromRoundtrip @PLA.PDelegatee
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PDRepCredential)
         [ checkLedgerProperties @PLA.PDRepCredential
-        , propPTryFromRoundrip @PLA.PDRepCredential
+        , propPTryFromRoundtrip @PLA.PDRepCredential
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PColdCommitteeCredential)
         [ checkLedgerProperties @PLA.PColdCommitteeCredential
-        , propPTryFromRoundrip @PLA.PColdCommitteeCredential
+        , propPTryFromRoundtrip @PLA.PColdCommitteeCredential
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PHotCommitteeCredential)
         [ checkLedgerProperties @PLA.PHotCommitteeCredential
-        , propPTryFromRoundrip @PLA.PHotCommitteeCredential
+        , propPTryFromRoundtrip @PLA.PHotCommitteeCredential
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PDRep)
         [ checkLedgerProperties @PLA.PDRep
-        , propPTryFromRoundrip @PLA.PDRep
+        , propPTryFromRoundtrip @PLA.PDRep
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PVoter)
         [ checkLedgerProperties @PLA.PVoter
-        , propPTryFromRoundrip @PLA.PVoter
+        , propPTryFromRoundtrip @PLA.PVoter
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PGovernanceActionId)
         [ checkLedgerProperties @PLA.PGovernanceActionId
-        , propPTryFromRoundrip @PLA.PGovernanceActionId
+        , propPTryFromRoundtrip @PLA.PGovernanceActionId
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PVote)
         [ checkLedgerProperties @PLA.PVote
-        , propPTryFromRoundrip @PLA.PVote
+        , propPTryFromRoundtrip @PLA.PVote
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PProtocolVersion)
         [ checkLedgerProperties @PLA.PProtocolVersion
-        , propPTryFromRoundrip @PLA.PProtocolVersion
+        , propPTryFromRoundtrip @PLA.PProtocolVersion
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PProposalProcedure)

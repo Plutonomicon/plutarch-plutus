@@ -1,6 +1,6 @@
 cabal-version: 3.0
 name:          plutarch-testlib
-version:       1.0.3
+version:       1.1.0
 license:       MIT
 data-files:    goldens/*.golden
 
@@ -142,6 +142,7 @@ test-suite tests
     Plutarch.Test.Suite.PlutarchLedgerApi.V3
     Plutarch.Test.Suite.PlutarchLedgerApi.V3.Contexts
     Plutarch.Test.Suite.PlutarchLedgerApi.V3.Value
+    Plutarch.Test.Suite.PlutarchLedgerApi.V4
     Plutarch.Test.Suite.PlutarchLedgerApi.Value.AssetClass
 
   build-depends:
