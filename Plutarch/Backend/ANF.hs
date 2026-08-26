@@ -515,9 +515,8 @@ analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
     digDependency target currId =
       let currBind = binds NEVector.! currId
        in case currBind of
-            -- We should absolutely never make it down here. Give it a default
-            -- for the completeness checker.
-            ANFLeaf _ -> Id currId
+            -- We should never make it down here.
+            ANFLeaf _ -> error "When performing demand analysis, a let-binding would be placed on a constant."
             -- As these binds have only a single descendant, they are never the
             -- optimal place for a `let`-bind, as we can also bind in their
             -- bodies. Thus, we 'step into' their bodies and keep searching.
@@ -543,17 +542,17 @@ analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
                in case NEVector.foldl' (combineJPRs target) start xs of
                     -- This cannot happen: at least one of the descendants must
                     -- depend on `target` somehow.
-                    NoCandidateFound -> Id currId
+                    NoCandidateFound -> error "When performing demand analysis, an ANFApply join point had no candidate descendants."
                     Ineligible -> Id currId
                     Descend next -> digDependency target next
             ANFConstr _ _ fields -> case Vector.uncons fields of
-              -- This cannot happen: at least one of the descendants must depend
-              -- on `target` somehow.
-              Nothing -> Id currId
+              -- This cannot happen: if we have no fields, this cannot require a
+              -- let-binding to occur here.
+              Nothing -> error "When performing demand analysis, an ANFConstr was declared as a join point, but it has no descendants."
               Just (field, fields') -> case Vector.foldl' (combineJPRs target) (refToJPR target field) fields' of
                 -- This cannot happen: at least one of the descendants must
                 -- depend on `target` somehow.
-                NoCandidateFound -> Id currId
+                NoCandidateFound -> error "When performing demand analysis, an ANFConstr join point had no candidate descendants."
                 Ineligible -> Id currId
                 Descend next -> digDependency target next
             ANFCase _ scrut handlers ->
@@ -561,14 +560,14 @@ analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
                in case NEVector.foldl' (combineJPRs target) start handlers of
                     -- This cannot happen: at least one of the descendants must
                     -- depend on `target` somehow.
-                    NoCandidateFound -> Id currId
+                    NoCandidateFound -> error "When performing demand analysis, an ANFCase join point had no candidate descendants."
                     Ineligible -> Id currId
                     Descend next -> digDependency target next
             ANFCompose _ components -> case NEVector.uncons components of
               (c, cs) -> case Vector.foldl' (combineJPRs target) (refToJPR target c) cs of
                 -- This cannot happen: at least one of the descendants must
                 -- depend on `target` somehow.
-                NoCandidateFound -> Id currId
+                NoCandidateFound -> error "When performing demand analysis, an ANFCompose join point had no candidate descendants."
                 Ineligible -> Id currId
                 Descend next -> digDependency target next
     refToBindSite :: Id -> Id -> Ref -> Id
