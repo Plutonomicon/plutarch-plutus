@@ -85,7 +85,6 @@ module Plutarch.LedgerApi.AssocMap (
 ) where
 
 import Data.Bifunctor (bimap)
-import Data.Foldable (foldl')
 import Data.Kind (Type)
 import Data.Proxy (Proxy (Proxy))
 import GHC.Generics (Generic)

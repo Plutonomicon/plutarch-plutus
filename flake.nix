@@ -57,7 +57,7 @@
 
           project = pkgs.haskell-nix.cabalProject' {
             src = ./.;
-            compiler-nix-name = "ghc96";
+            compiler-nix-name = "ghc912";
             # NOTE(bladyjoker): Follow https://github.com/input-output-hk/plutus/blob/master/cabal.project
             index-state = "2026-08-07T15:03:01Z";
             inputMap = {
@@ -77,7 +77,7 @@
                 cabal = { };
                 haskell-language-server = { };
                 hlint = { };
-                cabal-fmt = { };
+                # cabal-fmt = "latest";
                 fourmolu = { };
                 hspec-discover = { };
                 markdown-unlit = { };
