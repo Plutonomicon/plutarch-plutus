@@ -15,7 +15,7 @@ import Data.Char (isSpace, isUpperCase, toLower)
 import Data.Kind (Type)
 import Data.Text (Text)
 import Data.Text.Lazy.Encoding (encodeUtf8)
-import Plutarch.Backend.ANF (analyzeDemand, fromHashedAST)
+import Plutarch.Backend.ANF (fromHashedAST, fullPipeline)
 import Plutarch.Backend.AST (fromRawTerm)
 import Plutarch.Backend.Compile (toUPLCTerm)
 import Plutarch.Backend.S (S)
@@ -91,7 +91,7 @@ plutarchGoldenWith env@(TermEnv _ opt) testDescription testName t =
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
-      withDemand = analyzeDemand <$> asANF
+      withDemand = fullPipeline <$> asANF
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
       optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
       asUPLC = toUPLCTerm optAsBool <$> withDemand
@@ -200,7 +200,7 @@ plutarchGoldenAllWith env@(TermEnv _ opt) testDescription testName t =
       astGoldenFP = goldenFolderFP </> "ast" <.> "golden"
       asANF = fromHashedAST <$> asAST
       anfGoldenFP = goldenFolderFP </> "anf" <.> "golden"
-      withDemand = analyzeDemand <$> asANF
+      withDemand = fullPipeline <$> asANF
       demandGoldenFP = goldenFolderFP </> "anf-demand" <.> "golden"
       optAsBool = case opt of OnlyInternal -> False; InternalExternal -> True
       asUPLC = toUPLCTerm optAsBool <$> withDemand

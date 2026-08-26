@@ -1,10 +1,17 @@
-(
-  fix (\a_self b ->
-        case 
-          (EqualsInteger # b # 10 :: Integer)
-          [ AddInteger # b # (a_self # (AddInteger # b # 1 :: Integer))
-          , 0 :: Integer
-          ]
+\a ->
+  case a
+    [ (\b c ->
+        AddInteger
+        # ((\d -> AddInteger # d # d) # b)
+        # ((\e -> AddInteger # e # e) # c)
       )
-)
-# 0 :: Integer
+      # 10 :: Integer
+      # 20 :: Integer
+    , (\f g ->
+        AddInteger
+        # ((\h -> MultiplyInteger # h # h) # f)
+        # ((\i -> MultiplyInteger # i # i) # g)
+      )
+      # 10 :: Integer
+      # 20 :: Integer
+    ]

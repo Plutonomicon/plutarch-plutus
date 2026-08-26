@@ -1,30 +1,51 @@
-<Apply
-  <Fix
-    [a]
-    <\b -> 
-      <case
-        <Apply
-          <EqualsInteger>@dr5yy9ULU5j [b, <10 :: Integer>@d9BTnRxpywy]
-        >@aqRKgS66iZpN 
-        [
+<\a -> 
+  <case
+    a 
+    [
+      <Apply
+        <\b c -> 
           <Apply
             <AddInteger>@m5XKL3leqWoN
             [
-              b, 
               <Apply
-                a
-                [
-                  <Apply
-                    <AddInteger>@m5XKL3leqWoN [b, <1 :: Integer>@vyRIuwDii3A]
-                  >@kYhABZ6eYVbN
-                ]
-              >@wjBWCvxJa2dN
+                <\d -> 
+                  <Apply<AddInteger>@m5XKL3leqWoN [d, d]>@yAdcymrewDkN
+                >@dViasIdX6cAN
+                [b]
+              >@slqPW2p3QzrN, 
+              <Apply
+                <\e -> 
+                  <Apply<AddInteger>@m5XKL3leqWoN [e, e]>@hzUq59mr9rm
+                >@dViasIdX6cAN
+                [c]
+              >@nA7l1g6grKvN
             ]
-          >@pd26HDFcm2sN, 
-          <0 :: Integer>@mqE7eqJLvgvN
-        ]
-      >@fj9soe5KwBc
-    >@pAwiorAeSvN
-  >@xOQgy6PHLUx
-  [<0 :: Integer>@mqE7eqJLvgvN]
->@taajMpzZaRb
+          >@iR37VzyRyyBN
+        >@wdLCSeVn8mh
+        [<10 :: Integer>@d9BTnRxpywy, <20 :: Integer>@hBvTlxVXYAD]
+      >@oi8jxSP7coy, 
+      <Apply
+        <\f g -> 
+          <Apply
+            <AddInteger>@m5XKL3leqWoN
+            [
+              <Apply
+                <\h -> 
+                  <Apply<MultiplyInteger>@vjMEhbkCp9cN [h, h]>@iQxs37LJJtxN
+                >@gqkffdFA6vnN
+                [f]
+              >@viKUoLGoOUw, 
+              <Apply
+                <\i -> 
+                  <Apply<MultiplyInteger>@vjMEhbkCp9cN [i, i]>@yDK2FYsfAmzN
+                >@gqkffdFA6vnN
+                [g]
+              >@exWYLdJv1YbN
+            ]
+          >@owbEYdEV4uDN
+        >@qAoihh9YcVhN
+        [<10 :: Integer>@d9BTnRxpywy, <20 :: Integer>@hBvTlxVXYAD]
+      >@yQdEL0I1DuyN
+    ]
+  >@qyY0w1U5l4jN
+>@ifZFDzvSrdm

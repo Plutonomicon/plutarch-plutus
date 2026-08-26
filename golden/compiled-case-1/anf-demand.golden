@@ -9,6 +9,6 @@ ANF Binds:
  #2 := \a:1 b:1 c:1 -> #1
 
 ANF Annotations:
- #0 := Demanded (Id 2) 1
- #1 := Demanded (Id 2) 1
+ #0 := Demanded (Id 0) 1
+ #1 := Demanded (Id 1) 1
  #2 := NeverDemanded

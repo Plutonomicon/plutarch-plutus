@@ -21,15 +21,14 @@ module Plutarch.Backend.ANF (
   ANF (..),
   Demand (..),
   fromHashedAST,
-  analyzeDemand,
   getANFBindAnn,
+  fullPipeline,
 ) where
 
-import Control.Monad.ST (ST, runST)
+import Control.Monad (when)
 import Control.Monad.State.Strict (
   MonadState,
   State,
-  execStateT,
   gets,
   modify,
   runState,
@@ -37,7 +36,7 @@ import Control.Monad.State.Strict (
 import Data.Bifunctor (bimap)
 import Data.Bimap (Bimap)
 import Data.Bimap qualified as Bimap
-import Data.Foldable (fold, for_, traverse_)
+import Data.Foldable (for_, traverse_)
 import Data.IntMap.Strict (IntMap)
 import Data.IntMap.Strict qualified as IntMap
 import Data.Kind (Type)
@@ -409,38 +408,294 @@ data Demand
 instance Pretty Demand where
   pretty = viaShow
 
-analyzeDemand :: forall (ann :: Type). ANF ann -> ANF Demand
-analyzeDemand (ANF bm binds) = runST $ do
+{- | Performs all analysis steps needed to get the full demand analysis, then
+annotates the ANF with that analysis.
+
+@since wip
+-}
+fullPipeline :: forall (ann :: Type). ANF ann -> ANF Demand
+fullPipeline anf@(ANF _ binds) =
+  let labelled = labelTransitiveDeps binds
+      counted = countUses binds
+      reqVars = collectRequiredVars binds
+      bindSites = determineBindSites anf
+   in analyzeDemand labelled counted reqVars bindSites anf
+
+-- Helpers
+
+-- At this stage, we have all of the following for each bind:
+--
+
+-- * Its transitive dependencies (as `Id`s)
+
+-- * A direct use count (or `Nothing` if trivial)
+
+-- * All variables required by its subcomputation
+
+--
+-- Additionally, we also have, for every variable, the site where it is bound
+-- (as an `Id`). We can put all this together to construct `Demand`s for each
+-- bind.
+analyzeDemand ::
+  forall (ann :: Type).
+  NonEmptyVector (Set Id) ->
+  NonEmptyVector (Maybe Word) ->
+  NonEmptyVector (Set Hash) ->
+  Map Hash Id ->
+  ANF ann ->
+  ANF Demand
+analyzeDemand labelled counted reqVars bindSites (ANF bm binds) =
   let len = NEVector.length binds
-  countMV <- MVector.replicate len (0 :: Int)
-  neededVarsMV <- MVector.replicate len Set.empty
-  -- Collect 'raw' statistics on use count, needed variables and binding sites
-  bindingSites <- collectRawStatistics len countMV neededVarsMV
-  -- At this stage, we know:
-  --
-  -- 1. Every (useful) use count of every bind
-  -- 2. What variables must be in scope for any given bind to be meaningful
-  -- 3. For every variable, where that variable was bound
-  --
-  -- Knowing all these, we can now construct a brand-new ANF with full demand
-  -- analysis.
-  newBinds <- NEVector.generate1M len $ \i -> do
-    let oldBind = binds NEVector.! i
-    uses <- MVector.read countMV i
-    case uses of
-      (-1) -> pure (Trivial <$ oldBind)
-      0 -> pure (NeverDemanded <$ oldBind)
-      _ -> do
-        neededVars <- MVector.read neededVarsMV i
-        let lowestSite = Set.foldl' (siteMin bindingSites) (len - 1) neededVars
-        pure (Demanded (Id lowestSite) (fromIntegral uses) <$ oldBind)
-  pure . ANF bm $ newBinds
+      newBinds = NEVector.generate1 len $ \i ->
+        let oldBind = binds NEVector.! i
+            uses = counted NEVector.! i
+         in case uses of
+              -- Trivial binds are always inlined, so no need to do any
+              -- analysis.
+              Nothing -> Trivial <$ oldBind
+              -- Only the toplevel node will ever have a zero use count.
+              Just 0 -> NeverDemanded <$ oldBind
+              -- If we're only used once, we're getting inlined. Thus, what bind
+              -- site we give is irrelevant, so we might as well just give
+              -- itself.
+              Just 1 -> Demanded (Id i) 1 <$ oldBind
+              Just n ->
+                let neededVars = reqVars NEVector.! i
+                    -- Once we know all the required variables, we can determine
+                    -- a 'bind site of last resort'. This is because we _must_
+                    -- have all required variables in scope, or the bind is
+                    -- meaningless.
+                    --
+                    -- We can establish this by finding the `Id` corresponding
+                    -- to the lambda that binds a variable we need with the
+                    -- _lowest_ possible identifier. As lower `Id`s are
+                    -- dependencies of higher `Id`s, this guarantees we'll get
+                    -- the closest enclosing lambda.
+                    lastResort = Set.foldl' siteMin (len - 1) neededVars
+                 in -- The site of last resort isn't always optimal, especially
+                    -- for closed subcomputations. As UPLC is strict, and
+                    -- `let`-bindings are compiled into applications of lambdas,
+                    -- `let`-binding 'too high' can cause more evaluation than we
+                    -- actually need. Consider the following example:
+                    --
+                    -- \a -> if a then doB else doC
+                    --
+                    -- Suppose that `doB` (and only `doB`) depends on a closed
+                    -- subcomputation `c1` multiple times. Likewise, suppose that
+                    -- `doC` (and only `doC`) depends on a closed subcomputation
+                    -- `c2` multiple times. If we use the site of last resort, we
+                    -- end up compiling something akin to:
+                    --
+                    -- let c1 = ... in let c2 = ... in \a -> if a then doB' else doC'
+                    --
+                    -- where `doB'` and `doC'` are `doB` and `doC` with the
+                    -- relevant subcomputations replaced by `let`-bound variables.
+                    -- However, this would force evaluation of both `c1` and `c2`,
+                    -- even though we only ever need one of them!
+                    --
+                    -- A more sensible strategy would compile to something like so
+                    -- instead:
+                    --
+                    -- \a -> if a then (let c1 = .. in doB') (let c2 = .. in doC')
+                    --
+                    -- This way, we end up evaluating only what we need and
+                    -- nothing more.
+                    --
+                    -- We thus do a 'digging' analysis to try and 'push'
+                    -- `let`-bindings as close to their use sites as we can.
+                    Demanded (digDependency (Id i) lastResort) (fromIntegral n) <$ oldBind
+   in ANF bm newBinds
   where
-    siteMin :: Map Hash Int -> Int -> Hash -> Int
-    siteMin bindingSites acc varHash = case Map.lookup varHash bindingSites of
+    siteMin :: Int -> Hash -> Int
+    siteMin acc varHash = case Map.lookup varHash bindSites of
       -- Technically impossible
       Nothing -> acc
-      Just site -> min acc site
+      Just (Id site) -> min acc site
+    digDependency :: Id -> Int -> Id
+    digDependency target currId =
+      let currBind = binds NEVector.! currId
+       in case currBind of
+            -- We should never make it down here.
+            ANFLeaf _ -> error "When performing demand analysis, a let-binding would be placed on a constant."
+            -- As these binds have only a single descendant, they are never the
+            -- optimal place for a `let`-bind, as we can also bind in their
+            -- bodies. Thus, we 'step into' their bodies and keep searching.
+            ANFForce _ r -> refToBindSite target (Id currId) r
+            ANFDelay _ r -> refToBindSite target (Id currId) r
+            ANFLam _ _ body -> refToBindSite target (Id currId) body
+            ANFFix _ _ body -> refToBindSite target (Id currId) body
+            -- Each of the following have multiple descendants. By our earlier
+            -- analyses, we know that at least one of them depends, either
+            -- directly or not, on `target`. Thus, there are two possibilities:
+            --
+            -- 1. Exactly one descendant bind depends (transitively) on
+            --    `target`.
+            -- 2. More than one descendant bind depends (transitively) on
+            --    `target.
+            --
+            -- The _first time_ we encounter Case 2 represents the point at
+            -- which the `let`-bind of `target` _must_ happen. If we see a Case
+            -- 1, the descendant (or possibly one of its descendants) is instead
+            -- a better choice.
+            ANFApply _ f xs ->
+              let start = refToJPR target f
+               in case NEVector.foldl' (combineJPRs target) start xs of
+                    -- This cannot happen: at least one of the descendants must
+                    -- depend on `target` somehow.
+                    NoCandidateFound -> error "When performing demand analysis, an ANFApply join point had no candidate descendants."
+                    Ineligible -> Id currId
+                    Descend next -> digDependency target next
+            ANFConstr _ _ fields -> case Vector.uncons fields of
+              -- This cannot happen: if we have no fields, this cannot require a
+              -- let-binding to occur here.
+              Nothing -> error "When performing demand analysis, an ANFConstr was declared as a join point, but it has no descendants."
+              Just (field, fields') -> case Vector.foldl' (combineJPRs target) (refToJPR target field) fields' of
+                -- This cannot happen: at least one of the descendants must
+                -- depend on `target` somehow.
+                NoCandidateFound -> error "When performing demand analysis, an ANFConstr join point had no candidate descendants."
+                Ineligible -> Id currId
+                Descend next -> digDependency target next
+            ANFCase _ scrut handlers ->
+              let start = refToJPR target scrut
+               in case NEVector.foldl' (combineJPRs target) start handlers of
+                    -- This cannot happen: at least one of the descendants must
+                    -- depend on `target` somehow.
+                    NoCandidateFound -> error "When performing demand analysis, an ANFCase join point had no candidate descendants."
+                    Ineligible -> Id currId
+                    Descend next -> digDependency target next
+            ANFCompose _ components -> case NEVector.uncons components of
+              (c, cs) -> case Vector.foldl' (combineJPRs target) (refToJPR target c) cs of
+                -- This cannot happen: at least one of the descendants must
+                -- depend on `target` somehow.
+                NoCandidateFound -> error "When performing demand analysis, an ANFCompose join point had no candidate descendants."
+                Ineligible -> Id currId
+                Descend next -> digDependency target next
+    refToBindSite :: Id -> Id -> Ref -> Id
+    refToBindSite target curr = \case
+      AVar _ -> curr
+      AnId (Id i) -> digDependency target i
+    refToJPR :: Id -> Ref -> JoinPointResult
+    refToJPR target = \case
+      AVar _ -> NoCandidateFound
+      AnId i@(Id asInt) ->
+        if
+          | -- Direct dependency, which means we _must_ `let`-bind here.
+            i == target ->
+              Ineligible
+          | -- Indirect dependency, so we may potentially be able to bind closer to the use site.
+            Set.member target (labelled NEVector.! asInt) ->
+              Descend asInt
+          | -- No dependency in this particular descendant.
+            otherwise ->
+              NoCandidateFound
+    combineJPRs :: Id -> JoinPointResult -> Ref -> JoinPointResult
+    combineJPRs target acc r = case acc of
+      -- Once we have established that the `let`-bind must happen here, no
+      -- further evidence matters.
+      Ineligible -> Ineligible
+      -- We haven't (yet) found which descendant(s) require `target` as a
+      -- dependency, so whatever answer we get for this one becomes the result
+      -- for now.
+      NoCandidateFound -> refToJPR target r
+      -- Once we've identified a descendant as requiring `target`, any other
+      -- descendants that also require `target` essentially force the `let`-bind
+      -- to happen right here. Furthermore, if any of the descendants _are_
+      -- `target`, this also happens. The only way this _doesn't_ happen is if
+      -- the descendant doesn't depend on `target` at all.
+      Descend _ -> case refToJPR target r of
+        NoCandidateFound -> acc
+        _ -> Ineligible
+
+-- A 'join point' is a place where two (or more) subcomputations connect. This
+-- data type represents a (possibly partial) analysis of a join point as a
+-- candidate for placing a `let`-bind.
+data JoinPointResult
+  = -- We haven't found any descendants (yet) which depend on the computation
+    -- we're trying to `let`-bind.
+    NoCandidateFound
+  | -- Either this join point depends on the computation we need to `let`-bind
+    -- directly, or multiple descendants depend on the computation we need to
+    -- `let`-bind, directly or transitively.
+    Ineligible
+  | -- The descendant whose `Id` is the given `Int` is an improved candidate
+    -- for placing the `let`-bind.
+    Descend Int
+
+determineBindSites :: forall (ann :: Type). ANF ann -> Map Hash Id
+determineBindSites (ANF _ binds) = NEVector.ifoldl' go Map.empty binds
+  where
+    go :: Map Hash Id -> Int -> ANFBind ann -> Map Hash Id
+    go acc i = \case
+      ANFLam _ bvs _ ->
+        NEVector.foldl' (\acc' bv -> maybe acc' (\(BoundVar h _) -> Map.insert h (Id i) acc') bv) acc bvs
+      ANFFix _ (BoundVar h _) _ -> Map.insert h (Id i) acc
+      _ -> acc
+
+labelTransitiveDeps ::
+  forall (ann :: Type).
+  NonEmptyVector (ANFBind ann) ->
+  NonEmptyVector (Set Id)
+labelTransitiveDeps binds = NEVector.unsafeCreate $ do
+  let len = NEVector.length binds
+  tdMV <- MVector.replicate len Set.empty
+  for_ [0, 1 .. len - 1] $ \i -> do
+    let bind = binds NEVector.! i
+    case bind of
+      ANFLeaf _ -> pure ()
+      ANFForce _ r -> updateDeps tdMV i r
+      ANFDelay _ r -> updateDeps tdMV i r
+      ANFLam _ _ body -> updateDeps tdMV i body
+      ANFFix _ _ body -> updateDeps tdMV i body
+      ANFApply _ f xs -> do
+        updateDeps tdMV i f
+        traverse_ (updateDeps tdMV i) xs
+      ANFConstr _ _ fields -> traverse_ (updateDeps tdMV i) fields
+      ANFCase _ scrut handlers -> do
+        updateDeps tdMV i scrut
+        traverse_ (updateDeps tdMV i) handlers
+      ANFCompose _ components -> traverse_ (updateDeps tdMV i) components
+  pure tdMV
+  where
+    updateDeps ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (Set Id) ->
+      Int ->
+      Ref ->
+      m ()
+    updateDeps mv i = \case
+      AnId (Id j) -> do
+        deps <- MVector.read mv j
+        MVector.modify mv (Set.union (Set.insert (Id j) deps)) i
+      AVar _ -> pure ()
+
+-- `Nothing` means trivial
+countUses :: forall (ann :: Type). NonEmptyVector (ANFBind ann) -> NonEmptyVector (Maybe Word)
+countUses binds = NEVector.unsafeCreate $ do
+  let len = NEVector.length binds
+  countMV <- MVector.replicate len (Just 0)
+  for_ [0, 1 .. len - 1] $ \i -> do
+    let bind = binds NEVector.! i
+    case bind of
+      ANFLeaf ell -> case ell of
+        LConstant _ c -> when (smallEnoughToInline c) (MVector.write countMV i Nothing)
+        LBuiltin _ _ -> MVector.write countMV i Nothing
+        LError _ -> MVector.write countMV i Nothing
+        _ -> pure ()
+      ANFForce _ r -> updateCountAt countMV r
+      ANFDelay _ r -> updateCountAt countMV r
+      ANFLam _ _ body -> updateCountAt countMV body
+      ANFFix _ _ body -> updateCountAt countMV body
+      ANFApply _ f xs -> do
+        updateCountAt countMV f
+        traverse_ (updateCountAt countMV) xs
+      ANFConstr _ _ fields -> traverse_ (updateCountAt countMV) fields
+      ANFCase _ scrut handlers -> do
+        updateCountAt countMV scrut
+        traverse_ (updateCountAt countMV) handlers
+      ANFCompose _ components -> traverse_ (updateCountAt countMV) components
+  pure countMV
+  where
     smallEnoughToInline :: Some (ValueOf PLC.DefaultUni) -> Bool
     smallEnoughToInline = \case
       Some (ValueOf PLC.DefaultUniBool _) -> True
@@ -450,95 +705,64 @@ analyzeDemand (ANF bm binds) = runST $ do
     updateCountAt ::
       forall (m :: Type -> Type).
       PrimMonad m =>
-      MVector (PrimState m) Int -> Ref -> m ()
+      MVector (PrimState m) (Maybe Word) -> Ref -> m ()
     updateCountAt mv = \case
-      AnId (Id i) -> MVector.modify mv (\case (-1) -> (-1); old -> old + 1) i
+      AnId (Id i) -> MVector.modify mv (fmap (+ 1)) i
       AVar _ -> pure ()
-    getNeededFrom ::
+
+collectRequiredVars :: forall (ann :: Type). NonEmptyVector (ANFBind ann) -> NonEmptyVector (Set Hash)
+collectRequiredVars binds = NEVector.unsafeCreate $ do
+  let len = NEVector.length binds
+  varMV <- MVector.replicate len Set.empty
+  for_ [0, 1 .. len - 1] $ \i -> do
+    let bind = binds NEVector.! i
+    case bind of
+      ANFLeaf _ -> pure ()
+      ANFForce _ r -> updateWithDeps varMV i r
+      ANFDelay _ r -> updateWithDeps varMV i r
+      -- As lambdas are binding sites, they do not depend on the variables they
+      -- themselves bind.
+      ANFLam _ bvs body -> do
+        let boundHashes = NEVector.foldl' (\acc -> \case Nothing -> acc; Just (BoundVar h _) -> Set.insert h acc) Set.empty bvs
+        deps <- getDeps varMV body
+        let actualDeps = Set.difference deps boundHashes
+        MVector.write varMV i actualDeps
+      -- As a fixpoint binds its `self` argument, it does not itself depend on
+      -- it.
+      ANFFix _ (BoundVar h _) body -> do
+        let boundHashes = Set.singleton h
+        deps <- getDeps varMV body
+        let actualDeps = Set.difference deps boundHashes
+        MVector.write varMV i actualDeps
+      ANFApply _ f xs -> do
+        updateWithDeps varMV i f
+        traverse_ (updateWithDeps varMV i) xs
+      ANFConstr _ _ fields -> traverse_ (updateWithDeps varMV i) fields
+      ANFCase _ scrut handlers -> do
+        updateWithDeps varMV i scrut
+        traverse_ (updateWithDeps varMV i) handlers
+      ANFCompose _ components -> traverse_ (updateWithDeps varMV i) components
+  pure varMV
+  where
+    updateWithDeps ::
       forall (m :: Type -> Type).
       PrimMonad m =>
-      MVector (PrimState m) (Set Hash) -> Ref -> m (Set Hash)
-    getNeededFrom mv = \case
-      AnId (Id i) -> MVector.read mv i
-      AVar v -> pure . Set.singleton $ v
-    bvsToSet :: NonEmptyVector (Maybe BoundVar) -> Set Hash
-    bvsToSet = NEVector.foldl' go Set.empty
-    go :: Set Hash -> Maybe BoundVar -> Set Hash
-    go acc = \case
-      Nothing -> acc
-      Just (BoundVar h _) -> Set.insert h acc
-    collectRawStatistics ::
-      forall (s :: Type).
+      MVector (PrimState m) (Set Hash) ->
       Int ->
-      MVector s Int ->
-      MVector s (Set Hash) ->
-      ST s (Map Hash Int)
-    collectRawStatistics len countMV neededVarsMV = flip execStateT Map.empty $
-      for_ [0, 1 .. len - 1] $ \i -> case binds NEVector.! i of
-        ANFLeaf ell -> MVector.write countMV i $ case ell of
-          LConstant _ c ->
-            if smallEnoughToInline c
-              then (-1)
-              else 0
-          LBuiltin _ _ -> (-1)
-          LError _ -> (-1)
-          _ -> 0
-        ANFForce _ r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFDelay _ r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFLam _ boundVars r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          -- Lambdas act as binding sites, so they only need variables bound
-          -- 'above' them. Thus, we remove any used bound vars, but also note
-          -- that this is where said variables get bound.
-          let bvAsSet = bvsToSet boundVars
-          let neededVars' = Set.difference neededVars bvAsSet
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars'
-          modify (\acc -> Set.foldr (`Map.insert` i) acc bvAsSet)
-        ANFFix _ (BoundVar varHash _) r -> do
-          updateCountAt countMV r
-          neededVars <- getNeededFrom neededVarsMV r
-          -- Fixpoint self arguments aren't needed by fixes themselves. Thus, we
-          -- remove it from used vars, but also note that it was bound here.
-          let neededVars' = Set.delete varHash neededVars
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars'
-          modify (Map.insert varHash i)
-        ANFApply _ f xs -> do
-          updateCountAt countMV f
-          traverse_ (updateCountAt countMV) xs
-          neededF <- getNeededFrom neededVarsMV f
-          neededXs <- traverse (getNeededFrom neededVarsMV) xs
-          let neededVars = NEVector.foldl' Set.union neededF neededXs
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFConstr _ _ fields -> do
-          traverse_ (updateCountAt countMV) fields
-          neededFields <- traverse (getNeededFrom neededVarsMV) fields
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i . fold $ neededFields
-        ANFCase _ scrut handlers -> do
-          updateCountAt countMV scrut
-          traverse_ (updateCountAt countMV) handlers
-          neededScrut <- getNeededFrom neededVarsMV scrut
-          neededHandlers <- traverse (getNeededFrom neededVarsMV) handlers
-          let neededVars = NEVector.foldl' Set.union neededScrut neededHandlers
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i neededVars
-        ANFCompose _ components -> do
-          traverse_ (updateCountAt countMV) components
-          neededComponents <- traverse (getNeededFrom neededVarsMV) components
-          MVector.write countMV i 0
-          MVector.write neededVarsMV i . fold $ neededComponents
+      Ref ->
+      m ()
+    updateWithDeps mv i r = do
+      deps <- getDeps mv r
+      MVector.modify mv (Set.union deps) i
+    getDeps ::
+      forall (m :: Type -> Type).
+      PrimMonad m =>
+      MVector (PrimState m) (Set Hash) ->
+      Ref ->
+      m (Set Hash)
+    getDeps mv = \case
+      AnId (Id i) -> MVector.read mv i
+      AVar varHash -> pure . Set.singleton $ varHash
 
 bvWithMultiplicity ::
   forall (a :: Type) (m :: Type -> Type).
@@ -570,8 +794,6 @@ hashToCount :: Hash -> Ref -> Sum Word
 hashToCount h = \case
   AVar h' -> if h == h' then Sum 1 else mempty
   AnId _ -> mempty
-
--- Pretty Printer Helpers
 
 prettyANFBinds :: forall ann1 ann2. ANF ann1 -> Doc ann2
 prettyANFBinds (ANF _ binds) = vcat . NEVector.toList $ NEVector.imap (\(Id -> i) b -> mkBind i b) binds
