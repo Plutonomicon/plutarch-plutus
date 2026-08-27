@@ -61,7 +61,24 @@ import Plutarch.Primitive.Pair (PBPair (PBPair))
 import Plutarch.Primitive.String (PString)
 import PlutusCore qualified as PLC
 
--- | @since wip
+{- | A way of displaying a value of a Plutarch type (for debugging purposes).
+This is designed primarily for debugging: thus, release builds of scripts
+will not include this logic.
+
+= Why the CPS?
+
+'pdebug' is written in a continuation-passing style. This allows us to avoid
+generating any code to produce debug representations when 'pshow' is used if
+we're in a release build.
+
+= Important note
+
+/Do not/ use 'pdebug' directly! This is designed mostly as an implementation
+detail. Use 'pshow' instead: not only is this easier, it also means that if
+you accidentally leave in any 'pshow's, your scripts won't suffer too much.
+
+@since wip
+-}
 class PlutarchType a => PDebug (a :: S -> Type) where
   pdebug ::
     forall (r :: S -> Type) (s :: S).
@@ -110,7 +127,10 @@ instance PDebug PPositive where
          in renderNum # q # r
       )
 
--- | @since wip
+{- | Represented as hex, with a leading @0x@.
+
+@since wip
+-}
 instance PDebug PByte where
   pdebug t f =
     f
@@ -120,7 +140,10 @@ instance PDebug PByte where
          in sc "0x" #<|> (renderHexDigit # d1) #<|> (renderHexDigit # d2)
       )
 
--- | @since wip
+{- | Represented as a list of hex bytes.
+
+@since wip
+-}
 instance PDebug PByteString where
   pdebug t f =
     f
@@ -166,14 +189,33 @@ instance PDebug PData where
           # pshow (punIData # dat)
           # pshow (punBData # dat)
 
--- \| @since wip
+{- | Will display the @Data@ encoding rather than the wrapped type @a@.
+
+@since wip
+-}
 instance PDebug (PAsData a)
 
--- | @since wip
+{- | Wraps in @"@.
+
+@since wip
+-}
 instance PDebug PString where
   pdebug t f = f (sc "\"" #<|> t #<|> sc "\"")
 
--- | @since wip
+{- | A direct way of transforming something with a 'PDebug' instance into a
+'PString' representation.
+
+= Important note
+
+'pshow' is extremely inefficient, both in terms of onchain resources and
+script size. It should not be used for production - only debugging.
+
+To help reduce the impact of accidental 'pshow' inclusion, if tracing is
+disabled, 'pshow' will generate an empty string. This is not ideal, but at
+least limits the impact of stray 'pshow's.
+
+@since wip
+-}
 pshow ::
   forall (a :: S -> Type) (s :: S).
   PDebug a =>
