@@ -1,570 +1,541 @@
-<case
-  <[1, 2, 3, 4] :: [Integer]>@q8QDjAhPyzbN 
-  [
-    <\a b -> 
-      <Apply
-        <AppendString>@p7qYeALXKVC
-        [
-          <"[" :: String>@cDpRPlTVLte, 
+<Apply
+  <\a -> 
+    <case
+      a 
+      [
+        <\b c -> 
           <Apply
             <AppendString>@p7qYeALXKVC
             [
               <Apply
-                <Fix
-                  [c]
-                  <\d e -> 
-                    <case
-                      e 
-                      [
-                        <\f g -> 
-                          <Apply
-                            <AppendString>@p7qYeALXKVC
-                            [
-                              <case
-                                <Apply
-                                  <LessThanEqualsInteger>@khwRaGmJyGyN
-                                  [d, <-1 :: Integer>@lS5p0LduYncN]
-                                >@iMkH0Qf2Gjt 
-                                [
-                                  <case
-                                    <Apply
-                                      <EqualsInteger>@dr5yy9ULU5j
-                                      [d, <0 :: Integer>@mqE7eqJLvgvN]
-                                    >@paoG7jaEhse 
-                                    [
-                                      <Apply
-                                        <Fix
-                                          [h]
-                                          <\i j -> 
-                                            <case
-                                              <Apply
-                                                <EqualsInteger>@dr5yy9ULU5j
-                                                [i, <0 :: Integer>@mqE7eqJLvgvN]
-                                              >@eqh16RIw4GgN 
-                                              [
-                                                <Apply
-                                                  <AppendString>@p7qYeALXKVC
-                                                  [
-                                                    <Apply
-                                                      h
-                                                      [
-                                                        <Apply
-                                                          <
-                                                            QuotientInteger
-                                                          >@kq3kmmKulbi
-                                                          [
-                                                            i, 
-                                                            <
-                                                              10 :: Integer
-                                                            >@d9BTnRxpywy
-                                                          ]
-                                                        >@yKQXOZc5KvzN, 
-                                                        <Apply
-                                                          <
-                                                            RemainderInteger
-                                                          >@n275PtZtdlc
-                                                          [
-                                                            i, 
-                                                            <
-                                                              10 :: Integer
-                                                            >@d9BTnRxpywy
-                                                          ]
-                                                        >@hk5VT7YBPyD
-                                                      ]
-                                                    >@zqAdEMIpvFr, 
-                                                    <Apply
-                                                      <\k -> 
-                                                        <case
-                                                          k 
-                                                          [
-                                                            <
-                                                              "0" :: String
-                                                            >@csDJobL38ReN, 
-                                                            <
-                                                              "1" :: String
-                                                            >@xcoGmOiC8HiN, 
-                                                            <
-                                                              "2" :: String
-                                                            >@mSGXrSlhOzoN, 
-                                                            <
-                                                              "3" :: String
-                                                            >@zBbVugCAuKb, 
-                                                            <
-                                                              "4" :: String
-                                                            >@c8j19kUVGIf, 
-                                                            <
-                                                              "5" :: String
-                                                            >@dSu76OoYQVw, 
-                                                            <
-                                                              "6" :: String
-                                                            >@qoj0eYQE55l, 
-                                                            <
-                                                              "7" :: String
-                                                            >@dWf9bSLUCJAN, 
-                                                            <
-                                                              "8" :: String
-                                                            >@nqMwP3WtHczN, 
-                                                            <
-                                                              "9" :: String
-                                                            >@tT7TcSLpins
-                                                          ]
-                                                        >@ms7XKa85giy
-                                                      >@cUA55Lq3VP
-                                                      [j]
-                                                    >@xzbLxjsJsMe
-                                                  ]
-                                                >@zCnb8OqpMZAN, 
-                                                <Apply
-                                                  <\l -> 
-                                                    <case
-                                                      l 
-                                                      [
-                                                        <
-                                                          "0" :: String
-                                                        >@csDJobL38ReN, 
-                                                        <
-                                                          "1" :: String
-                                                        >@xcoGmOiC8HiN, 
-                                                        <
-                                                          "2" :: String
-                                                        >@mSGXrSlhOzoN, 
-                                                        <
-                                                          "3" :: String
-                                                        >@zBbVugCAuKb, 
-                                                        <
-                                                          "4" :: String
-                                                        >@c8j19kUVGIf, 
-                                                        <
-                                                          "5" :: String
-                                                        >@dSu76OoYQVw, 
-                                                        <
-                                                          "6" :: String
-                                                        >@qoj0eYQE55l, 
-                                                        <
-                                                          "7" :: String
-                                                        >@dWf9bSLUCJAN, 
-                                                        <
-                                                          "8" :: String
-                                                        >@nqMwP3WtHczN, 
-                                                        <
-                                                          "9" :: String
-                                                        >@tT7TcSLpins
-                                                      ]
-                                                    >@byWnLy6yKsN
-                                                  >@cUA55Lq3VP
-                                                  [j]
-                                                >@xzbLxjsJsMe
-                                              ]
-                                            >@xGnrVWtlXxhN
-                                          >@orcVP9zAdohN
-                                        >@bRPc5qXg6dm
-                                        [
-                                          <Apply
-                                            <QuotientInteger>@kq3kmmKulbi
-                                            [d, <10 :: Integer>@d9BTnRxpywy]
-                                          >@niItcI10cxwN, 
-                                          <Apply
-                                            <RemainderInteger>@n275PtZtdlc
-                                            [d, <10 :: Integer>@d9BTnRxpywy]
-                                          >@no7hsZ0eP
-                                        ]
-                                      >@oF1T2qjtuUn, 
-                                      <"0" :: String>@csDJobL38ReN
-                                    ]
-                                  >@cIy8QJdjHRz, 
-                                  <Apply
-                                    <AppendString>@p7qYeALXKVC
-                                    [
-                                      <"-" :: String>@nB6vG8uH1md, 
-                                      <case
-                                        <Apply
-                                          <EqualsInteger>@dr5yy9ULU5j
-                                          [
-                                            <Apply
-                                              <SubtractInteger>@lAuuiZ9AppE
-                                              [<0 :: Integer>@mqE7eqJLvgvN, d]
-                                            >@fSGYKq413RN, 
-                                            <0 :: Integer>@mqE7eqJLvgvN
-                                          ]
-                                        >@sQIY9u3OCiA 
-                                        [
-                                          <Apply
-                                            <Fix
-                                              [m]
-                                              <\n o -> 
-                                                <case
-                                                  <Apply
-                                                    <EqualsInteger>@dr5yy9ULU5j
-                                                    [
-                                                      n, 
-                                                      <
-                                                        0 :: Integer
-                                                      >@mqE7eqJLvgvN
-                                                    ]
-                                                  >@lb323rj5PJfN 
-                                                  [
-                                                    <Apply
-                                                      <AppendString>@p7qYeALXKVC
-                                                      [
-                                                        <Apply
-                                                          m
-                                                          [
-                                                            <Apply
-                                                              <
-                                                                QuotientInteger
-                                                              >@kq3kmmKulbi
-                                                              [
-                                                                n, 
-                                                                <
-                                                                  10 :: Integer
-                                                                >@d9BTnRxpywy
-                                                              ]
-                                                            >@sdhTiBP6Cwm, 
-                                                            <Apply
-                                                              <
-                                                                RemainderInteger
-                                                              >@n275PtZtdlc
-                                                              [
-                                                                n, 
-                                                                <
-                                                                  10 :: Integer
-                                                                >@d9BTnRxpywy
-                                                              ]
-                                                            >@hheObXlRY7BN
-                                                          ]
-                                                        >@cvteKWliprhN, 
-                                                        <Apply
-                                                          <\p -> 
-                                                            <case
-                                                              p 
-                                                              [
-                                                                <
-                                                                  "0" :: String
-                                                                >@csDJobL38ReN, 
-                                                                <
-                                                                  "1" :: String
-                                                                >@xcoGmOiC8HiN, 
-                                                                <
-                                                                  "2" :: String
-                                                                >@mSGXrSlhOzoN, 
-                                                                <
-                                                                  "3" :: String
-                                                                >@zBbVugCAuKb, 
-                                                                <
-                                                                  "4" :: String
-                                                                >@c8j19kUVGIf, 
-                                                                <
-                                                                  "5" :: String
-                                                                >@dSu76OoYQVw, 
-                                                                <
-                                                                  "6" :: String
-                                                                >@qoj0eYQE55l, 
-                                                                <
-                                                                  "7" :: String
-                                                                >@dWf9bSLUCJAN, 
-                                                                <
-                                                                  "8" :: String
-                                                                >@nqMwP3WtHczN, 
-                                                                <
-                                                                  "9" :: String
-                                                                >@tT7TcSLpins
-                                                              ]
-                                                            >@zlGGUnVlw4u
-                                                          >@cUA55Lq3VP
-                                                          [o]
-                                                        >@vsIT7zhWD4c
-                                                      ]
-                                                    >@fsv3gUbMb5m, 
-                                                    <Apply
-                                                      <\q -> 
-                                                        <case
-                                                          q 
-                                                          [
-                                                            <
-                                                              "0" :: String
-                                                            >@csDJobL38ReN, 
-                                                            <
-                                                              "1" :: String
-                                                            >@xcoGmOiC8HiN, 
-                                                            <
-                                                              "2" :: String
-                                                            >@mSGXrSlhOzoN, 
-                                                            <
-                                                              "3" :: String
-                                                            >@zBbVugCAuKb, 
-                                                            <
-                                                              "4" :: String
-                                                            >@c8j19kUVGIf, 
-                                                            <
-                                                              "5" :: String
-                                                            >@dSu76OoYQVw, 
-                                                            <
-                                                              "6" :: String
-                                                            >@qoj0eYQE55l, 
-                                                            <
-                                                              "7" :: String
-                                                            >@dWf9bSLUCJAN, 
-                                                            <
-                                                              "8" :: String
-                                                            >@nqMwP3WtHczN, 
-                                                            <
-                                                              "9" :: String
-                                                            >@tT7TcSLpins
-                                                          ]
-                                                        >@wcRnuWKjc4e
-                                                      >@cUA55Lq3VP
-                                                      [o]
-                                                    >@vsIT7zhWD4c
-                                                  ]
-                                                >@qZfllknc5lkN
-                                              >@m7OtR9ZHsmn
-                                            >@bRPc5qXg6dm
-                                            [
-                                              <Apply
-                                                <QuotientInteger>@kq3kmmKulbi
-                                                [
-                                                  <Apply
-                                                    <
-                                                      SubtractInteger
-                                                    >@lAuuiZ9AppE
-                                                    [
-                                                      <
-                                                        0 :: Integer
-                                                      >@mqE7eqJLvgvN, 
-                                                      d
-                                                    ]
-                                                  >@fSGYKq413RN, 
-                                                  <10 :: Integer>@d9BTnRxpywy
-                                                ]
-                                              >@wmxI7JKvyQu, 
-                                              <Apply
-                                                <RemainderInteger>@n275PtZtdlc
-                                                [
-                                                  <Apply
-                                                    <
-                                                      SubtractInteger
-                                                    >@lAuuiZ9AppE
-                                                    [
-                                                      <
-                                                        0 :: Integer
-                                                      >@mqE7eqJLvgvN, 
-                                                      d
-                                                    ]
-                                                  >@fSGYKq413RN, 
-                                                  <10 :: Integer>@d9BTnRxpywy
-                                                ]
-                                              >@qjgJTkG92Pg
-                                            ]
-                                          >@bpQzXt2Ggtd, 
-                                          <"0" :: String>@csDJobL38ReN
-                                        ]
-                                      >@ilF76jqmrRy
-                                    ]
-                                  >@ljvGGMfBFKjN
-                                ]
-                              >@ihKOt76gzDg, 
+                <AppendString>@p7qYeALXKVC
+                [
+                  <"[" :: String>@cDpRPlTVLte, 
+                  <Apply
+                    <Fix
+                      [d]
+                      <\e f -> 
+                        <case
+                          f 
+                          [
+                            <\g h -> 
                               <Apply
                                 <AppendString>@p7qYeALXKVC
                                 [
-                                  <", " :: String>@t3U4h8CsxbeN, 
-                                  <Applyc [f, g]>@kqftrSfvArvN
-                                ]
-                              >@cSvlMw92OTnN
-                            ]
-                          >@agSoasat3UiN
-                        >@yF8AZKrtl8eN, 
-                        <case
-                          <Apply
-                            <LessThanEqualsInteger>@khwRaGmJyGyN
-                            [d, <-1 :: Integer>@lS5p0LduYncN]
-                          >@iMkH0Qf2Gjt 
-                          [
-                            <case
-                              <Apply
-                                <EqualsInteger>@dr5yy9ULU5j
-                                [d, <0 :: Integer>@mqE7eqJLvgvN]
-                              >@paoG7jaEhse 
-                              [
-                                <Apply
-                                  <Fix
-                                    [r]
-                                    <\s t -> 
-                                      <case
-                                        <Apply
-                                          <EqualsInteger>@dr5yy9ULU5j
-                                          [s, <0 :: Integer>@mqE7eqJLvgvN]
-                                        >@eB9kFCOaDOAN 
-                                        [
-                                          <Apply
-                                            <AppendString>@p7qYeALXKVC
-                                            [
-                                              <Apply
-                                                r
-                                                [
-                                                  <Apply
-                                                    <
-                                                      QuotientInteger
-                                                    >@kq3kmmKulbi
-                                                    [
-                                                      s, 
-                                                      <
-                                                        10 :: Integer
-                                                      >@d9BTnRxpywy
-                                                    ]
-                                                  >@u9SDMYJ7Afc, 
-                                                  <Apply
-                                                    <
-                                                      RemainderInteger
-                                                    >@n275PtZtdlc
-                                                    [
-                                                      s, 
-                                                      <
-                                                        10 :: Integer
-                                                      >@d9BTnRxpywy
-                                                    ]
-                                                  >@q6AGuucKgHu
-                                                ]
-                                              >@dgfyXDDJwzqN, 
-                                              <Apply
-                                                <\u -> 
-                                                  <case
-                                                    u 
-                                                    [
-                                                      <
-                                                        "0" :: String
-                                                      >@csDJobL38ReN, 
-                                                      <
-                                                        "1" :: String
-                                                      >@xcoGmOiC8HiN, 
-                                                      <
-                                                        "2" :: String
-                                                      >@mSGXrSlhOzoN, 
-                                                      <
-                                                        "3" :: String
-                                                      >@zBbVugCAuKb, 
-                                                      <
-                                                        "4" :: String
-                                                      >@c8j19kUVGIf, 
-                                                      <
-                                                        "5" :: String
-                                                      >@dSu76OoYQVw, 
-                                                      <
-                                                        "6" :: String
-                                                      >@qoj0eYQE55l, 
-                                                      <
-                                                        "7" :: String
-                                                      >@dWf9bSLUCJAN, 
-                                                      <
-                                                        "8" :: String
-                                                      >@nqMwP3WtHczN, 
-                                                      <
-                                                        "9" :: String
-                                                      >@tT7TcSLpins
-                                                    ]
-                                                  >@mAnHBnQzlMlN
-                                                >@cUA55Lq3VP
-                                                [t]
-                                              >@iGmo74sb7Ip
-                                            ]
-                                          >@b6C02ipeonl, 
-                                          <Apply
-                                            <\v -> 
-                                              <case
-                                                v 
-                                                [
-                                                  <"0" :: String>@csDJobL38ReN, 
-                                                  <"1" :: String>@xcoGmOiC8HiN, 
-                                                  <"2" :: String>@mSGXrSlhOzoN, 
-                                                  <"3" :: String>@zBbVugCAuKb, 
-                                                  <"4" :: String>@c8j19kUVGIf, 
-                                                  <"5" :: String>@dSu76OoYQVw, 
-                                                  <"6" :: String>@qoj0eYQE55l, 
-                                                  <"7" :: String>@dWf9bSLUCJAN, 
-                                                  <"8" :: String>@nqMwP3WtHczN, 
-                                                  <"9" :: String>@tT7TcSLpins
-                                                ]
-                                              >@uXhpEpm1tclN
-                                            >@cUA55Lq3VP
-                                            [t]
-                                          >@iGmo74sb7Ip
-                                        ]
-                                      >@xUefxOEl64m
-                                    >@nQUMJe79FeEN
-                                  >@bRPc5qXg6dm
-                                  [
-                                    <Apply
-                                      <QuotientInteger>@kq3kmmKulbi
-                                      [d, <10 :: Integer>@d9BTnRxpywy]
-                                    >@niItcI10cxwN, 
-                                    <Apply
-                                      <RemainderInteger>@n275PtZtdlc
-                                      [d, <10 :: Integer>@d9BTnRxpywy]
-                                    >@no7hsZ0eP
-                                  ]
-                                >@oF1T2qjtuUn, 
-                                <"0" :: String>@csDJobL38ReN
-                              ]
-                            >@cIy8QJdjHRz, 
-                            <Apply
-                              <AppendString>@p7qYeALXKVC
-                              [
-                                <"-" :: String>@nB6vG8uH1md, 
-                                <case
                                   <Apply
-                                    <EqualsInteger>@dr5yy9ULU5j
+                                    <AppendString>@p7qYeALXKVC
                                     [
                                       <Apply
-                                        <SubtractInteger>@lAuuiZ9AppE
-                                        [<0 :: Integer>@mqE7eqJLvgvN, d]
-                                      >@fSGYKq413RN, 
-                                      <0 :: Integer>@mqE7eqJLvgvN
-                                    ]
-                                  >@sQIY9u3OCiA 
-                                  [
-                                    <Apply
-                                      <Fix
-                                        [w]
-                                        <\x y -> 
+                                        <\i -> 
                                           <case
                                             <Apply
-                                              <EqualsInteger>@dr5yy9ULU5j
-                                              [x, <0 :: Integer>@mqE7eqJLvgvN]
-                                            >@n2IhKB6n1fg 
+                                              <
+                                                LessThanEqualsInteger
+                                              >@khwRaGmJyGyN
+                                              [i, <-1 :: Integer>@lS5p0LduYncN]
+                                            >@ytAbm3wSuSbN 
                                             [
-                                              <Apply
-                                                <AppendString>@p7qYeALXKVC
+                                              <case
+                                                <Apply
+                                                  <EqualsInteger>@dr5yy9ULU5j
+                                                  [
+                                                    i, 
+                                                    <0 :: Integer>@mqE7eqJLvgvN
+                                                  ]
+                                                >@eqh16RIw4GgN 
                                                 [
                                                   <Apply
-                                                    w
+                                                    <Fix
+                                                      [j]
+                                                      <\k l -> 
+                                                        <case
+                                                          <Apply
+                                                            <
+                                                              EqualsInteger
+                                                            >@dr5yy9ULU5j
+                                                            [
+                                                              k, 
+                                                              <
+                                                                0 :: Integer
+                                                              >@mqE7eqJLvgvN
+                                                            ]
+                                                          >@h3uxkj6pquvN 
+                                                          [
+                                                            <Apply
+                                                              <
+                                                                AppendString
+                                                              >@p7qYeALXKVC
+                                                              [
+                                                                <Apply
+                                                                  j
+                                                                  [
+                                                                    <Apply
+                                                                      <
+                                                                        QuotientInteger
+                                                                      >@kq3kmmKulbi
+                                                                      [
+                                                                        k, 
+                                                                        <
+                                                                          10 :: Integer
+                                                                        >@d9BTnRxpywy
+                                                                      ]
+                                                                    >@rgmAfBmRa2pN, 
+                                                                    <Apply
+                                                                      <
+                                                                        RemainderInteger
+                                                                      >@n275PtZtdlc
+                                                                      [
+                                                                        k, 
+                                                                        <
+                                                                          10 :: Integer
+                                                                        >@d9BTnRxpywy
+                                                                      ]
+                                                                    >@aBCekHzzvgz
+                                                                  ]
+                                                                >@uh2hFiglWCpN, 
+                                                                <Apply
+                                                                  <\m -> 
+                                                                    <case
+                                                                      m 
+                                                                      [
+                                                                        <
+                                                                          "0" :: String
+                                                                        >@csDJobL38ReN, 
+                                                                        <
+                                                                          "1" :: String
+                                                                        >@xcoGmOiC8HiN, 
+                                                                        <
+                                                                          "2" :: String
+                                                                        >@mSGXrSlhOzoN, 
+                                                                        <
+                                                                          "3" :: String
+                                                                        >@zBbVugCAuKb, 
+                                                                        <
+                                                                          "4" :: String
+                                                                        >@c8j19kUVGIf, 
+                                                                        <
+                                                                          "5" :: String
+                                                                        >@dSu76OoYQVw, 
+                                                                        <
+                                                                          "6" :: String
+                                                                        >@qoj0eYQE55l, 
+                                                                        <
+                                                                          "7" :: String
+                                                                        >@dWf9bSLUCJAN, 
+                                                                        <
+                                                                          "8" :: String
+                                                                        >@nqMwP3WtHczN, 
+                                                                        <
+                                                                          "9" :: String
+                                                                        >@tT7TcSLpins
+                                                                      ]
+                                                                    >@dLZEJqjb1vrN
+                                                                  >@cUA55Lq3VP
+                                                                  [l]
+                                                                >@a5Ye8fYh6ZgN
+                                                              ]
+                                                            >@wCuW2UbmpWBN, 
+                                                            <Apply
+                                                              <\n -> 
+                                                                <case
+                                                                  n 
+                                                                  [
+                                                                    <
+                                                                      "0" :: String
+                                                                    >@csDJobL38ReN, 
+                                                                    <
+                                                                      "1" :: String
+                                                                    >@xcoGmOiC8HiN, 
+                                                                    <
+                                                                      "2" :: String
+                                                                    >@mSGXrSlhOzoN, 
+                                                                    <
+                                                                      "3" :: String
+                                                                    >@zBbVugCAuKb, 
+                                                                    <
+                                                                      "4" :: String
+                                                                    >@c8j19kUVGIf, 
+                                                                    <
+                                                                      "5" :: String
+                                                                    >@dSu76OoYQVw, 
+                                                                    <
+                                                                      "6" :: String
+                                                                    >@qoj0eYQE55l, 
+                                                                    <
+                                                                      "7" :: String
+                                                                    >@dWf9bSLUCJAN, 
+                                                                    <
+                                                                      "8" :: String
+                                                                    >@nqMwP3WtHczN, 
+                                                                    <
+                                                                      "9" :: String
+                                                                    >@tT7TcSLpins
+                                                                  ]
+                                                                >@lYjPAfDADkrN
+                                                              >@cUA55Lq3VP
+                                                              [l]
+                                                            >@a5Ye8fYh6ZgN
+                                                          ]
+                                                        >@waGnE0KDbst
+                                                      >@mWrrdkqW3wi
+                                                    >@bRPc5qXg6dm
                                                     [
                                                       <Apply
                                                         <
                                                           QuotientInteger
                                                         >@kq3kmmKulbi
                                                         [
-                                                          x, 
+                                                          i, 
                                                           <
                                                             10 :: Integer
                                                           >@d9BTnRxpywy
                                                         ]
-                                                      >@gDwUtmqf5us, 
+                                                      >@yKQXOZc5KvzN, 
                                                       <Apply
                                                         <
                                                           RemainderInteger
                                                         >@n275PtZtdlc
                                                         [
-                                                          x, 
+                                                          i, 
                                                           <
                                                             10 :: Integer
                                                           >@d9BTnRxpywy
                                                         ]
-                                                      >@c5KBvdm0vYkN
+                                                      >@hk5VT7YBPyD
                                                     ]
-                                                  >@leRChVwIG2j, 
+                                                  >@d53Y0D1WeyrN, 
+                                                  <"0" :: String>@csDJobL38ReN
+                                                ]
+                                              >@buRocOG5SAm, 
+                                              <Apply
+                                                <AppendString>@p7qYeALXKVC
+                                                [
+                                                  <"-" :: String>@nB6vG8uH1md, 
+                                                  <case
+                                                    <Apply
+                                                      <
+                                                        EqualsInteger
+                                                      >@dr5yy9ULU5j
+                                                      [
+                                                        <Apply
+                                                          <
+                                                            SubtractInteger
+                                                          >@lAuuiZ9AppE
+                                                          [
+                                                            <
+                                                              0 :: Integer
+                                                            >@mqE7eqJLvgvN, 
+                                                            i
+                                                          ]
+                                                        >@cw80DIyiumyN, 
+                                                        <
+                                                          0 :: Integer
+                                                        >@mqE7eqJLvgvN
+                                                      ]
+                                                    >@f9gjx6979an 
+                                                    [
+                                                      <Apply
+                                                        <Fix
+                                                          [o]
+                                                          <\p q -> 
+                                                            <case
+                                                              <Apply
+                                                                <
+                                                                  EqualsInteger
+                                                                >@dr5yy9ULU5j
+                                                                [
+                                                                  p, 
+                                                                  <
+                                                                    0 :: Integer
+                                                                  >@mqE7eqJLvgvN
+                                                                ]
+                                                              >@cTJnjotnriAN 
+                                                              [
+                                                                <Apply
+                                                                  <
+                                                                    AppendString
+                                                                  >@p7qYeALXKVC
+                                                                  [
+                                                                    <Apply
+                                                                      o
+                                                                      [
+                                                                        <Apply
+                                                                          <
+                                                                            QuotientInteger
+                                                                          >@kq3kmmKulbi
+                                                                          [
+                                                                            p, 
+                                                                            <
+                                                                              10 :: Integer
+                                                                            >@d9BTnRxpywy
+                                                                          ]
+                                                                        >@qIC1LLJTIIiN, 
+                                                                        <Apply
+                                                                          <
+                                                                            RemainderInteger
+                                                                          >@n275PtZtdlc
+                                                                          [
+                                                                            p, 
+                                                                            <
+                                                                              10 :: Integer
+                                                                            >@d9BTnRxpywy
+                                                                          ]
+                                                                        >@qVvoZegdvOiN
+                                                                      ]
+                                                                    >@l36sXiDpeXx, 
+                                                                    <Apply
+                                                                      <\r -> 
+                                                                        <case
+                                                                          r 
+                                                                          [
+                                                                            <
+                                                                              "0" :: String
+                                                                            >@csDJobL38ReN, 
+                                                                            <
+                                                                              "1" :: String
+                                                                            >@xcoGmOiC8HiN, 
+                                                                            <
+                                                                              "2" :: String
+                                                                            >@mSGXrSlhOzoN, 
+                                                                            <
+                                                                              "3" :: String
+                                                                            >@zBbVugCAuKb, 
+                                                                            <
+                                                                              "4" :: String
+                                                                            >@c8j19kUVGIf, 
+                                                                            <
+                                                                              "5" :: String
+                                                                            >@dSu76OoYQVw, 
+                                                                            <
+                                                                              "6" :: String
+                                                                            >@qoj0eYQE55l, 
+                                                                            <
+                                                                              "7" :: String
+                                                                            >@dWf9bSLUCJAN, 
+                                                                            <
+                                                                              "8" :: String
+                                                                            >@nqMwP3WtHczN, 
+                                                                            <
+                                                                              "9" :: String
+                                                                            >@tT7TcSLpins
+                                                                          ]
+                                                                        >@zEo3AtT7fol
+                                                                      >@cUA55Lq3VP
+                                                                      [q]
+                                                                    >@v1baoPXLMTx
+                                                                  ]
+                                                                >@czdpbHvxziq, 
+                                                                <Apply
+                                                                  <\s -> 
+                                                                    <case
+                                                                      s 
+                                                                      [
+                                                                        <
+                                                                          "0" :: String
+                                                                        >@csDJobL38ReN, 
+                                                                        <
+                                                                          "1" :: String
+                                                                        >@xcoGmOiC8HiN, 
+                                                                        <
+                                                                          "2" :: String
+                                                                        >@mSGXrSlhOzoN, 
+                                                                        <
+                                                                          "3" :: String
+                                                                        >@zBbVugCAuKb, 
+                                                                        <
+                                                                          "4" :: String
+                                                                        >@c8j19kUVGIf, 
+                                                                        <
+                                                                          "5" :: String
+                                                                        >@dSu76OoYQVw, 
+                                                                        <
+                                                                          "6" :: String
+                                                                        >@qoj0eYQE55l, 
+                                                                        <
+                                                                          "7" :: String
+                                                                        >@dWf9bSLUCJAN, 
+                                                                        <
+                                                                          "8" :: String
+                                                                        >@nqMwP3WtHczN, 
+                                                                        <
+                                                                          "9" :: String
+                                                                        >@tT7TcSLpins
+                                                                      ]
+                                                                    >@vVQmtOvnldy
+                                                                  >@cUA55Lq3VP
+                                                                  [q]
+                                                                >@v1baoPXLMTx
+                                                              ]
+                                                            >@ewfMePxtvrq
+                                                          >@j1UWIChBZwxN
+                                                        >@bRPc5qXg6dm
+                                                        [
+                                                          <Apply
+                                                            <
+                                                              QuotientInteger
+                                                            >@kq3kmmKulbi
+                                                            [
+                                                              <Apply
+                                                                <
+                                                                  SubtractInteger
+                                                                >@lAuuiZ9AppE
+                                                                [
+                                                                  <
+                                                                    0 :: Integer
+                                                                  >@mqE7eqJLvgvN, 
+                                                                  i
+                                                                ]
+                                                              >@cw80DIyiumyN, 
+                                                              <
+                                                                10 :: Integer
+                                                              >@d9BTnRxpywy
+                                                            ]
+                                                          >@oCHjunsplYx, 
+                                                          <Apply
+                                                            <
+                                                              RemainderInteger
+                                                            >@n275PtZtdlc
+                                                            [
+                                                              <Apply
+                                                                <
+                                                                  SubtractInteger
+                                                                >@lAuuiZ9AppE
+                                                                [
+                                                                  <
+                                                                    0 :: Integer
+                                                                  >@mqE7eqJLvgvN, 
+                                                                  i
+                                                                ]
+                                                              >@cw80DIyiumyN, 
+                                                              <
+                                                                10 :: Integer
+                                                              >@d9BTnRxpywy
+                                                            ]
+                                                          >@zVQ6jZziyMlN
+                                                        ]
+                                                      >@v0Vyf1xW2Wf, 
+                                                      <
+                                                        "0" :: String
+                                                      >@csDJobL38ReN
+                                                    ]
+                                                  >@uIxDZ1JEup
+                                                ]
+                                              >@gn8tCTxArik
+                                            ]
+                                          >@h1mEkwEmz6DN
+                                        >@n6rAyxpHXuhN
+                                        [e]
+                                      >@rGLaulMTdsm, 
+                                      <", " :: String>@t3U4h8CsxbeN
+                                    ]
+                                  >@e9uErGoUswlN, 
+                                  <Applyd [g, h]>@gn2USKa6URmN
+                                ]
+                              >@rS9FbGtqLlf
+                            >@y4JIc3KLZ0d, 
+                            <Apply
+                              <\t -> 
+                                <case
+                                  <Apply
+                                    <LessThanEqualsInteger>@khwRaGmJyGyN
+                                    [t, <-1 :: Integer>@lS5p0LduYncN]
+                                  >@zl68ObT3B4cN 
+                                  [
+                                    <case
+                                      <Apply
+                                        <EqualsInteger>@dr5yy9ULU5j
+                                        [t, <0 :: Integer>@mqE7eqJLvgvN]
+                                      >@hO3uTuHTM3jN 
+                                      [
+                                        <Apply
+                                          <Fix
+                                            [u]
+                                            <\v w -> 
+                                              <case
+                                                <Apply
+                                                  <EqualsInteger>@dr5yy9ULU5j
+                                                  [
+                                                    v, 
+                                                    <0 :: Integer>@mqE7eqJLvgvN
+                                                  ]
+                                                >@jkYQdJJqcrD 
+                                                [
                                                   <Apply
-                                                    <\z -> 
+                                                    <AppendString>@p7qYeALXKVC
+                                                    [
+                                                      <Apply
+                                                        u
+                                                        [
+                                                          <Apply
+                                                            <
+                                                              QuotientInteger
+                                                            >@kq3kmmKulbi
+                                                            [
+                                                              v, 
+                                                              <
+                                                                10 :: Integer
+                                                              >@d9BTnRxpywy
+                                                            ]
+                                                          >@tqpoJ28PMlj, 
+                                                          <Apply
+                                                            <
+                                                              RemainderInteger
+                                                            >@n275PtZtdlc
+                                                            [
+                                                              v, 
+                                                              <
+                                                                10 :: Integer
+                                                              >@d9BTnRxpywy
+                                                            ]
+                                                          >@gRpADmSXhYDN
+                                                        ]
+                                                      >@wuuqBYxXSpe, 
+                                                      <Apply
+                                                        <\x -> 
+                                                          <case
+                                                            x 
+                                                            [
+                                                              <
+                                                                "0" :: String
+                                                              >@csDJobL38ReN, 
+                                                              <
+                                                                "1" :: String
+                                                              >@xcoGmOiC8HiN, 
+                                                              <
+                                                                "2" :: String
+                                                              >@mSGXrSlhOzoN, 
+                                                              <
+                                                                "3" :: String
+                                                              >@zBbVugCAuKb, 
+                                                              <
+                                                                "4" :: String
+                                                              >@c8j19kUVGIf, 
+                                                              <
+                                                                "5" :: String
+                                                              >@dSu76OoYQVw, 
+                                                              <
+                                                                "6" :: String
+                                                              >@qoj0eYQE55l, 
+                                                              <
+                                                                "7" :: String
+                                                              >@dWf9bSLUCJAN, 
+                                                              <
+                                                                "8" :: String
+                                                              >@nqMwP3WtHczN, 
+                                                              <
+                                                                "9" :: String
+                                                              >@tT7TcSLpins
+                                                            ]
+                                                          >@cwCAoqDHFHwN
+                                                        >@cUA55Lq3VP
+                                                        [w]
+                                                      >@wxWCA3y8cKgN
+                                                    ]
+                                                  >@r1RGBUy2fVfN, 
+                                                  <Apply
+                                                    <\y -> 
                                                       <case
-                                                        z 
+                                                        y 
                                                         [
                                                           <
                                                             "0" :: String
@@ -597,98 +568,241 @@
                                                             "9" :: String
                                                           >@tT7TcSLpins
                                                         ]
-                                                      >@qzfR2ISv5ON
+                                                      >@nlOJkoPPcpl
                                                     >@cUA55Lq3VP
-                                                    [y]
-                                                  >@iqWIgyrSF0sN
+                                                    [w]
+                                                  >@wxWCA3y8cKgN
                                                 ]
-                                              >@mZi5Ml7ILcc, 
-                                              <Apply
-                                                <\ab -> 
-                                                  <case
-                                                    ab 
-                                                    [
-                                                      <
-                                                        "0" :: String
-                                                      >@csDJobL38ReN, 
-                                                      <
-                                                        "1" :: String
-                                                      >@xcoGmOiC8HiN, 
-                                                      <
-                                                        "2" :: String
-                                                      >@mSGXrSlhOzoN, 
-                                                      <
-                                                        "3" :: String
-                                                      >@zBbVugCAuKb, 
-                                                      <
-                                                        "4" :: String
-                                                      >@c8j19kUVGIf, 
-                                                      <
-                                                        "5" :: String
-                                                      >@dSu76OoYQVw, 
-                                                      <
-                                                        "6" :: String
-                                                      >@qoj0eYQE55l, 
-                                                      <
-                                                        "7" :: String
-                                                      >@dWf9bSLUCJAN, 
-                                                      <
-                                                        "8" :: String
-                                                      >@nqMwP3WtHczN, 
-                                                      <
-                                                        "9" :: String
-                                                      >@tT7TcSLpins
-                                                    ]
-                                                  >@fBIFPZAw6JiN
-                                                >@cUA55Lq3VP
-                                                [y]
-                                              >@iqWIgyrSF0sN
-                                            ]
-                                          >@cjCvFm7ET5j
-                                        >@lHgBCmU5nVb
-                                      >@bRPc5qXg6dm
-                                      [
-                                        <Apply
-                                          <QuotientInteger>@kq3kmmKulbi
+                                              >@cUXR8xQDKVx
+                                            >@a1F6YjQe4go
+                                          >@bRPc5qXg6dm
                                           [
                                             <Apply
-                                              <SubtractInteger>@lAuuiZ9AppE
-                                              [<0 :: Integer>@mqE7eqJLvgvN, d]
-                                            >@fSGYKq413RN, 
-                                            <10 :: Integer>@d9BTnRxpywy
-                                          ]
-                                        >@wmxI7JKvyQu, 
-                                        <Apply
-                                          <RemainderInteger>@n275PtZtdlc
-                                          [
+                                              <QuotientInteger>@kq3kmmKulbi
+                                              [t, <10 :: Integer>@d9BTnRxpywy]
+                                            >@gs4m6v4hEK, 
                                             <Apply
-                                              <SubtractInteger>@lAuuiZ9AppE
-                                              [<0 :: Integer>@mqE7eqJLvgvN, d]
-                                            >@fSGYKq413RN, 
-                                            <10 :: Integer>@d9BTnRxpywy
+                                              <RemainderInteger>@n275PtZtdlc
+                                              [t, <10 :: Integer>@d9BTnRxpywy]
+                                            >@gximM4s2Q7w
                                           ]
-                                        >@qjgJTkG92Pg
+                                        >@lQFwTrbiJUoN, 
+                                        <"0" :: String>@csDJobL38ReN
                                       ]
-                                    >@bpQzXt2Ggtd, 
-                                    <"0" :: String>@csDJobL38ReN
+                                    >@sEdZGx0QU2kN, 
+                                    <Apply
+                                      <AppendString>@p7qYeALXKVC
+                                      [
+                                        <"-" :: String>@nB6vG8uH1md, 
+                                        <case
+                                          <Apply
+                                            <EqualsInteger>@dr5yy9ULU5j
+                                            [
+                                              <Apply
+                                                <SubtractInteger>@lAuuiZ9AppE
+                                                [<0 :: Integer>@mqE7eqJLvgvN, t]
+                                              >@ktcSvAfI5zv, 
+                                              <0 :: Integer>@mqE7eqJLvgvN
+                                            ]
+                                          >@kHgnGGtx7OqN 
+                                          [
+                                            <Apply
+                                              <Fix
+                                                [z]
+                                                <\ab bb -> 
+                                                  <case
+                                                    <Apply
+                                                      <
+                                                        EqualsInteger
+                                                      >@dr5yy9ULU5j
+                                                      [
+                                                        ab, 
+                                                        <
+                                                          0 :: Integer
+                                                        >@mqE7eqJLvgvN
+                                                      ]
+                                                    >@fDkDSSSfnOhN 
+                                                    [
+                                                      <Apply
+                                                        <
+                                                          AppendString
+                                                        >@p7qYeALXKVC
+                                                        [
+                                                          <Apply
+                                                            z
+                                                            [
+                                                              <Apply
+                                                                <
+                                                                  QuotientInteger
+                                                                >@kq3kmmKulbi
+                                                                [
+                                                                  ab, 
+                                                                  <
+                                                                    10 :: Integer
+                                                                  >@d9BTnRxpywy
+                                                                ]
+                                                              >@pI0XT3052ulN, 
+                                                              <Apply
+                                                                <
+                                                                  RemainderInteger
+                                                                >@n275PtZtdlc
+                                                                [
+                                                                  ab, 
+                                                                  <
+                                                                    10 :: Integer
+                                                                  >@d9BTnRxpywy
+                                                                ]
+                                                              >@zlWZUxflsPkN
+                                                            ]
+                                                          >@md3UrmIx4bpN, 
+                                                          <Apply
+                                                            <\cb -> 
+                                                              <case
+                                                                cb 
+                                                                [
+                                                                  <
+                                                                    "0" :: String
+                                                                  >@csDJobL38ReN, 
+                                                                  <
+                                                                    "1" :: String
+                                                                  >@xcoGmOiC8HiN, 
+                                                                  <
+                                                                    "2" :: String
+                                                                  >@mSGXrSlhOzoN, 
+                                                                  <
+                                                                    "3" :: String
+                                                                  >@zBbVugCAuKb, 
+                                                                  <
+                                                                    "4" :: String
+                                                                  >@c8j19kUVGIf, 
+                                                                  <
+                                                                    "5" :: String
+                                                                  >@dSu76OoYQVw, 
+                                                                  <
+                                                                    "6" :: String
+                                                                  >@qoj0eYQE55l, 
+                                                                  <
+                                                                    "7" :: String
+                                                                  >@dWf9bSLUCJAN, 
+                                                                  <
+                                                                    "8" :: String
+                                                                  >@nqMwP3WtHczN, 
+                                                                  <
+                                                                    "9" :: String
+                                                                  >@tT7TcSLpins
+                                                                ]
+                                                              >@lq3ci2stovc
+                                                            >@cUA55Lq3VP
+                                                            [bb]
+                                                          >@qhBCH1YmuTb
+                                                        ]
+                                                      >@flrJCoYBYylN, 
+                                                      <Apply
+                                                        <\db -> 
+                                                          <case
+                                                            db 
+                                                            [
+                                                              <
+                                                                "0" :: String
+                                                              >@csDJobL38ReN, 
+                                                              <
+                                                                "1" :: String
+                                                              >@xcoGmOiC8HiN, 
+                                                              <
+                                                                "2" :: String
+                                                              >@mSGXrSlhOzoN, 
+                                                              <
+                                                                "3" :: String
+                                                              >@zBbVugCAuKb, 
+                                                              <
+                                                                "4" :: String
+                                                              >@c8j19kUVGIf, 
+                                                              <
+                                                                "5" :: String
+                                                              >@dSu76OoYQVw, 
+                                                              <
+                                                                "6" :: String
+                                                              >@qoj0eYQE55l, 
+                                                              <
+                                                                "7" :: String
+                                                              >@dWf9bSLUCJAN, 
+                                                              <
+                                                                "8" :: String
+                                                              >@nqMwP3WtHczN, 
+                                                              <
+                                                                "9" :: String
+                                                              >@tT7TcSLpins
+                                                            ]
+                                                          >@dmzj4O2yUlpN
+                                                        >@cUA55Lq3VP
+                                                        [bb]
+                                                      >@qhBCH1YmuTb
+                                                    ]
+                                                  >@eoZHphoPuty
+                                                >@oxxIWhunM2q
+                                              >@bRPc5qXg6dm
+                                              [
+                                                <Apply
+                                                  <QuotientInteger>@kq3kmmKulbi
+                                                  [
+                                                    <Apply
+                                                      <
+                                                        SubtractInteger
+                                                      >@lAuuiZ9AppE
+                                                      [
+                                                        <
+                                                          0 :: Integer
+                                                        >@mqE7eqJLvgvN, 
+                                                        t
+                                                      ]
+                                                    >@ktcSvAfI5zv, 
+                                                    <10 :: Integer>@d9BTnRxpywy
+                                                  ]
+                                                >@zxQtRtTovCl, 
+                                                <Apply
+                                                  <RemainderInteger>@n275PtZtdlc
+                                                  [
+                                                    <Apply
+                                                      <
+                                                        SubtractInteger
+                                                      >@lAuuiZ9AppE
+                                                      [
+                                                        <
+                                                          0 :: Integer
+                                                        >@mqE7eqJLvgvN, 
+                                                        t
+                                                      ]
+                                                    >@ktcSvAfI5zv, 
+                                                    <10 :: Integer>@d9BTnRxpywy
+                                                  ]
+                                                >@pM2TzDW70qB
+                                              ]
+                                            >@cV0DR52urtg, 
+                                            <"0" :: String>@csDJobL38ReN
+                                          ]
+                                        >@t3SQXEHrO6A
+                                      ]
+                                    >@eWWze5EyAjwN
                                   ]
-                                >@ilF76jqmrRy
-                              ]
-                            >@ljvGGMfBFKjN
+                                >@dRATXV5m1Om
+                              >@n6rAyxpHXuhN
+                              [e]
+                            >@rGLaulMTdsm
                           ]
-                        >@ihKOt76gzDg
-                      ]
-                    >@f045QHk1o2sN
-                  >@wQdSGZeWSKpN
-                >@pdwtFx15gqy
-                [a, b]
-              >@srVpB0lO0km, 
+                        >@h6jK2hTwlLo
+                      >@njv2cQ7FtPvN
+                    >@xulJRIdlyEvN
+                    [b, c]
+                  >@aqu8BsUiaDj
+                ]
+              >@zxhVD9ojK7r, 
               <"]" :: String>@dQCqSxBto5wN
             ]
-          >@sgqEKlGCnhsN
-        ]
-      >@xZhWHTSsqGm
-    >@pHHDThialxoN, 
-    <"[]" :: String>@amtPr1eo5ctN
-  ]
->@yjIbedUfEpu
+          >@lfqT4E86aEqN
+        >@kPm5Ovj3Muf, 
+        <"[]" :: String>@amtPr1eo5ctN
+      ]
+    >@mFGsOeA5Iqi
+  >@fHEr4HnH5KzN
+  [<[1, 2, 3, 4] :: [Integer]>@q8QDjAhPyzbN]
+>@xMrSuAXsSllN

@@ -84,7 +84,7 @@ instance PDebug PInteger where
       ( pif
           (t #<= ic (-1))
           -- Add a minus sign, absolute value
-          (pappendString # sc "-" # pshow (punsafeSpecialize @PNatural (psubtractInteger # ic 0 # t)))
+          (sc "-" #<|> pshow (punsafeSpecialize @PNatural (psubtractInteger # ic 0 # t)))
           (pshow (punsafeSpecialize @PNatural t))
       )
 
@@ -117,7 +117,7 @@ instance PDebug PByte where
       ( let t' = pgeneralize t
             d1 = pquotientInteger # t' # ic 16
             d2 = premainderInteger # t' # ic 16
-         in pappendString # sc "0x" #$ pappendString # (renderHexDigit # d1) #$ renderHexDigit # d2
+         in sc "0x" #<|> (renderHexDigit # d1) #<|> (renderHexDigit # d2)
       )
 
 -- | @since wip
@@ -129,81 +129,49 @@ instance PDebug PByteString where
               (pequalsInteger # len # ic 0)
               (sc "[]")
               ( let lim = psubtractInteger # len # ic 1
-                 in pappendString # sc "[" #$ pappendString # (go # t # lim # ic 0) # sc "]"
+                 in sc "[" #<|> (go # t # lim # ic 0) #<|> sc "]"
               )
       )
     where
       go :: forall (s :: S). Term s (PByteString :--> PInteger :--> PInteger :--> PString)
       go = pfix $ \self -> plam' $ \bs -> plam' $ \lim -> plam' $ \i ->
-        pif
-          (pequalsInteger # lim # i)
-          (pshow $ pindexByteString # bs # punsafeSpecialize i)
-          ( let rendered = pshow $ pindexByteString # bs # punsafeSpecialize i
-             in pappendString # rendered #$ pappendString # sc ", " #$ self # bs # lim #$ paddInteger # i # ic 1
-          )
+        let rendered = pshow $ pindexByteString # bs # punsafeSpecialize i
+         in pif
+              (pequalsInteger # lim # i)
+              rendered
+              (rendered #<|> sc ", " #<|> (self # bs # lim #$ paddInteger # i # ic 1))
 
 -- | @since wip
 instance PDebug a => PDebug (PBList a) where
-  pdebug t f =
-    f
-      ( pmatch t $ \case
-          PBNil -> sc "[]"
-          PBCons x xs -> pappendString # sc "[" #$ pappendString # (go # x # xs) # sc "]"
-      )
-    where
-      go :: forall (s :: S). Term s (a :--> PBList a :--> PString)
-      go = pfix $ \self -> plam' $ \x -> plam' $ \xs -> pmatch xs $ \case
-        PBNil -> pshow x
-        PBCons y ys -> pappendString # pshow x #$ pappendString # sc ", " #$ self # y # ys
+  pdebug t f = f (formatList (plam' pshow) # t)
 
 -- | @since wip
 instance (PDebug a, PDebug b) => PDebug (PBPair a b) where
-  pdebug t f =
-    f
-      ( pmatch t $ \(PBPair x y) ->
-          pappendString
-            # sc "("
-            #$ pappendString
-            # pshow x
-            #$ pappendString
-            # sc ", "
-            #$ pappendString
-            # pshow y
-            # sc ")"
-      )
+  pdebug t f = f (formatPair (plam' pshow) (plam' pshow) # t)
 
 -- | @since wip
 instance PDebug PData where
   pdebug ::
     forall (r :: S -> Type) (s :: S).
-    PlutarchType r =>
     Term s PData -> (Term s PString -> Term s r) -> Term s r
-  pdebug t f =
-    pchooseData
-      # t
-      # pdebug asConstr f
-      # pdebug asMap f
-      # pdebug asList f
-      # pdebug asI f
-      # pdebug asB f
+  pdebug t f = f (go # t)
     where
-      asConstr :: Term s (PBPair PInteger (PBList PData))
-      asConstr = punConstrData # t
-      asMap :: Term s (PBList (PBPair PData PData))
-      asMap = punMapData # t
-      asList :: Term s (PBList PData)
-      asList = punListData # t
-      asI :: Term s PInteger
-      asI = punIData # t
-      asB :: Term s PByteString
-      asB = punBData # t
+      go :: Term s (PData :--> PString)
+      go = pfix $ \self -> plam' $ \dat ->
+        pchooseData
+          # dat
+          # (formatPair (plam' pshow) (formatList self) #$ punConstrData # dat) -- Constr
+          # (formatList (formatPair self self) #$ punMapData # dat)
+          # (formatList self #$ punListData # dat)
+          # pshow (punIData # dat)
+          # pshow (punBData # dat)
 
--- | @since wip
+-- \| @since wip
 instance PDebug (PAsData a)
 
 -- | @since wip
 instance PDebug PString where
-  pdebug t f = f (pappendString # sc "\"" #$ pappendString # t # sc "\"")
+  pdebug t f = f (sc "\"" #<|> t #<|> sc "\"")
 
 -- | @since wip
 pshow ::
@@ -217,6 +185,33 @@ pshow t = pdebug t $ \asString -> Term $ do
     _ -> asString
 
 -- Helpers
+
+formatList ::
+  forall (a :: S -> Type) (s :: S).
+  PlutarchType a =>
+  Term s (a :--> PString) ->
+  Term s (PBList a :--> PString)
+formatList f = plam' $ \ell -> pmatch ell $ \case
+  PBNil -> sc "[]"
+  PBCons x xs -> sc "[" #<|> (go # x # xs) #<|> sc "]"
+  where
+    go :: Term s (a :--> PBList a :--> PString)
+    go = pfix $ \self -> plam' $ \x -> plam' $ \xs -> pmatch xs $ \case
+      PBNil -> f # x
+      PBCons y ys -> (f # x) #<|> sc ", " #<|> (self # y # ys)
+
+formatPair ::
+  forall (a :: S -> Type) (b :: S -> Type) (s :: S).
+  (PlutarchType a, PlutarchType b) =>
+  Term s (a :--> PString) ->
+  Term s (b :--> PString) ->
+  Term s (PBPair a b :--> PString)
+formatPair f g = plam' $ \p -> pmatch p $ \(PBPair x y) ->
+  sc "(" #<|> (f # x) #<|> sc ", " #<|> (g # y) #<|> sc ")"
+
+-- Shorthand
+(#<|>) :: forall (s :: S). Term s PString -> Term s PString -> Term s PString
+t1 #<|> t2 = pappendString # t1 # t2
 
 -- 'String constant'
 sc :: forall (s :: S). Text -> Term s PString

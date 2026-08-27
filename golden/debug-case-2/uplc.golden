@@ -35,7 +35,6 @@
                         # c
                       )
                   )
-  let bind_sb = SubtractInteger # (0 :: Integer) # bind_h
   in case 
        (LessThanEqualsInteger # bind_h # (-1 :: Integer))
        [ case 
@@ -47,12 +46,16 @@
            ]
        , AppendString
          # ("-" :: String)
-         # (case 
-             (EqualsInteger # bind_sb # (0 :: Integer))
-             [ bind_lb
-               # (QuotientInteger # bind_sb # (10 :: Integer))
-               # (RemainderInteger # bind_sb # (10 :: Integer))
-             , bind_v
-             ]
+         # (
+             (\bind_sb ->
+               case 
+                 (EqualsInteger # bind_sb # (0 :: Integer))
+                 [ bind_lb
+                   # (QuotientInteger # bind_sb # (10 :: Integer))
+                   # (RemainderInteger # bind_sb # (10 :: Integer))
+                 , bind_v
+                 ]
+             )
+             # (SubtractInteger # (0 :: Integer) # bind_h)
            )
        ]

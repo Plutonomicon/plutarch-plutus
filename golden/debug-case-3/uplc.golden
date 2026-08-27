@@ -19,9 +19,9 @@
                    , ("F" :: String)
                    ]
   in AppendString
-     # ("0x" :: String)
      # (
          AppendString
+         # ("0x" :: String)
          # (bind_v # (QuotientInteger # (31 :: Integer) # (16 :: Integer)))
-         # (bind_v # (RemainderInteger # (31 :: Integer) # (16 :: Integer)))
        )
+     # (bind_v # (RemainderInteger # (31 :: Integer) # (16 :: Integer)))
