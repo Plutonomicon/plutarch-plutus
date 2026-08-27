@@ -3,12 +3,7 @@
 
 module Plutarch.Helpers.TH (
   checkTyName,
-  getArity,
-  conToName,
-  hasNoFields,
   bindToName,
-  checkFieldsAreTerms,
-  checkFieldIsWrapped,
   fullTypeName,
   mkContextOf,
   mkUncons,
@@ -24,7 +19,6 @@ module Plutarch.Helpers.TH (
   pmkConsE,
   pconstrDataE,
   pequalsDataE,
-  conToFieldTypes,
   mkPLam,
   mkAnonPLam,
   PType (..),
@@ -37,7 +31,7 @@ module Plutarch.Helpers.TH (
 ) where
 
 import Control.Monad (unless)
-import Data.Foldable (foldl', for_)
+import Data.Foldable (foldl')
 import Data.Kind qualified as GHC
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
@@ -90,46 +84,6 @@ checkTyName tyName = do
     TyConI tyDec -> pure tyDec
     _ -> fail $ show tyName <> " does not name a type."
 
-{- | Given a data constructor, state how many fields it has.
-
-@since wip
--}
-getArity :: Con -> Word
-getArity = \case
-  NormalC _ fields -> fromIntegral . length $ fields
-  RecC _ fields -> fromIntegral . length $ fields
-  InfixC {} -> 2
-  ForallC _ _ con -> getArity con
-  GadtC _ fields _ -> fromIntegral . length $ fields
-  RecGadtC _ fields _ -> fromIntegral . length $ fields
-
-{- | Get the name of a non-GADT constructor. Error out if given a GADT
-constructor.
-
-@since wip
--}
-conToName :: Con -> Q Name
-conToName = \case
-  NormalC name _ -> pure name
-  RecC name _ -> pure name
-  InfixC _ name _ -> pure name
-  ForallC _ _ con -> conToName con
-  GadtC {} -> fail "Derivation does not work on GADTs."
-  RecGadtC {} -> fail "Derivation does not work on GADTs."
-
-{- | Check that a data constructor has no fields.
-
-@since wip
--}
-hasNoFields :: Con -> Bool
-hasNoFields = \case
-  NormalC _ fields -> null fields
-  RecC _ fields -> null fields
-  InfixC {} -> False
-  ForallC _ _ con -> hasNoFields con
-  GadtC _ fields _ -> null fields
-  RecGadtC _ fields _ -> null fields
-
 {- | Given a binder, yield the name it binds.
 
 @since wip
@@ -138,48 +92,6 @@ bindToName :: TyVarBndr BndrVis -> Name
 bindToName = \case
   PlainTV n _ -> n
   KindedTV n _ _ -> n
-
-{- | Check that every field of the given data constructor is @'Term'@-wrapped.
-Error if not, or if given a nested @forall@ or GADT.
-
-@since wip
--}
-checkFieldsAreTerms :: Con -> Q ()
-checkFieldsAreTerms = \case
-  NormalC name fields -> for_ fields (go name)
-  RecC name fields -> for_ fields (goNamed name)
-  InfixC lhs name rhs -> do
-    go name lhs
-    go name rhs
-  ForallC {} -> fail "Derivation does not work on nested foralls."
-  GadtC {} -> fail "Derivation does not work on GADTs."
-  RecGadtC {} -> fail "Derivation does not work on GADTs."
-  where
-    go :: Name -> (Bang, Type) -> Q ()
-    go conName (_, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> " has a field whose type is not wrapped in 'Term'."
-       in dig errMsg t
-    goNamed :: Name -> (Name, Bang, Type) -> Q ()
-    goNamed conName (fieldName, _, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> " has a field whose type is not wrapped in 'Term', specifically "
-              <> show fieldName
-              <> "."
-       in dig errMsg t
-    dig :: String -> Type -> Q ()
-    dig errMsg = \case
-      AppT x _ -> case x of
-        ConT n ->
-          if n == ''Term
-            then pure ()
-            else fail errMsg
-        _ -> dig errMsg x
-      _ -> fail errMsg
 
 {- | Given a \'base\' type name, and a list of type variable binds, construct
 the type name with all those binds applied.
@@ -202,44 +114,6 @@ mkContextOf tyClassName tyVars =
   let len = Vector.length tyVars
       varNames = fmap (AppT (ConT tyClassName) . VarT . bindToName) tyVars
    in foldl' AppT (TupleT len) varNames
-
-{- | Verifies that all fields of the given constructor are \'wrapped\' in
-@PAsData@.
-
-@since wip
--}
-checkFieldIsWrapped :: Con -> Q ()
-checkFieldIsWrapped = \case
-  NormalC name fields -> for_ fields (go name)
-  RecC name fields -> for_ fields (goNamed name)
-  InfixC lhs name rhs -> do
-    go name lhs
-    go name rhs
-  _ -> fail "Unexpected constructor type found. If you see this message, report as a bug."
-  where
-    go :: Name -> (Bang, Type) -> Q ()
-    go conName (_, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData'."
-       in dig errMsg t
-    goNamed :: Name -> (Name, Bang, Type) -> Q ()
-    goNamed conName (fieldName, _, t) =
-      let errMsg =
-            "Constructor "
-              <> show conName
-              <> "has a field whose type is not wrapped in 'PAsData', specifically "
-              <> show fieldName
-              <> "."
-       in dig errMsg t
-    dig :: String -> Type -> Q ()
-    dig errMsg = \case
-      AppT _ (AppT (ConT t) _) ->
-        if t == ''PAsData
-          then pure ()
-          else fail errMsg
-      _ -> fail errMsg
 
 {- | Given a name @ell@ corresponding to a @PDList@ variable, constructs the
 equivalent of:
@@ -310,53 +184,99 @@ pconstrDataE = pure $ VarE 'pconstrData
 pequalsDataE :: Q Exp
 pequalsDataE = pure $ VarE 'pequalsData
 
-{- | Retrieve the types of all fields in a data constructor, in order. Fail if
-given something unsupported. Will do 'Term' unwrapping as well.
+{- | Given a \'handler\' taking the named argument, constructs a new @plam'@
+with a fresh argument.
 
 @since wip
 -}
-conToFieldTypes :: Con -> Q [Type]
-conToFieldTypes = \case
-  NormalC _ fields -> traverse (termUnwrap . snd) fields
-  RecC _ fields -> traverse (\(_, _, t) -> termUnwrap t) fields
-  InfixC (_, t1) _ (_, t2) -> traverse termUnwrap [t1, t2]
-  ForallC {} -> fail "Derivation does not work on nested foralls."
-  GadtC {} -> fail "Derivation does not work on GADTs."
-  RecGadtC {} -> fail "Derivation does not work on GADTs."
-  where
-    termUnwrap :: Type -> Q Type
-    termUnwrap = \case
-      AppT _ t -> pure t
-      _ -> fail "Unexpected non-Term-wrapped type. If you see this, report a bug."
-
--- | @since wip
 mkPLam :: (Name -> Q Exp) -> Q Exp
 mkPLam f = do
   argName <- newName "x"
   body <- f argName
   pure . AppE (VarE 'plam') . LamE [VarP argName] $ body
 
--- | @since wip
+{- | As 'mkPLam', but does not name a fresh argument.
+
+@since wip
+-}
 mkAnonPLam :: Q Exp -> Q Exp
 mkAnonPLam f = AppE (VarE 'plam') . LamE [WildP] <$> f
 
--- | @since wip
-data PType
-  = PTypeData Type
-  | PTypeNotData Type
-  | PTypeFunction Type
+{- | A \'classifier type\' for Plutarch types.
 
--- | @since wip
+@since wip
+-}
+data PType
+  = -- | 'PAsData' wrapped.
+    PTypeData Type
+  | -- | A function type.
+    PTypeFunction Type
+  | -- | Something else.
+    PTypeNotData Type
+
+{- | A sum of 'PType' products.
+
+@since wip
+-}
 newtype PTypeSum = PTypeSum (NonEmptyVector (Name, PTypeProduct))
 
--- | @since wip
+{- | A 'PType' product.
+
+@since wip
+-}
 newtype PTypeProduct = PTypeProduct (Vector PType)
 
--- | @since wip
+{- | Given a 'Vector' of constructors, produce the corresponding 'PTypeSum'.
+Errors if given an empty 'Vector'.
+
+@since wip
+-}
 consToPTypeSum :: Vector Con -> Q PTypeSum
 consToPTypeSum v = case Vector.uncons v of
   Nothing -> fail "Cannot derive for nullary types."
   Just (c, cs) -> PTypeSum <$> traverse conToPTypeProduct (NEVector.consV c cs)
+
+{- | Produce the \'inner type\' (removing the 'PAsData' wrapper) for a 'PType'
+that represents @'PAsData' t@ for some @t@, erroring otherwise.
+
+@since wip
+-}
+unwrapField :: PType -> Q Type
+unwrapField = \case
+  PTypeData t -> pure t
+  _ -> fail "Cannot use this derivation if a field is not wrapped in 'PAsData'."
+
+{- | Verify whether a given 'PType' is recursive with the given 'Name' or not.
+
+@since wip
+-}
+isTypeRecursive :: Name -> PType -> Bool
+isTypeRecursive name = \case
+  PTypeData t -> go t
+  PTypeNotData t -> go t
+  PTypeFunction t -> go t
+  where
+    go :: Type -> Bool
+    go = \case
+      ConT name' -> name' == name
+      AppT x y -> go x || go y
+      InfixT t name' u -> name' == name || go t || go u
+      _ -> False
+
+{- | Verify that a given 'PType' is not a function type (erroring if so), and
+produces both of the following:
+
+* An indication of whether the type is recursive given the 'Name' argument
+('True' means \'recursive\'); and
+* The 'Type' as it would be originally (restoring 'PAsData' if it was there).
+
+@since wip
+-}
+checkAndMark :: Name -> PType -> Q (Bool, Type)
+checkAndMark name t = case t of
+  PTypeFunction _ -> fail "Functions cannot have derivations for PEq."
+  PTypeData t' -> pure (isTypeRecursive name t, AppT (ConT ''PAsData) t')
+  PTypeNotData t' -> pure (isTypeRecursive name t, t')
 
 -- Helpers
 
@@ -403,32 +323,7 @@ classifyType t = case t of
         then PTypeFunction t
         else PTypeNotData t
 
-unwrapField :: PType -> Q Type
-unwrapField = \case
-  PTypeData t -> pure t
-  _ -> fail "Cannot use this derivation if a field is not wrapped in 'PAsData'."
-
--- | @since wip
-isTypeRecursive :: Name -> PType -> Bool
-isTypeRecursive name = \case
-  PTypeData t -> go t
-  PTypeNotData t -> go t
-  PTypeFunction t -> go t
-  where
-    go :: Type -> Bool
-    go = \case
-      ConT name' -> name' == name
-      AppT x y -> go x || go y
-      InfixT t name' u -> name' == name || go t || go u
-      _ -> False
-
 isTypePFunction :: Type -> Bool
 isTypePFunction = \case
   InfixT _ name _ -> name == ''(:-->)
   _ -> False
-
-checkAndMark :: Name -> PType -> Q (Bool, Type)
-checkAndMark name t = case t of
-  PTypeFunction _ -> fail "Functions cannot have derivations for PEq."
-  PTypeData t' -> pure (isTypeRecursive name t, AppT (ConT ''PAsData) t')
-  PTypeNotData t' -> pure (isTypeRecursive name t, t')
