@@ -1,9 +1,15 @@
-(\mArg_c -> mArg_c # mArg_c)
-# (\a b ->
-    case 
-      (EqualsInteger # b # (10 :: Integer))
-      [ AddInteger # b # (a # a # (AddInteger # b # (1 :: Integer)))
-      , (0 :: Integer)
-      ]
-  )
-# (0 :: Integer)
+\a ->
+  case a
+    [ (\b c ->
+        (\bind_k -> AddInteger # (bind_k # b) # (bind_k # c))
+        # (\d -> AddInteger # d # d)
+      )
+      # (10 :: Integer)
+      # (20 :: Integer)
+    , (\f g ->
+        (\bind_u -> AddInteger # (bind_u # f) # (bind_u # g))
+        # (\h -> MultiplyInteger # h # h)
+      )
+      # (10 :: Integer)
+      # (20 :: Integer)
+    ]
