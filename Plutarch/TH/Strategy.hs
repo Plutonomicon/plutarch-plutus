@@ -3,14 +3,13 @@ module Plutarch.TH.Strategy (
   deriveFor,
 ) where
 
-import Data.Foldable (traverse_)
 import Data.Vector qualified as Vector
 import Language.Haskell.TH (
   Dec (DataD, NewtypeD, TySynD),
   Name,
   Q,
  )
-import Plutarch.Helpers.TH (checkFieldsAreTerms, checkTyName)
+import Plutarch.Helpers.TH (checkTyName, consToPTypeSum)
 import Plutarch.TH.DataList (deriveDataList)
 import Plutarch.TH.DataPlutus (deriveDataPlutus)
 import Plutarch.TH.Enum (deriveEnum)
@@ -46,7 +45,8 @@ data Strategy
     -}
     Enum
   | {- | Use a @'PBList'@ as the representation. This strategy derives
-    'PlutarchType', 'PMatch', and 'PCon' instances.
+    'PlutarchType', 'PMatch', and 'PCon' instances. 'PEq' can be derived using
+    the default instance for anything 'Data'-encoded.
 
     @since wip
     -}
@@ -83,15 +83,15 @@ deriveFor tyName strat = do
     DataD _ name tyVarBinds _ constructors _ -> do
       let tvbAsVec = Vector.fromList tyVarBinds
       let consAsVec = Vector.fromList constructors
-      traverse_ checkFieldsAreTerms consAsVec
+      typeStructure <- consToPTypeSum consAsVec
       case Vector.unsnoc tvbAsVec of
         Nothing -> fail "Types must have an s :: S type parameter in last position."
         Just (tvbs, _) -> case strat of
-          SOP -> deriveSOP tvbs name consAsVec
-          DataPlutus -> deriveDataPlutus tvbs name consAsVec
-          Enum -> deriveEnum tvbs name consAsVec
-          DataList -> deriveDataList tvbs name consAsVec
-          MogensenScott -> deriveMS tvbs name consAsVec
+          Enum -> deriveEnum tvbs name typeStructure
+          DataList -> deriveDataList tvbs name typeStructure
+          DataPlutus -> deriveDataPlutus tvbs name typeStructure
+          SOP -> deriveSOP tvbs name typeStructure
+          MogensenScott -> deriveMS tvbs name typeStructure
     NewtypeD {} -> fail "Newtype derivations not supported at present."
     TySynD {} -> fail "Type synonym derivations are not supported. Define using the underlying type."
     _ -> fail $ "Not a valid type name: " <> show tyName

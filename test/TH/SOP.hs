@@ -9,7 +9,7 @@ module TH.SOP (
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term)
+import Plutarch.Backend.Term (Term, pfix)
 import Plutarch.Primitive.Apply ((#))
 import Plutarch.Primitive.Bool (pand, pfalse, ptrue)
 import Plutarch.Primitive.Match (pmatch)

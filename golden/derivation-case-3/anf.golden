@@ -11,14 +11,14 @@ ANF Hashes:
  #9 := nWCH23YUPCbN
  #10 := is4E8lYAuJtN
  #11 := zr7qa8ksf6jN
- #12 := hE1QK8pH3VxN
- #13 := dIPb0M0m3MjN
- #14 := lQQBhx6VpZCN
- #15 := oSVkVuchGrq
- #16 := aJGljnuzb8b
- #17 := q5zh3rlDvZAN
- #18 := icxhESnh8WhN
- #19 := m5hePyXrMxN
+ #12 := dIPb0M0m3MjN
+ #13 := hE1QK8pH3VxN
+ #14 := ws0UBmycQRhN
+ #15 := emPZVoL8raDN
+ #16 := c5gDh40dSHv
+ #17 := cowS46G60UnN
+ #18 := qlnGlGP7l8yN
+ #19 := l5gLdJttCAnN
 
 ANF Binds:
  #0 := EqualsInteger
@@ -33,8 +33,8 @@ ANF Binds:
  #9 := \j:1 -> #8
  #10 := Apply b [#4, #9, #5]
  #11 := \h:1 -> #10
- #12 := Apply #0 [n, r]
- #13 := Apply #0 [m, q]
+ #12 := Apply #0 [m, q]
+ #13 := Apply #0 [n, r]
  #14 := Case #12 [#3, #13]
  #15 := \q:1 r:1 -> #14
  #16 := Apply b [#4, #4, #15]

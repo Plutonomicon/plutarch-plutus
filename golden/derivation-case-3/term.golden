@@ -17,6 +17,6 @@
       # (\_ -> False :: Bool)
       # (\_ -> False :: Bool)
       # (\i j ->
-          case (EqualsInteger # h # j) [False :: Bool, EqualsInteger # g # i]
+          case (EqualsInteger # g # i) [False :: Bool, EqualsInteger # h # j]
         )
     )

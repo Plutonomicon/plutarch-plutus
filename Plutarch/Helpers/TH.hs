@@ -31,12 +31,17 @@ module Plutarch.Helpers.TH (
   PTypeSum (..),
   PTypeProduct (..),
   consToPTypeSum,
+  unwrapField,
+  isTypeRecursive,
+  checkAndMark,
 ) where
 
+import Control.Monad (unless)
 import Data.Foldable (foldl', for_)
 import Data.Kind qualified as GHC
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
+import Data.Vector.NonEmpty (NonEmptyVector)
 import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
   Bang,
@@ -49,7 +54,7 @@ import Language.Haskell.TH (
   Pat (VarP, WildP),
   Q,
   TyVarBndr (KindedTV, PlainTV),
-  Type (AppT, ConT, TupleT, VarT),
+  Type (AppT, ConT, InfixT, TupleT, VarT),
   newName,
   reify,
  )
@@ -71,6 +76,7 @@ import Plutarch.Primitive.BuiltinFun (
   punConstrData,
  )
 import Plutarch.Primitive.Data (PAsData)
+import Plutarch.Primitive.Function ((:-->))
 
 {- | Return the declaration of a type given its name, or error out if the name
 does not name a type.
@@ -338,32 +344,35 @@ mkAnonPLam f = AppE (VarE 'plam') . LamE [WildP] <$> f
 data PType
   = PTypeData Type
   | PTypeNotData Type
+  | PTypeFunction Type
 
 -- | @since wip
-newtype PTypeSum = PTypeSum (Vector PTypeProduct)
+newtype PTypeSum = PTypeSum (NonEmptyVector (Name, PTypeProduct))
 
 -- | @since wip
 newtype PTypeProduct = PTypeProduct (Vector PType)
 
 -- | @since wip
 consToPTypeSum :: Vector Con -> Q PTypeSum
-consToPTypeSum v = PTypeSum <$> traverse conToPTypeProduct v
+consToPTypeSum v = case Vector.uncons v of
+  Nothing -> fail "Cannot derive for nullary types."
+  Just (c, cs) -> PTypeSum <$> traverse conToPTypeProduct (NEVector.consV c cs)
 
 -- Helpers
 
-conToPTypeProduct :: Con -> Q PTypeProduct
-conToPTypeProduct =
-  fmap PTypeProduct . \case
-    NormalC name fields -> traverse (go name) . Vector.fromList $ fields
-    RecC name fields -> traverse (goNamed name) . Vector.fromList $ fields
-    InfixC lhs name rhs ->
-      (<>)
-        <$> traverse (go name) (Vector.singleton lhs)
-        <*> traverse (go name) (Vector.singleton rhs)
-    ForallC {} -> fail "Derivation does not work on nested foralls."
-    GadtC {} -> fail "Derivation does not work on GADTs."
-    RecGadtC {} -> fail "Derivation does not work on GADTs."
+conToPTypeProduct :: Con -> Q (Name, PTypeProduct)
+conToPTypeProduct = \case
+  NormalC name fields -> addName name <$> (traverse (go name) . Vector.fromList $ fields)
+  RecC name fields -> addName name <$> (traverse (goNamed name) . Vector.fromList $ fields)
+  InfixC lhs name rhs -> do
+    let pieces = Vector.fromListN 2 [lhs, rhs]
+    addName name <$> traverse (go name) pieces
+  ForallC {} -> fail "Derivation does not work on nested foralls."
+  GadtC {} -> fail "Derivation does not work on GADTs."
+  RecGadtC {} -> fail "Derivation does not work on GADTs."
   where
+    addName :: Name -> Vector PType -> (Name, PTypeProduct)
+    addName name p = (name, PTypeProduct p)
     go :: Name -> (Bang, Type) -> Q PType
     go conName (_, t) =
       let errMsg = "Constructor " <> show conName <> " has a field whose type is not wrapped in 'Term'."
@@ -374,13 +383,52 @@ conToPTypeProduct =
        in dig errMsg t
     dig :: String -> Type -> Q PType
     dig errMsg = \case
-      AppT (AppT (ConT n) _) x ->
-        if n == ''Term
-          then pure $ case x of
-            AppT (ConT n') y ->
-              if n' == ''PAsData
-                then PTypeData y
-                else PTypeNotData x
-            _ -> PTypeNotData x
-          else fail errMsg
+      AppT (AppT (ConT n) _) x -> do
+        unless (n == ''Term) (fail errMsg)
+        classifyType x
       _ -> fail errMsg
+
+classifyType :: Type -> Q PType
+classifyType t = case t of
+  AppT (ConT t') x ->
+    if t' == ''PAsData
+      then
+        if isTypePFunction x
+          then fail "PAsData wrapping a Plutarch function makes no sense."
+          else pure $ PTypeData x
+      else pure $ PTypeNotData t
+  _ ->
+    pure $
+      if isTypePFunction t
+        then PTypeFunction t
+        else PTypeNotData t
+
+unwrapField :: PType -> Q Type
+unwrapField = \case
+  PTypeData t -> pure t
+  _ -> fail "Cannot use this derivation if a field is not wrapped in 'PAsData'."
+
+-- | @since wip
+isTypeRecursive :: Name -> PType -> Bool
+isTypeRecursive name = \case
+  PTypeData t -> go t
+  PTypeNotData t -> go t
+  PTypeFunction t -> go t
+  where
+    go :: Type -> Bool
+    go = \case
+      ConT name' -> name' == name
+      AppT x y -> go x || go y
+      InfixT t name' u -> name' == name || go t || go u
+      _ -> False
+
+isTypePFunction :: Type -> Bool
+isTypePFunction = \case
+  InfixT _ name _ -> name == ''(:-->)
+  _ -> False
+
+checkAndMark :: Name -> PType -> Q (Bool, Type)
+checkAndMark name t = case t of
+  PTypeFunction _ -> fail "Functions cannot have derivations for PEq."
+  PTypeData t' -> pure (isTypeRecursive name t, AppT (ConT ''PAsData) t')
+  PTypeNotData t' -> pure (isTypeRecursive name t, t')
