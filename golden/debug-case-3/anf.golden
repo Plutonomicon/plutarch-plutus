@@ -1,0 +1,78 @@
+ANF Hashes:
+ #0 := p7qYeALXKVC
+ #1 := tdiaC1B3uRC
+ #2 := csDJobL38ReN
+ #3 := xcoGmOiC8HiN
+ #4 := mSGXrSlhOzoN
+ #5 := zBbVugCAuKb
+ #6 := c8j19kUVGIf
+ #7 := dSu76OoYQVw
+ #8 := qoj0eYQE55l
+ #9 := dWf9bSLUCJAN
+ #10 := nqMwP3WtHczN
+ #11 := tT7TcSLpins
+ #12 := k445oVkHpQg
+ #13 := kt1FkeQSdE
+ #14 := uUuKSQb3bJDN
+ #15 := wLjtDqApIvb
+ #16 := x3z68WbeDAB
+ #17 := knPV8JelUIcN
+ #18 := swg3mCrqa6yN
+ #19 := wG3amaxKV8zN
+ #20 := kq3kmmKulbi
+ #21 := uB44BucK0eA
+ #22 := vT9XgGQd7Qs
+ #23 := q4l3DHnjzvh
+ #24 := lvHhiipb1Rp
+ #25 := g8c1HzlYMhuN
+ #26 := n275PtZtdlc
+ #27 := iSLMyFX2lEj
+ #28 := dWtCXT0twKx
+ #29 := ap31USeLtPzN
+
+ANF Binds:
+ #0 := AppendString
+ #1 := "0x" :: String
+ #2 := "0" :: String
+ #3 := "1" :: String
+ #4 := "2" :: String
+ #5 := "3" :: String
+ #6 := "4" :: String
+ #7 := "5" :: String
+ #8 := "6" :: String
+ #9 := "7" :: String
+ #10 := "8" :: String
+ #11 := "9" :: String
+ #12 := "A" :: String
+ #13 := "B" :: String
+ #14 := "C" :: String
+ #15 := "D" :: String
+ #16 := "E" :: String
+ #17 := "F" :: String
+ #18 := Case a [ #2
+        , #3
+        , #4
+        , #5
+        , #6
+        , #7
+        , #8
+        , #9
+        , #10
+        , #11
+        , #12
+        , #13
+        , #14
+        , #15
+        , #16
+        , #17 ]
+ #19 := \a:1 -> #18
+ #20 := QuotientInteger
+ #21 := 31 :: Integer
+ #22 := 16 :: Integer
+ #23 := Apply #20 [#21, #22]
+ #24 := Apply #19 [#23]
+ #25 := Apply #0 [#1, #24]
+ #26 := RemainderInteger
+ #27 := Apply #26 [#21, #22]
+ #28 := Apply #19 [#27]
+ #29 := Apply #0 [#25, #28]

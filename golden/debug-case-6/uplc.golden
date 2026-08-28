@@ -1,0 +1,281 @@
+\ ->
+  let a = ((10, "nyaaa") :: (Integer, Bytestring))
+  in case a
+       [ \b c ->
+           AppendString
+           # (
+               (\bind_gb ->
+                 (\bind_hb ->
+                   (\bind_ib ->
+                     (\bind_jb ->
+                       (\bind_kb ->
+                         (\bind_lb ->
+                           (\bind_mb ->
+                             (\bind_nb ->
+                               (\bind_ob ->
+                                 (\bind_pb ->
+                                   (\bind_oc ->
+                                     AppendString
+                                     # (
+                                         AppendString
+                                         # (
+                                             AppendString
+                                             # ("(" :: String)
+                                             # (
+                                                 (\d ->
+                                                   (\bind_wb ->
+                                                     case 
+                                                       (
+                                                         LessThanEqualsInteger
+                                                         # d
+                                                         # (-1 :: Integer)
+                                                       )
+                                                       [ case 
+                                                           (
+                                                             EqualsInteger
+                                                             # d
+                                                             # (0 :: Integer)
+                                                           )
+                                                           [ bind_wb
+                                                             # (
+                                                                 QuotientInteger
+                                                                 # d
+                                                                 # (10 :: Integer)
+                                                               )
+                                                             # (
+                                                                 RemainderInteger
+                                                                 # d
+                                                                 # (10 :: Integer)
+                                                               )
+                                                           , bind_gb
+                                                           ]
+                                                       , AppendString
+                                                         # ("-" :: String)
+                                                         # (
+                                                             (\bind_dc ->
+                                                               case 
+                                                                 (
+                                                                   EqualsInteger
+                                                                   # bind_dc
+                                                                   # (0 :: Integer)
+                                                                 )
+                                                                 [ bind_wb
+                                                                   # (
+                                                                       QuotientInteger
+                                                                       # bind_dc
+                                                                       # (10 :: Integer)
+                                                                     )
+                                                                   # (
+                                                                       RemainderInteger
+                                                                       # bind_dc
+                                                                       # (10 :: Integer)
+                                                                     )
+                                                                 , bind_gb
+                                                                 ]
+                                                             )
+                                                             # (
+                                                                 SubtractInteger
+                                                                 # (0 :: Integer)
+                                                                 # d
+                                                               )
+                                                           )
+                                                       ]
+                                                   )
+                                                   # (
+                                                       (\mArg_i ->
+                                                         mArg_i # mArg_i
+                                                       )
+                                                       # (\e f g ->
+                                                           (\bind_sb ->
+                                                             case 
+                                                               (
+                                                                 EqualsInteger
+                                                                 # f
+                                                                 # (0 :: Integer)
+                                                               )
+                                                               [ AppendString
+                                                                 # (
+                                                                     e
+                                                                     # e
+                                                                     # (
+                                                                         QuotientInteger
+                                                                         # f
+                                                                         # (10 :: Integer)
+                                                                       )
+                                                                     # (
+                                                                         RemainderInteger
+                                                                         # f
+                                                                         # (10 :: Integer)
+                                                                       )
+                                                                   )
+                                                                 # bind_sb
+                                                               , bind_sb
+                                                               ]
+                                                           )
+                                                           # (
+                                                               (\h ->
+                                                                 case h
+                                                                   [ bind_gb
+                                                                   , bind_hb
+                                                                   , bind_ib
+                                                                   , bind_jb
+                                                                   , bind_kb
+                                                                   , bind_lb
+                                                                   , bind_mb
+                                                                   , bind_nb
+                                                                   , bind_ob
+                                                                   , bind_pb
+                                                                   ]
+                                                               )
+                                                               # g
+                                                             )
+                                                         )
+                                                     )
+                                                 )
+                                                 # b
+                                               )
+                                           )
+                                         # bind_oc
+                                       )
+                                     # (
+                                         (\o ->
+                                           (\bind_rc ->
+                                             case 
+                                               (
+                                                 EqualsInteger
+                                                 # bind_rc
+                                                 # (0 :: Integer)
+                                               )
+                                               [ AppendString
+                                                 # (
+                                                     AppendString
+                                                     # ("[" :: String)
+                                                     # (case 
+                                                         (constr 0
+                                                           [ o
+                                                           , SubtractInteger
+                                                             # bind_rc
+                                                             # (1 :: Integer)
+                                                           , (0 :: Integer)
+                                                           ]
+                                                         )
+                                                         [ (\mArg_j ->
+                                                             mArg_j # mArg_j
+                                                           )
+                                                           # (\p q r s ->
+                                                               (\bind_dd ->
+                                                                 (\bind_fd ->
+                                                                   (\bind_md ->
+                                                                     case 
+                                                                       (
+                                                                         EqualsInteger
+                                                                         # r
+                                                                         # s
+                                                                       )
+                                                                       [ AppendString
+                                                                         # (
+                                                                             AppendString
+                                                                             # bind_md
+                                                                             # bind_oc
+                                                                           )
+                                                                         # (case 
+                                                                             (constr 0
+                                                                               [ q
+                                                                               , r
+                                                                               , AddInteger
+                                                                                 # s
+                                                                                 # (1 :: Integer)
+                                                                               ]
+                                                                             )
+                                                                             [ p
+                                                                                 # p
+                                                                             ]
+                                                                           )
+                                                                       , bind_md
+                                                                       ]
+                                                                   )
+                                                                   # (
+                                                                       AppendString
+                                                                       # (
+                                                                           AppendString
+                                                                           # ("0x" :: String)
+                                                                           # (bind_dd
+                                                                               # (
+                                                                                   QuotientInteger
+                                                                                   # bind_fd
+                                                                                   # (16 :: Integer)
+                                                                                 )
+                                                                             )
+                                                                         )
+                                                                       # (bind_dd
+                                                                           # (
+                                                                               RemainderInteger
+                                                                               # bind_fd
+                                                                               # (16 :: Integer)
+                                                                             )
+                                                                         )
+                                                                     )
+                                                                 )
+                                                                 # (
+                                                                     IndexByteString
+                                                                     # q
+                                                                     # s
+                                                                   )
+                                                               )
+                                                               # (\t ->
+                                                                   case t
+                                                                     [ bind_gb
+                                                                     , bind_hb
+                                                                     , bind_ib
+                                                                     , bind_jb
+                                                                     , bind_kb
+                                                                     , bind_lb
+                                                                     , bind_mb
+                                                                     , bind_nb
+                                                                     , bind_ob
+                                                                     , bind_pb
+                                                                     , ("A" :: String)
+                                                                     , ("B" :: String)
+                                                                     , ("C" :: String)
+                                                                     , ("D" :: String)
+                                                                     , ("E" :: String)
+                                                                     , ("F" :: String)
+                                                                     ]
+                                                                 )
+                                                             )
+                                                         ]
+                                                       )
+                                                   )
+                                                 # ("]" :: String)
+                                               , ("[]" :: String)
+                                               ]
+                                           )
+                                           # (LengthOfByteString # o)
+                                         )
+                                         # c
+                                       )
+                                   )
+                                   # (", " :: String)
+                                 )
+                                 # ("9" :: String)
+                               )
+                               # ("8" :: String)
+                             )
+                             # ("7" :: String)
+                           )
+                           # ("6" :: String)
+                         )
+                         # ("5" :: String)
+                       )
+                       # ("4" :: String)
+                     )
+                     # ("3" :: String)
+                   )
+                   # ("2" :: String)
+                 )
+                 # ("1" :: String)
+               )
+               # ("0" :: String)
+             )
+           # (")" :: String)
+       ]

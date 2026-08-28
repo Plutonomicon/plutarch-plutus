@@ -1,0 +1,1 @@
+case True :: Bool ["false" :: String, "true" :: String]

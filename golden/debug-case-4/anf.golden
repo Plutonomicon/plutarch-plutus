@@ -1,0 +1,132 @@
+ANF Hashes:
+ #0 := dr5yy9ULU5j
+ #1 := dEUK13sdXzs
+ #2 := pXqm9kzJAimN
+ #3 := yHOfVzauSUxN
+ #4 := mqE7eqJLvgvN
+ #5 := ygKK6EkTb7kN
+ #6 := p7qYeALXKVC
+ #7 := cDpRPlTVLte
+ #8 := hTZyTFV7cmhN
+ #9 := tdiaC1B3uRC
+ #10 := csDJobL38ReN
+ #11 := xcoGmOiC8HiN
+ #12 := mSGXrSlhOzoN
+ #13 := zBbVugCAuKb
+ #14 := c8j19kUVGIf
+ #15 := dSu76OoYQVw
+ #16 := qoj0eYQE55l
+ #17 := dWf9bSLUCJAN
+ #18 := nqMwP3WtHczN
+ #19 := tT7TcSLpins
+ #20 := k445oVkHpQg
+ #21 := kt1FkeQSdE
+ #22 := uUuKSQb3bJDN
+ #23 := wLjtDqApIvb
+ #24 := x3z68WbeDAB
+ #25 := knPV8JelUIcN
+ #26 := lM49pzuKxoz
+ #27 := wG3amaxKV8zN
+ #28 := kq3kmmKulbi
+ #29 := zfqBEnIn0Tt
+ #30 := c6uyneU4TrgN
+ #31 := vT9XgGQd7Qs
+ #32 := oawyi6zjPZw
+ #33 := bOIs8BqULkxN
+ #34 := r7LTUkrBXoe
+ #35 := n275PtZtdlc
+ #36 := cguPWydcucp
+ #37 := j9eWiGWVinN
+ #38 := xwdJDjxq0nxN
+ #39 := t3U4h8CsxbeN
+ #40 := lUkWLh6pgIuN
+ #41 := m5XKL3leqWoN
+ #42 := vyRIuwDii3A
+ #43 := u91PwOEtU0eN
+ #44 := iM1mZWSECAs
+ #45 := c1a7Zdw79CeN
+ #46 := hrDQvg6k3iv
+ #47 := s2ZohlA9JWk
+ #48 := bQ4jswlF3CB
+ #49 := lAuuiZ9AppE
+ #50 := wBB4ZDaEJJsN
+ #51 := bXn6giRkD5C
+ #52 := dnye1uWG1HmN
+ #53 := dQCqSxBto5wN
+ #54 := wCr08QVmx9xN
+ #55 := amtPr1eo5ctN
+ #56 := cl1UP8PRhphN
+
+ANF Binds:
+ #0 := EqualsInteger
+ #1 := LengthOfByteString
+ #2 := "cat goes nya" :: Bytestring
+ #3 := Apply #1 [#2]
+ #4 := 0 :: Integer
+ #5 := Apply #0 [#3, #4]
+ #6 := AppendString
+ #7 := "[" :: String
+ #8 := Apply #0 [c, d]
+ #9 := "0x" :: String
+ #10 := "0" :: String
+ #11 := "1" :: String
+ #12 := "2" :: String
+ #13 := "3" :: String
+ #14 := "4" :: String
+ #15 := "5" :: String
+ #16 := "6" :: String
+ #17 := "7" :: String
+ #18 := "8" :: String
+ #19 := "9" :: String
+ #20 := "A" :: String
+ #21 := "B" :: String
+ #22 := "C" :: String
+ #23 := "D" :: String
+ #24 := "E" :: String
+ #25 := "F" :: String
+ #26 := Case e [ #10
+        , #11
+        , #12
+        , #13
+        , #14
+        , #15
+        , #16
+        , #17
+        , #18
+        , #19
+        , #20
+        , #21
+        , #22
+        , #23
+        , #24
+        , #25 ]
+ #27 := \e:1 -> #26
+ #28 := QuotientInteger
+ #29 := IndexByteString
+ #30 := Apply #29 [b, d]
+ #31 := 16 :: Integer
+ #32 := Apply #28 [#30, #31]
+ #33 := Apply #27 [#32]
+ #34 := Apply #6 [#9, #33]
+ #35 := RemainderInteger
+ #36 := Apply #35 [#30, #31]
+ #37 := Apply #27 [#36]
+ #38 := Apply #6 [#34, #37]
+ #39 := ", " :: String
+ #40 := Apply #6 [#38, #39]
+ #41 := AddInteger
+ #42 := 1 :: Integer
+ #43 := Apply #41 [d, #42]
+ #44 := Apply a [b, c, #43]
+ #45 := Apply #6 [#40, #44]
+ #46 := Case #8 [#45, #38]
+ #47 := \b:2 c:2 d:3 -> #46
+ #48 := Fix[a:1] #47
+ #49 := SubtractInteger
+ #50 := Apply #49 [#3, #42]
+ #51 := Apply #48 [#2, #50, #4]
+ #52 := Apply #6 [#7, #51]
+ #53 := "]" :: String
+ #54 := Apply #6 [#52, #53]
+ #55 := "[]" :: String
+ #56 := Case #5 [#54, #55]

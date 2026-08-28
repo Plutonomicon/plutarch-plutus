@@ -308,7 +308,7 @@ pverifySchnorrSecp256k1Signature = punsafeBuiltin PLC.VerifySchnorrSecp256k1Sign
 -- | @since wip
 pappendString ::
   forall (s :: S).
-  Term s (PString :--> PString)
+  Term s (PString :--> PString :--> PString)
 pappendString = punsafeBuiltin PLC.AppendString
 
 -- | @since wip
