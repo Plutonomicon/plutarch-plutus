@@ -115,6 +115,46 @@ derivePMatch tyVars tyName cs (nameLast, fieldsLast) =
       let arityLast' = arityLast - minArity
       let aritiesRest' = fmap (- minArity) aritiesRest
       withPreload contName tagName (arityLast', nameLast) (aritiesRest', namesRest) [] fieldsName minArity
+    -- Consider the following data type:
+    --
+    -- ```
+    -- data PThese a b s =
+    --     PThis (Term s (PAsData a)) |
+    --     PThat (Term s (PAsData b)) |
+    --     PThese (Term s (PAsData a)) (Term s (PAsData b))
+    -- ```
+    --
+    -- The most straightforward @Data@ encoding would do something like the
+    -- following:
+    --
+    -- \* `PThis t` becomes `Constr 0 [t]`
+    -- \* `PThat t` becomes `Constr 1 [t]`
+    -- \* `PThese t1 t2` becomes `Constr 2 [t1, t2]`
+    --
+    -- To 'take apart' such an encoding, we can see that we _must_ 'pull out'
+    -- the first element of the 'field list' no matter which branch we take.
+    -- Thus, an efficient sequence of events would be:
+    --
+    -- 1. Transform `PData` into `(PInteger, PBList PData)`
+    -- 2. Take the head of the `PBList PData`
+    -- 3. Branch on the tag; if we have `0` or `1`, assemble the `PThese`, if
+    --    not, take the head _again_, then assemble the `PThese`.
+    --
+    -- However, if we were to just follow the constructor logic blindly, we
+    -- would _instead_ get:
+    --
+    -- 1. Transform `PData` into `(PInteger, PBList PData)`
+    -- 2. Branch on the tag; if we have `0`, take the head, then assemble, if we
+    --    have `1`, take the head, then assemble, if we have 2, take the head
+    --    twice, then assemble.
+    --
+    -- This forces us to duplicate the 'take the head' code into _every_ branch.
+    --
+    -- `withPreload` essentially ensures that in situations like the one above,
+    -- the code that gets generated follows the efficient sequence of events
+    -- above. More precisely, if _all_ 'arms' of a data type have a minimal
+    -- number of fields, `withPreload` generates code to extract that number of
+    -- fields _before_ branching on the tag.
     withPreload ::
       Name ->
       Name ->

@@ -54,7 +54,22 @@ import Plutarch.Primitive.Eq (PEq (peq))
 import Plutarch.Primitive.Function ((:-->))
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 
--- | @since wip
+{- | = Example
+
+If you have the following data type:
+
+@
+data PListMS a s = PNilMS | PConsMS (Term s a) (Term s (PListMS a))
+@
+
+its Mogensen-Scott encoding is essentially
+
+@
+forall a s . Term s (forall r . r :--> (a :--> PListMS a :--> r) :--> r)
+@
+
+@since wip
+-}
 deriveMS :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
 deriveMS tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure of
   (ps, (nameLast, PTypeProduct fieldsLast)) -> do
