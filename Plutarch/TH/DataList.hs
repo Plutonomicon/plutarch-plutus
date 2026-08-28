@@ -5,13 +5,15 @@ module Plutarch.TH.DataList (
   deriveDataList,
 ) where
 
-import Data.Foldable (foldrM, traverse_)
+import Control.Monad (unless, when)
+import Data.Foldable (foldrM)
 import Data.Vector (Vector)
 import Data.Vector qualified as Vector
+import Data.Vector.NonEmpty (NonEmptyVector)
+import Data.Vector.NonEmpty qualified as NEVector
 import Language.Haskell.TH (
   BndrVis,
   Body (NormalB),
-  Con,
   Dec,
   Exp (AppE, CaseE, ConE, VarE),
   Match (Match),
@@ -23,16 +25,16 @@ import Language.Haskell.TH (
   newName,
  )
 import Plutarch.Helpers.TH (
-  checkFieldIsWrapped,
-  conToName,
+  PTypeProduct (PTypeProduct),
+  PTypeSum (PTypeSum),
   fullTypeName,
-  getArity,
-  hasNoFields,
+  isTypeRecursive,
   mkContextOf,
   mkUncons,
   pmkConsE,
   pnilDataE,
   punsafeCoerceE,
+  unwrapField,
  )
 import Plutarch.Primitive.Apply (PlutarchType (PRepresentation))
 import Plutarch.Primitive.BuiltinFun (pheadList)
@@ -43,21 +45,21 @@ import Plutarch.Primitive.List (PBList)
 import Plutarch.Primitive.Match (PMatch (pmatch'))
 
 -- | @since wip
-deriveDataList :: Vector (TyVarBndr BndrVis) -> Name -> Vector Con -> Q [Dec]
-deriveDataList tvbs name constructors = case Vector.unsnoc constructors of
-  Nothing -> fail "DataList derivation is not possible for nullary types."
-  Just (cs, c) ->
-    if Vector.all hasNoFields constructors
-      then fail "Use the Enum strategy for types with no fields in any 'arm'."
-      else
-        if Vector.null cs
-          then do
-            traverse_ checkFieldIsWrapped constructors
-            plutarchTypeDec <- derivePlutarchType tvbs name
-            pmatchDec <- derivePMatch tvbs name c
-            pconDec <- derivePCon tvbs name c
-            pure $ plutarchTypeDec <> pmatchDec <> pconDec
-          else fail "Cannot use DataList derivation for a type with multiple data constructors."
+deriveDataList :: Vector (TyVarBndr BndrVis) -> Name -> PTypeSum -> Q [Dec]
+deriveDataList tvbs name (PTypeSum typeStructure) = case NEVector.unsnoc typeStructure of
+  (ps, (conName, PTypeProduct conStructure)) -> do
+    unless (Vector.null ps) (fail "Cannot use DataList strategy for a type with multiple data constructors.")
+    case NEVector.fromVector conStructure of
+      Nothing -> fail "Use the Enum strategy for types with no fields in any 'arm'."
+      Just conStructure' -> do
+        when
+          (NEVector.any (isTypeRecursive name) conStructure')
+          (fail "An isorecursive type cannot use the DataList strategy.")
+        unwrapped <- traverse unwrapField conStructure'
+        plutarchTypeDec <- derivePlutarchType tvbs name
+        pmatchDec <- derivePMatch tvbs name conName unwrapped
+        pconDec <- derivePCon tvbs name conName unwrapped
+        pure $ plutarchTypeDec <> pmatchDec <> pconDec
 
 -- Helpers
 
@@ -73,8 +75,8 @@ derivePlutarchType tyVars tyName =
     ctx :: Q Type
     ctx = pure . mkContextOf ''PCanData $ tyVars
 
-derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Con -> Q [Dec]
-derivePMatch tyVars tyName c =
+derivePMatch :: Vector (TyVarBndr BndrVis) -> Name -> Name -> NonEmptyVector Type -> Q [Dec]
+derivePMatch tyVars tyName cName fieldTypes =
   [d|
     instance $ctx => PMatch $name where
       pmatch' x f = $(mkMatchBody 'x 'f)
@@ -84,19 +86,17 @@ derivePMatch tyVars tyName c =
     name = pure . fullTypeName tyName $ tyVars
     ctx :: Q Type
     ctx = pure . mkContextOf ''PCanData $ tyVars
+    -- We have to do this in such a convoluted way because the continuation (`f`
+    -- argument to `pmatch'`) has to be placed on the _inside_ of all our list
+    -- unconses. However, at the same time, we _also_ have to build up a large
+    -- application chain to our constructor `C`.
+    --
+    -- We can assume that there is at least one field: this is verified by the
+    -- non-emptiness of `fieldTypes`.
     mkMatchBody :: Name -> Name -> Q Exp
-    mkMatchBody listName contName = do
-      let cArity = getArity c
-      cName <- conToName c
-      case cArity of
-        -- Generates `f C`, where `C` is the data constructor.
-        0 -> [e|$(pure (VarE contName)) $(pure (ConE cName))|]
-        -- We have to do this in such a convoluted way because the continuation
-        -- (`f` argument to `pmatch'`) has to be placed on the _inside_ of all
-        -- of our list unconses. However, at the same time, we also have to
-        -- build up a large application of our constructor `C`.
-        _ -> go contName cName [] listName (cArity - 1)
-    go :: Name -> Name -> [Name] -> Name -> Word -> Q Exp
+    mkMatchBody listName contName =
+      go contName cName [] listName (NEVector.length fieldTypes - 1)
+    go :: Name -> Name -> [Name] -> Name -> Int -> Q Exp
     go contName cName headsNamesBackwards lastTailName = \case
       0 -> do
         -- We accumulate the heads needed in reverse order, because otherwise,
@@ -114,8 +114,8 @@ derivePMatch tyVars tyName c =
         -- the end.
         go contName cName (headName : headsNamesBackwards) tailName (n - 1)
 
-derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> Con -> Q [Dec]
-derivePCon tyVars tyName c =
+derivePCon :: Vector (TyVarBndr BndrVis) -> Name -> Name -> NonEmptyVector Type -> Q [Dec]
+derivePCon tyVars tyName cName fieldTypes =
   [d|
     instance $ctx => PCon $name where
       pcon' x = $(match 'x)
@@ -129,12 +129,8 @@ derivePCon tyVars tyName c =
     match bindName = CaseE (VarE bindName) . (: []) <$> mkMatch
     mkMatch :: Q Match
     mkMatch = do
-      let cArity = getArity c
-      cName <- conToName c
-      fieldNames <- case cArity of
-        0 -> pure []
-        n -> traverse (\i -> newName $ "f" <> show i) [0, 1 .. n - 1]
-      let conMatchPat = ConP cName [] . fmap VarP $ fieldNames
+      fieldNames <- NEVector.imapM (\i _ -> newName $ "f" <> show i) fieldTypes
+      let conMatchPat = ConP cName [] . fmap VarP . NEVector.toList $ fieldNames
       start <- pnilDataE
       constrList <- foldrM go start fieldNames
       pure . Match conMatchPat (NormalB constrList) $ []

@@ -14,8 +14,8 @@
                  , bind_c
                  , \k l ->
                      case 
-                       (EqualsInteger # j # l)
-                       [(False :: Bool), EqualsInteger # i # k]
+                       (EqualsInteger # i # k)
+                       [(False :: Bool), EqualsInteger # j # l]
                  ]
                )
                [b]

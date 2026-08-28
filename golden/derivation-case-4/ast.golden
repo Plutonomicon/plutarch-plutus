@@ -1,0 +1,55 @@
+<Apply
+  <Fix
+    [a]
+    <\b c -> 
+      <case
+        b 
+        [
+          <case
+            c 
+            [
+              <True :: Bool>@nAyEnYBEW9k, 
+              <\_ _ -> <False :: Bool>@ofkSqfsbj7l>@uRfhFDvanYk
+            ]
+          >@fPLuv7xeH7y, 
+          <\f g -> 
+            <case
+              c 
+              [
+                <False :: Bool>@ofkSqfsbj7l, 
+                <\h i -> 
+                  <case
+                    <Applya [g, i]>@cyT8Tb1s0Uy 
+                    [
+                      <False :: Bool>@ofkSqfsbj7l, 
+                      <Apply<EqualsInteger>@dr5yy9ULU5j [f, h]>@scSQTdZE1qu
+                    ]
+                  >@hY8PLh0DaijN
+                >@nbUZIdBkOpwN
+              ]
+            >@hkEpje5BEzAN
+          >@mZ0PtmbBUCrN
+        ]
+      >@qwtabJg9s1k
+    >@pZDdLUWHHivN
+  >@lwYa2T92mrj
+  [
+    <Constr [0] []>@vibvQatvl5z, 
+    <Constr 
+      [1] [
+            <3 :: Integer>@fBzj0GfC2ns, 
+            <Constr 
+              [1] [
+                    <2 :: Integer>@qjJx7b4Msxl, 
+                    <Constr 
+                      [1] [
+                            <1 :: Integer>@vyRIuwDii3A, 
+                            <Constr [0] []>@vibvQatvl5z
+                          ]
+                    >@zt6zKYwqmmxN
+                  ]
+            >@ggYp4U8Td8bN
+          ]
+    >@tm7cfO4UP1lN
+  ]
+>@gSuGxpITnwu

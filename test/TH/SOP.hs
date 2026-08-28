@@ -1,12 +1,16 @@
 {-# LANGUAGE TemplateHaskell #-}
 
-module TH.SOP (PThese (..), PEither (..)) where
+module TH.SOP (
+  PThese (..),
+  PEither (..),
+  PSOPList (..),
+) where
 
 import Data.Kind (Type)
 import Plutarch.Backend.S (S)
-import Plutarch.Backend.Term (Term)
+import Plutarch.Backend.Term (Term, pfix)
 import Plutarch.Primitive.Apply ((#))
-import Plutarch.Primitive.Bool (pand, pfalse)
+import Plutarch.Primitive.Bool (pand, pfalse, ptrue)
 import Plutarch.Primitive.Match (pmatch)
 import Plutarch.TH.Strategy (Strategy (SOP), deriveFor)
 
@@ -22,3 +26,9 @@ data PEither (a :: S -> Type) (b :: S -> Type) (s :: S)
   | PRight (Term s b)
 
 deriveFor ''PEither SOP
+
+data PSOPList (a :: S -> Type) (s :: S)
+  = PSOPNil
+  | PSOPCons (Term s a) (Term s (PSOPList a))
+
+deriveFor ''PSOPList SOP

@@ -14,8 +14,8 @@
                  , bind_l
                  , \q r ->
                      case 
-                       (EqualsInteger # n # r)
-                       [(False :: Bool), EqualsInteger # m # q]
+                       (EqualsInteger # m # q)
+                       [(False :: Bool), EqualsInteger # n # r]
                  ]
                )
                [b]
