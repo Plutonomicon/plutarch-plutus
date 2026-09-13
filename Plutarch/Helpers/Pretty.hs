@@ -17,6 +17,7 @@ module Plutarch.Helpers.Pretty (
   composeTemplate,
   letTemplate,
   PrintMode (PrintDefault, PrintAtomic),
+  readPrettyUPLC,
 ) where
 
 import Control.Lens.Plated
@@ -55,6 +56,7 @@ import Prettyprinter (
  )
 import UntypedPlutusCore (DefaultFun, Name (Name), Unique (Unique))
 import UntypedPlutusCore.Core.Type (
+  Program (Program),
   Term (
     Apply,
     Builtin,
@@ -68,6 +70,26 @@ import UntypedPlutusCore.Core.Type (
     Var
   ),
  )
+
+import Control.Exception.Base (throwIO)
+import Control.Monad (void)
+import Control.Monad.Except (ExceptT, runExceptT)
+import Data.Text.IO qualified as TIO
+import PlutusCore.Error qualified as PLC
+import PlutusCore.Quote (Quote, runQuote)
+import UntypedPlutusCore.Parser qualified as Parse
+
+readPrettyUPLC :: forall (ann :: Type). FilePath -> IO (Doc ann)
+readPrettyUPLC path =
+  TIO.readFile path >>= \raw -> case runQuote . runExceptT $ prettifyUPLCProgram raw of
+    Left err -> throwIO . userError . show $ err
+    Right res -> pure res
+
+prettifyUPLCProgram :: forall (ann :: Type). Text -> ExceptT PLC.ParserErrorBundle Quote (Doc ann)
+prettifyUPLCProgram inp =
+  let parsed :: ExceptT PLC.ParserErrorBundle Quote (Term Name DefaultUni DefaultFun ())
+      parsed = (\case Program _ _ x -> void x) <$> Parse.parseProgram inp
+   in prettyUPLC <$> parsed
 
 -- We can do better than the Plutus Pretty instance.
 -- If we use (_,_) for pairs and [] for list types then

@@ -206,6 +206,7 @@ library
     , constraints
     , containers
     , data-default
+    , directory
     , filepath
     , generics-sop
     , hashable
@@ -234,6 +235,7 @@ library
     , unordered-containers
     , vector
 
+-- temporary, to assist GHCI usage of UPLC file prettification machinery
 test-suite tests
   import:         c
   type:           exitcode-stdio-1.0
