@@ -9,27 +9,45 @@ record (\i-0 ->
                 case
                   i-3
                   [ (\i-5 i-6 ->
-                       (\i-7 -> (\i-8 -> i-0) (unIData (force headList i-6)))
+                       (\i-7 ->
+                          case
+                            i-6
+                            [ (\i-8 i-9 ->
+                                 (\i-10 ->
+                                    case i-9 [(\i-11 i-12 -> error), i-0])
+                                   (unIData i-8)) ])
                          (unIData i-5)) ])
                (unBData i-2)) ])
      (unListData i-0))
   (List [B #646561646265656664656164626565666465616462656566, I 42, I 42])
 sum (\i-0 ->
    (\i-1 ->
-      (\i-2 ->
-         case
-           i-2
-           [ (\i-3 i-4 ->
-                case
-                  i-3
-                  [ ((\i-5 -> i-0) (unBData (i-1 i-4)))
-                  , ((\i-6 -> i-0) (unIData (i-1 i-4)))
-                  , (case
-                       i-4
-                       [ (\i-7 i-8 ->
-                            (\i-9 -> (\i-10 -> i-0) (unIData (i-1 i-8)))
-                              (unBData i-7)) ]) ]) ])
-        (unConstrData i-0))
-     (force headList))
+      case
+        i-1
+        [ (\i-2 i-3 ->
+             case
+               i-2
+               [ (case
+                    i-3
+                    [ (\i-4 i-5 ->
+                         (\i-6 -> case i-5 [(\i-7 i-8 -> error), i-0])
+                           (unBData i-4)) ])
+               , (case
+                    i-3
+                    [ (\i-9 i-10 ->
+                         (\i-11 -> case i-10 [(\i-12 i-13 -> error), i-0])
+                           (unIData i-9)) ])
+               , (case
+                    i-3
+                    [ (\i-14 i-15 ->
+                         (\i-16 ->
+                            case
+                              i-15
+                              [ (\i-17 i-18 ->
+                                   (\i-19 ->
+                                      case i-18 [(\i-20 i-21 -> error), i-0])
+                                     (unIData i-17)) ])
+                           (unBData i-14)) ]) ]) ])
+     (unConstrData i-0))
   (Constr 2 [B #646561646265656664656164626565666465616462656566, I 42])
 tag (\i-0 -> case (unIData i-0) [i-0, i-0, i-0]) (I 2)

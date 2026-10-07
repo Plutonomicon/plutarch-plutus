@@ -23,11 +23,19 @@ pcond.direct-3 case (lessThanInteger 1 2) [(case (lessThanInteger 2 3) [3, 2]), 
 pcond.pcond-3 case (lessThanInteger 1 2) [(case (lessThanInteger 2 3) [3, 2]), 1]
 PValidateData.pparseData (PFalse) (\i-0 ->
    case
-     (case (unConstrData (constrData 0 i-0)) [(\i-1 i-2 -> i-1)])
-     [(constrData 0 i-0), (constrData 0 i-0)])
+     (unConstrData (constrData 0 i-0))
+     [ (\i-1 i-2 ->
+          case
+            i-2
+            [ (\i-3 i-4 -> error)
+            , (case i-1 [(constrData 0 i-0), (constrData 0 i-0)]) ]) ])
   []
 PValidateData.pparseData (PTrue) (\i-0 ->
    case
-     (case (unConstrData (constrData 1 i-0)) [(\i-1 i-2 -> i-1)])
-     [(constrData 1 i-0), (constrData 1 i-0)])
+     (unConstrData (constrData 1 i-0))
+     [ (\i-1 i-2 ->
+          case
+            i-2
+            [ (\i-3 i-4 -> error)
+            , (case i-1 [(constrData 1 i-0), (constrData 1 i-0)]) ]) ])
   []
