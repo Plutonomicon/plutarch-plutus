@@ -25,6 +25,7 @@ import Plutarch.Builtin.Data (
 import Plutarch.Builtin.Integer (PInteger, peqInteger)
 import Plutarch.Builtin.String (PString)
 import Plutarch.Builtin.Unit (PUnit)
+import Plutarch.Builtin.Value (PBuiltinValue, pvalueData)
 
 import Data.Kind (Type)
 import Data.List.NonEmpty (nonEmpty)
@@ -179,3 +180,7 @@ instance PEq PBuiltinBLS12_381_G2_Element where
 
 -- | @since 1.10.0
 deriving anyclass instance PEq PEndianness
+
+-- | @since wip
+instance PEq PBuiltinValue where
+  v1 #== v2 = (pvalueData # v1) #== (pvalueData # v2)
