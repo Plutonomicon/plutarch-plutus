@@ -35,7 +35,6 @@ import Plutarch.Builtin.Data (
   pasInt,
   pasList,
   pasMap,
-  pheadBuiltin,
   pheadTailBuiltin,
  )
 import Plutarch.Builtin.Integer (PInteger)
@@ -173,8 +172,8 @@ instance PValidateData PPositive where
 instance PValidateData PByteString where
   pwithValidated opq = plet (pasByteStr # opq) . const
 
-{- | Checks that we have a @Constr@ with either @0@ or @1@ as its tag. The
-second field of @Constr@ is not checked at all.
+{- | Checks that we have a @Constr@ with either @0@ or @1@ as its tag. Also
+checks there are no fields.
 
 @since 1.12.0
 -}
@@ -183,34 +182,40 @@ instance PValidateData PBool where
   -- over `Integer` treating the first 'arm' of the match as `0`, the second as
   -- `1`, and so on. Since we error on anything other than those two, we can use
   -- this for speed.
-  pwithValidated opq x =
-    punsafeCase
-      (pmatch (pasConstr # opq) $ \(PBuiltinPair i _) -> i)
-      [ popaque x
-      , popaque x
-      ]
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair tag fields) ->
+    pmatch fields $ \case
+      PNil -> punsafeCase tag [popaque x, popaque x]
+      PCons _ _ -> perror
 
-{- | Checks that we have a @Constr@ with a second field of at least length 2.
-Furthermore, checks that the first element validates as per @a@, while the
-second element validates as per @b@. The @Constr@ tag is not checked at all.
+{- | Checks that we have a @Constr@ with a tag of 0 and two fields. Furthermore,
+checks that the first field validates as per @a@, while the second element
+validates as per @b@.
 
 @since 1.12.0
 -}
-instance (PValidateData a, PValidateData b) => PValidateData (PBuiltinPair (PAsData a) (PAsData b)) where
-  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
-    pheadTailBuiltin p $ \fstOne rest ->
-      plet (pheadBuiltin # rest) $ \sndOne ->
-        pwithValidated @a fstOne . pwithValidated @b sndOne $ x
+instance
+  (PValidateData a, PValidateData b) =>
+  PValidateData (PBuiltinPair (PAsData a) (PAsData b))
+  where
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair tag fields) ->
+    pheadTailBuiltin fields $ \f1 rest ->
+      pheadTailBuiltin rest $ \f2 rest' ->
+        pmatch rest' $ \case
+          PNil -> punsafeCase tag [popaque $ pwithValidated @a f1 . pwithValidated @b f2 $ x]
+          PCons _ _ -> perror
 
-{- | Checks that we have a @Constr@ with a second field of at least length 2.
-The @Constr@ tag, or the elements, are not checked at all.
+{- | Checks that we have a @Constr@ with a tag of 0 and two fields. The fields
+are not checked.
 
 @since 1.12.0
 -}
 instance PValidateData (PBuiltinPair PData PData) where
-  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair _ p) ->
-    pheadTailBuiltin p $ \_ rest ->
-      plet (pheadBuiltin # rest) $ const x
+  pwithValidated opq x = pmatch (pasConstr # opq) $ \(PBuiltinPair tag fields) ->
+    pheadTailBuiltin fields $ \_ rest ->
+      pheadTailBuiltin rest $ \_ rest' ->
+        pmatch rest' $ \case
+          PNil -> punsafeCase tag [popaque x]
+          PCons _ _ -> perror
 
 {- | Checks that we have a @List@. Furthermore, checks that every element
 validates as per @a@.
@@ -264,7 +269,10 @@ instance
 instance PValidateData (PBuiltinList PData) where
   pwithValidated opq x = plet (pasList # opq) $ const x
 
--- | @since 1.12.0
+{- | Validates @a@.
+
+@since 1.12.0
+-}
 instance PValidateData a => PValidateData (PAsData a) where
   pwithValidated = pwithValidated @a
 
@@ -279,9 +287,9 @@ instance SOP.Generic (a Any) => PValidateData (DeriveAsTag a) where
     let len = SOP.lengthSList @_ @(SOP.Code (a Any)) Proxy
      in punsafeCase (pasInt # opq) . replicate len . popaque $ x
 
-{- | Checks that we have a @List@, that it has (at least) enough elements for
-each field of @a@, and that each of those elements, in order, validates as
-per its respective 'PValidateData' instance.
+{- | Checks that we have a @List@, that it has the same number of elements as
+the number of fields of @a@, and that each of these elements, in order,
+validates as per its respective 'PValidateData' instance.
 
 @since 1.12.0
 -}
@@ -297,7 +305,6 @@ instance
   ) =>
   PValidateData (DeriveAsDataRec a)
   where
-  {-# INLINEABLE pwithValidated #-}
   pwithValidated opq x = plet (pasList # opq) $ \ell ->
     go ell (SOP.shape @(S -> Type) @struct) x
     where
@@ -309,14 +316,15 @@ instance
         Term s r ->
         Term s r
       go ell aShape x = case aShape of
-        SOP.ShapeNil -> x
-        SOP.ShapeCons @_ @y SOP.ShapeNil -> pwithValidated @y (pheadBuiltin # ell) x
+        SOP.ShapeNil -> pmatch ell $ \case
+          PNil -> x
+          PCons _ _ -> perror
         SOP.ShapeCons @_ @y restShape -> pheadTailBuiltin ell $ \h t ->
           pwithValidated @y h $ go t restShape x
 
 {- | Checks that we have a @Constr@, that its tag is in the range @[0, n - 1]@
 (where @n@ is the number of \'arms\' in the encoded sum type), and that there
-are at least enough fields in the second @Constr@ argument, each of which
+are exactly enough fields in the second @Constr@ argument, each of which
 decodes as per that field's 'PValidateData' instance.
 
 @since 1.12.0
@@ -354,8 +362,9 @@ instance
         Term s r ->
         Term s r
       goInner ell aShape x = case aShape of
-        SOP.ShapeNil -> x
-        SOP.ShapeCons @_ @y SOP.ShapeNil -> pwithValidated @y (pheadBuiltin # ell) x
+        SOP.ShapeNil -> pmatch ell $ \case
+          PNil -> x
+          PCons _ _ -> perror
         SOP.ShapeCons @_ @y restShape -> pheadTailBuiltin ell $ \h t ->
           pwithValidated @y h $ goInner t restShape x
 

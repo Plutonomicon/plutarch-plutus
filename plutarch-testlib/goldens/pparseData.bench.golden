@@ -1,4 +1,4 @@
 newtype {"exBudgetCPU":164242,"exBudgetMemory":1032,"scriptSizeBytes":43}
-record {"exBudgetCPU":730813,"exBudgetMemory":3760,"scriptSizeBytes":71}
-sum {"exBudgetCPU":708724,"exBudgetMemory":3728,"scriptSizeBytes":87}
+record {"exBudgetCPU":695663,"exBudgetMemory":4028,"scriptSizeBytes":75}
+sum {"exBudgetCPU":625574,"exBudgetMemory":3696,"scriptSizeBytes":100}
 tag {"exBudgetCPU":148844,"exBudgetMemory":932,"scriptSizeBytes":20}
