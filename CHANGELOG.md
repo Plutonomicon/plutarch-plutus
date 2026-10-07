@@ -13,6 +13,7 @@
 
 - `PBuiltinValue`, and bindings to primitive functions for this
 - Support for CIP-133 multi-scalar multiplications of BLS primitives
+- `PEq` instance for `PBuiltinValue`
 
 ## Changed
 
