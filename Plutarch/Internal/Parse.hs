@@ -1,6 +1,5 @@
 {-# LANGUAGE AllowAmbiguousTypes #-}
 {-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE TypeAbstractions #-}
 {-# LANGUAGE UndecidableInstances #-}
 {-# LANGUAGE NoPartialTypeSignatures #-}
 -- Note (Koz, 25/08/2025): Needed to ensure that `pparseData` doesn't get used
