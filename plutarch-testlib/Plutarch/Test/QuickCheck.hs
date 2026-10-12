@@ -6,7 +6,7 @@ module Plutarch.Test.QuickCheck (
   propEvalFail,
   propCompileFail,
   propEvalEqual,
-  propPTryFromRoundrip,
+  propPTryFromRoundtrip,
   checkHaskellEquivalent,
   checkHaskellEquivalent2,
 ) where
@@ -108,7 +108,7 @@ propEval name mkTerm =
       Evaluated _ _ -> property True
 
 -- | @since 3.1.1
-propPTryFromRoundrip ::
+propPTryFromRoundtrip ::
   forall a.
   ( Show (AsHaskell a)
   , Arbitrary (AsHaskell a)
@@ -119,7 +119,7 @@ propPTryFromRoundrip ::
   , PTryFrom PData (PAsData a)
   ) =>
   TestTree
-propPTryFromRoundrip = testProperty testName $ forAll arbitrary $ \original ->
+propPTryFromRoundtrip = testProperty testName $ forAll arbitrary $ \original ->
   plift (precompileTerm (roundtripScript @a) # pconstant original)
   where
     testName :: TestName

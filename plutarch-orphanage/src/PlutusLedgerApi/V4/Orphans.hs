@@ -5,7 +5,6 @@ module PlutusLedgerApi.V4.Orphans where
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Data.Coerce (coerce)
-import Data.Foldable (foldl')
 import Data.These (These (That, These, This), these)
 import PlutusLedgerApi.V1.Orphans.Value qualified as Value
 import PlutusLedgerApi.V3.Orphans ()
