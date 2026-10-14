@@ -25,6 +25,11 @@
 - Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for
   anything (though the `findAllPlaceholders` version is)
 
+## Fixed
+
+- `PValidateData` now checks for an exact match for field count, rather than
+  just sufficient fields.
+
 # 1.13.0 -- 04-03-2026
 
 ## Added
