@@ -14,8 +14,11 @@ import Test.QuickCheck (
   CoArbitrary (coarbitrary),
   Function (function),
   NonEmptyList (NonEmpty),
+  NonNegative (NonNegative),
+  chooseInt,
   functionMap,
   getNonEmpty,
+  getNonNegative,
   oneof,
   variant,
  )
@@ -240,6 +243,19 @@ instance Arbitrary PLA.TxCert where
 
 -- TODO: CoArbitrary, Function
 
+-- | @since 1.4.0
+instance Arbitrary PLA.TxOutRef where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    refId <- arbitrary
+    refIdX <- getNonNegative <$> arbitrary
+    pure . PLA.TxOutRef refId $ refIdX
+  shrink (PLA.TxOutRef tid ix) =
+    PLA.TxOutRef <$> shrink tid <*> (fmap getNonNegative . shrink . NonNegative $ ix)
+
+-- TODO: CoArbitrary, Function
+
+-- | @since 1.4.0
 instance Arbitrary PLA.TxInInfo where
   {-# INLINEABLE arbitrary #-}
   arbitrary = PLA.TxInInfo <$> arbitrary <*> arbitrary
@@ -250,6 +266,93 @@ instance Arbitrary PLA.TxInInfo where
     (pure . PLA.TxInInfo outRef $ resolved')
       <|> (pure . PLA.TxInInfo outRef' $ resolved)
 
+-- | @since 1.4.0
+instance Arbitrary PLA.ProtocolVersion where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    NonNegative major <- arbitrary
+    NonNegative minor <- arbitrary
+    pure . PLA.ProtocolVersion major $ minor
+  {-# INLINEABLE shrink #-}
+  shrink (PLA.ProtocolVersion major minor) = do
+    NonNegative major' <- shrink (NonNegative major)
+    NonNegative minor' <- shrink (NonNegative minor)
+    pure . PLA.ProtocolVersion major' $ minor'
+
+-- | @since 1.4.0
+instance Arbitrary PLA.GovernanceActionId where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    PLA.GovernanceActionId
+      <$> arbitrary
+      <*> (getNonNegative <$> arbitrary)
+  {-# INLINEABLE shrink #-}
+  shrink (PLA.GovernanceActionId tid ix) =
+    -- Hashes don't shrink, so we don't bother either
+    PLA.GovernanceActionId tid . getNonNegative <$> shrink (NonNegative ix)
+
+-- | @since 1.4.0
+deriving via (Maybe PLA.ScriptHash) instance Arbitrary PLA.Constitution
+
+-- | @since 1.4.0
+deriving via (Maybe PLA.ScriptHash) instance CoArbitrary PLA.Constitution
+
+-- | @since 1.4.0
+instance Function PLA.Constitution where
+  {-# INLINEABLE function #-}
+  function = functionMap coerce PLA.Constitution
+
+-- | @since 1.4.0
+instance Arbitrary PLA.GovernanceAction where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    oneof
+      [ PLA.ParameterChange <$> arbitrary <*> arbitrary <*> arbitrary
+      , PLA.HardForkInitiation <$> arbitrary <*> arbitrary
+      , PLA.TreasuryWithdrawals <$> arbitrary <*> arbitrary
+      , PLA.NoConfidence <$> arbitrary
+      , PLA.UpdateCommittee
+          <$> arbitrary
+          <*> arbitrary
+          <*> arbitrary
+          <*> (PLA.unsafeRatio . fromIntegral <$> chooseInt (1, 100) <*> pure 100)
+      , PLA.NewConstitution <$> arbitrary <*> arbitrary
+      , pure PLA.InfoAction
+      ]
+  {-# INLINEABLE shrink #-}
+  shrink = \case
+    PLA.ParameterChange mgid cp msh ->
+      PLA.ParameterChange
+        <$> shrink mgid
+        <*> shrink cp
+        <*> shrink msh
+    PLA.HardForkInitiation mgid v ->
+      PLA.HardForkInitiation
+        <$> shrink mgid
+        <*> shrink v
+    PLA.TreasuryWithdrawals wdrls msh ->
+      PLA.TreasuryWithdrawals
+        <$> shrink wdrls
+        <*> shrink msh
+    PLA.NoConfidence msh -> PLA.NoConfidence <$> shrink msh
+    -- No quorum shrinking
+    PLA.UpdateCommittee mgid creds mems quorum -> do
+      mgid' <- shrink mgid
+      creds' <- shrink creds
+      mems' <- shrink mems
+      pure . PLA.UpdateCommittee mgid' creds' mems' $ quorum
+    PLA.NewConstitution mgid c -> PLA.NewConstitution <$> shrink mgid <*> shrink c
+    _ -> []
+
+-- | @since 1.4.0
+instance Arbitrary PLA.ProposalProcedure where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = PLA.ProposalProcedure <$> arbitrary <*> arbitrary <*> arbitrary
+  {-# INLINEABLE shrink #-}
+  shrink (PLA.ProposalProcedure dep raddr ga) =
+    PLA.ProposalProcedure <$> shrink dep <*> shrink raddr <*> shrink ga
+
+-- | @since 1.4.0
 instance Arbitrary PLA.ScriptPurpose where
   {-# INLINEABLE arbitrary #-}
   arbitrary =
@@ -306,6 +409,27 @@ instance Arbitrary PLA.ScriptPurpose where
 
 -- TODO: CoArbitrary, Function
 
+{- | Does not shrink.
+
+@since 1.4.0
+-}
+instance Arbitrary PLA.POSIXTimeRange where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary =
+    oneof
+      [ -- always
+        pure . PLA.POSIXTimeRange Nothing $ Nothing
+      , -- lower bound only
+        PLA.POSIXTimeRange . Just <$> arbitrary <*> pure Nothing
+      , -- upper bound only
+        PLA.POSIXTimeRange Nothing . Just <$> arbitrary
+      , -- lower and upper
+        do
+          range <- arbitrary
+          start <- arbitrary
+          pure . PLA.POSIXTimeRange (Just start) . Just $ start + range
+      ]
+
 -- | @since 1.4.0
 instance Arbitrary PLA.TxInfo where
   {-# INLINEABLE arbitrary #-}
@@ -315,7 +439,6 @@ instance Arbitrary PLA.TxInfo where
     ins <- getNonEmpty <$> arbitrary
     refIns <- arbitrary
     outs <- getNonEmpty <$> arbitrary
-    fee <- arbitrary
     mint <- arbitrary
     certs <- arbitrary
     wdrls <- arbitrary
@@ -330,9 +453,29 @@ instance Arbitrary PLA.TxInfo where
     pps <- arbitrary
     currT <- arbitrary
     tDonation <- arbitrary
-    pure . PLA.TxInfo iid subTxIx ins refIns outs fee mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT $ tDonation
+    pure
+      . PLA.TxInfo
+        iid
+        subTxIx
+        ins
+        refIns
+        outs
+        mint
+        certs
+        wdrls
+        directs
+        abints
+        valid
+        guards
+        reqGuards
+        reds
+        dats
+        votes
+        pps
+        currT
+      $ tDonation
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxInfo iid subTxIx ins refIns outs fee mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
+  shrink (PLA.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
     ins' <- getNonEmpty <$> shrink (NonEmpty ins)
     outs' <- getNonEmpty <$> shrink (NonEmpty outs)
     PLA.TxInfo
@@ -341,7 +484,6 @@ instance Arbitrary PLA.TxInfo where
       <*> pure ins'
       <*> shrink refIns
       <*> pure outs'
-      <*> shrink fee
       <*> shrink mint
       <*> shrink certs
       <*> shrink wdrls
@@ -374,15 +516,35 @@ instance Arbitrary PLA.TopTxInfoSimplified where
     dds <- arbitrary
     valid <- arbitrary
     guards <- arbitrary
-    purposes <- arbitrary
+    reqGuards <- arbitrary
+    redHashes <- arbitrary
     datas <- arbitrary
     votes <- arbitrary
     pps <- arbitrary
     currT <- arbitrary
     tDonations <- arbitrary
-    pure . PLA.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards purposes datas votes pps currT $ tDonations
+    pure
+      . PLA.TopTxInfoSimplified
+        ids
+        ins
+        refIns
+        outs
+        mints
+        burns
+        certs
+        wdrls
+        dds
+        valid
+        guards
+        reqGuards
+        redHashes
+        datas
+        votes
+        pps
+        currT
+      $ tDonations
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards purposes datas votes pps currT tDonations) = do
+  shrink (PLA.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards reqGuards reds datas votes pps currT tDonations) = do
     ins' <- getNonEmpty <$> shrink (NonEmpty ins)
     outs' <- getNonEmpty <$> shrink (NonEmpty outs)
     PLA.TopTxInfoSimplified
@@ -397,7 +559,8 @@ instance Arbitrary PLA.TopTxInfoSimplified where
       <*> shrink dds
       <*> shrink valid
       <*> shrink guards
-      <*> shrink purposes
+      <*> shrink reqGuards
+      <*> shrink reds
       <*> shrink datas
       <*> shrink votes
       <*> shrink pps
