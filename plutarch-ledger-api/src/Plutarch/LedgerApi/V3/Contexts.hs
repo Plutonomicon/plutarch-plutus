@@ -411,8 +411,6 @@ instance PValidateData PGovernanceActionId where
         )
         perror
 
--- TODO: Investigate what guarantees this provides on the Map, if any
-
 -- | @since 3.1.0
 data PCommittee (s :: S) = PCommittee
   { pcommittee'members :: Term s (PAsData (AssocMap.PUnsortedMap PColdCommitteeCredential PInteger))

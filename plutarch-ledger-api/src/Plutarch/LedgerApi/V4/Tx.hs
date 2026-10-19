@@ -7,6 +7,10 @@ module Plutarch.LedgerApi.V4.Tx (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Lift (
+  LiftError (CouldNotDecodeData),
+  punsafeCoercePLifted,
+ )
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Scripts (PScriptHash)
 import Plutarch.LedgerApi.V2.Tx (POutputDatum)
@@ -42,13 +46,18 @@ data PTxOut (s :: S) = PTxOut
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PTxOut)
+    via (DeriveAsDataRec PTxOut)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTxOut Plutus.TxOut
-  instance
-    PLiftable PTxOut
+instance PLiftable PTxOut where
+  type AsHaskell PTxOut = Plutus.TxOut
+  type PlutusRepr PTxOut = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PAddress is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PTxOut)

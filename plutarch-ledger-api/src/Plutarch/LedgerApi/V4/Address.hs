@@ -8,6 +8,10 @@ module Plutarch.LedgerApi.V4.Address (
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
+import Plutarch.Internal.Lift (
+  LiftError (CouldNotDecodeData),
+  punsafeCoercePLifted,
+ )
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential)
 import Plutarch.Prelude
@@ -74,13 +78,18 @@ data PAddress (s :: S) = PAddress
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PAddress)
+    via (DeriveAsDataRec PAddress)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PAddress Plutus.Address
-  instance
-    PLiftable PAddress
+instance PLiftable PAddress where
+  type AsHaskell PAddress = Plutus.Address
+  type PlutusRepr PAddress = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PAddress is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PAddress)

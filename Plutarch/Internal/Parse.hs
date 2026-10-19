@@ -45,7 +45,7 @@ import Plutarch.Internal.Case (punsafeCase)
 import Plutarch.Internal.Eq ((#==))
 import Plutarch.Internal.Fix (pfix)
 import Plutarch.Internal.IsData (PIsData, pfromData)
-import Plutarch.Internal.Numeric (PPositive)
+import Plutarch.Internal.Numeric (PNatural, PPositive)
 import Plutarch.Internal.Ord ((#<=))
 import Plutarch.Internal.PLam (plam)
 import Plutarch.Internal.PlutusType (
@@ -165,6 +165,15 @@ instance PValidateData PPositive where
   pwithValidated opq x =
     plet (pfromData $ pparseData @PInteger opq) $ \n ->
       pif (n #<= 0) perror x
+
+{- | Checks that we have a non-negative @I@.
+
+@since wip
+-}
+instance PValidateData PNatural where
+  pwithValidated opq x =
+    plet (pfromData $ pparseData @PInteger opq) $ \n ->
+      pif (n #<= (-1)) perror x
 
 {- | Checks that we have a @B@.
 

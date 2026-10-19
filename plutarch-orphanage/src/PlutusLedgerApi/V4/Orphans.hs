@@ -5,23 +5,105 @@ module PlutusLedgerApi.V4.Orphans where
 import Control.Applicative ((<|>))
 import Control.Monad (guard)
 import Data.Coerce (coerce)
+import Data.Maybe (fromJust)
 import Data.These (These (That, These, This), these)
 import PlutusLedgerApi.V1.Orphans.Value qualified as Value
 import PlutusLedgerApi.V3.Orphans ()
 import PlutusLedgerApi.V4 qualified as PLA
+import PlutusLedgerApi.V4.Ratio qualified as Ratio
+import PlutusTx.AssocMap qualified as AssocMap
 import Test.QuickCheck (
   Arbitrary (arbitrary, shrink),
   CoArbitrary (coarbitrary),
   Function (function),
   NonEmptyList (NonEmpty),
   NonNegative (NonNegative),
+  Positive (Positive),
   chooseInt,
   functionMap,
   getNonEmpty,
   getNonNegative,
+  getPositive,
+  liftArbitrary,
+  liftShrink,
   oneof,
   variant,
  )
+
+-- | @since 1.4.0
+instance Arbitrary PLA.Rational where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    den <- chooseInt (1, 100)
+    num <- chooseInt (-100, 100)
+    pure . fromJust . PLA.ratio (fromIntegral num) . fromIntegral $ den
+  {-# INLINEABLE shrink #-}
+  shrink r = do
+    let n = PLA.numerator r
+    let d = PLA.denominator r
+    n' <- shrink n
+    pure . fromJust . PLA.ratio n' $ d
+
+-- | @since 1.4.0
+instance CoArbitrary PLA.Rational where
+  {-# INLINEABLE coarbitrary #-}
+  coarbitrary r =
+    coarbitrary (PLA.numerator r)
+      . coarbitrary (PLA.denominator r)
+
+-- | @since 1.4.0
+instance Function PLA.Rational where
+  {-# INLINE function #-}
+  function = functionMap into outOf
+    where
+      into :: PLA.Rational -> (Integer, Integer)
+      into r = (PLA.numerator r, PLA.denominator r)
+      outOf :: (Integer, Integer) -> PLA.Rational
+      outOf (n, d) = PLA.unsafeRatio n d
+
+{- | Does not shrink the quorum, as this is surprisingly hard to do sensibly. We
+assume the quorum is in the interval @(0, 1]@ (meaning anywhere from a single
+voice to unanimity).
+
+@since 1.4.0
+-}
+instance Arbitrary PLA.Committee where
+  {-# INLINEABLE arbitrary #-}
+  arbitrary = do
+    committee <- liftArbitrary (getPositive <$> arbitrary)
+    -- We can't have a quorum of 0.0
+    num <- chooseInt (1, 100)
+    let quorum = Ratio.unsafeRatio (fromIntegral num) 100
+    pure . PLA.Committee committee $ quorum
+  {-# INLINEABLE shrink #-}
+  shrink (PLA.Committee committee quorum) = do
+    committee' <- liftShrink (fmap getPositive . shrink . Positive) committee
+    guard (not . AssocMap.null $ committee')
+    pure . PLA.Committee committee' $ quorum
+
+-- | @since 1.4.0
+instance CoArbitrary PLA.Committee where
+  {-# INLINEABLE coarbitrary #-}
+  coarbitrary (PLA.Committee committee quorum) =
+    coarbitrary committee
+      . coarbitrary (Ratio.numerator quorum)
+      . coarbitrary (Ratio.denominator quorum)
+
+-- | @since 1.4.0
+instance Function PLA.Committee where
+  {-# INLINEABLE function #-}
+  function = functionMap into outOf
+    where
+      into ::
+        PLA.Committee ->
+        (PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer)
+      into (PLA.Committee committee quorum) =
+        (committee, Ratio.numerator quorum, Ratio.denominator quorum)
+      outOf ::
+        (PLA.Map PLA.ColdCommitteeCredential Integer, Integer, Integer) ->
+        PLA.Committee
+      outOf (committee, num, den) =
+        PLA.Committee committee . Ratio.unsafeRatio num $ den
 
 -- | @since 1.4.0
 deriving via PLA.Credential instance Arbitrary PLA.AccountId
@@ -29,7 +111,7 @@ deriving via PLA.Credential instance Arbitrary PLA.AccountId
 -- | @since 1.4.0
 deriving via PLA.Credential instance CoArbitrary PLA.AccountId
 
--- | @since wip
+-- | @since 1.4.0
 instance Function PLA.AccountId where
   {-# INLINEABLE function #-}
   function = functionMap coerce PLA.AccountId

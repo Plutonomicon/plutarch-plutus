@@ -55,6 +55,7 @@ library
     Plutarch.LedgerApi.V3.Contexts
     Plutarch.LedgerApi.V3.Value
     Plutarch.LedgerApi.V4
+    Plutarch.LedgerApi.V4.Ratio
     Plutarch.LedgerApi.Value
 
   other-modules:
@@ -73,6 +74,7 @@ library
     Plutarch.LedgerApi.V3.Tx
     Plutarch.LedgerApi.V4.Address
     Plutarch.LedgerApi.V4.Contexts
+    Plutarch.LedgerApi.V4.Time
     Plutarch.LedgerApi.V4.Tx
     Plutarch.LedgerApi.Value.AssetClass
     Plutarch.LedgerApi.Value.CurrencySymbol
