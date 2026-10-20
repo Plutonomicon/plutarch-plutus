@@ -61,7 +61,7 @@ module Plutarch.LedgerApi.V4 (
   V3Tx.PTxId (..),
   ContextsV4.PTxInfo (..),
   Tx.PTxOut (..),
-  V3Tx.PTxOutRef (..),
+  Tx.PTxOutRef (..),
   ContextsV4.PTxInInfo (..),
   V2Tx.POutputDatum (..),
 

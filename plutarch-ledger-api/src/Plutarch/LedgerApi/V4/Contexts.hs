@@ -47,11 +47,11 @@ import Plutarch.LedgerApi.V3.Contexts (
   PVoter,
  )
 import Plutarch.LedgerApi.V3.MintValue (PMintValue)
-import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.V3.Tx (PTxId)
 import Plutarch.LedgerApi.V4.Address (PAccountId)
 import Plutarch.LedgerApi.V4.Ratio (PRationalData)
 import Plutarch.LedgerApi.V4.Time (PPosixTimeRange)
-import Plutarch.LedgerApi.V4.Tx (PTxOut)
+import Plutarch.LedgerApi.V4.Tx (PTxOut, PTxOutRef)
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)

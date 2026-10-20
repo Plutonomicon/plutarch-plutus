@@ -64,6 +64,11 @@ tests =
         , propPTryFromRoundtrip @PLA.PAddress
         ]
     , testGroup
+        (typeName @(S -> Type) @PLA.PTxOutRef)
+        [ checkLedgerProperties @PLA.PTxOutRef
+        , propPTryFromRoundtrip @PLA.PTxOutRef
+        ]
+    , testGroup
         (typeName @(S -> Type) @PLA.PTxOut)
         [ checkLedgerProperties @PLA.PTxOut
         , propPTryFromRoundtrip @PLA.PTxOut
