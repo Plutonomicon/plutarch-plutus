@@ -14,6 +14,46 @@ tests =
   testGroup
     "V4"
     [ testGroup
+        (typeName @(S -> Type) @PLA.PRationalData)
+        [ checkLedgerProperties @PLA.PRationalData
+        , propPTryFromRoundtrip @PLA.PRationalData
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PPosixTimeRange)
+        [ checkLedgerProperties @PLA.PPosixTimeRange
+        , propPTryFromRoundtrip @PLA.PPosixTimeRange
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PGovernanceActionId)
+        [ checkLedgerProperties @PLA.PGovernanceActionId
+        , propPTryFromRoundtrip @PLA.PGovernanceActionId
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PProtocolVersion)
+        [ checkLedgerProperties @PLA.PProtocolVersion
+        , propPTryFromRoundtrip @PLA.PProtocolVersion
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PConstitution)
+        [ checkLedgerProperties @PLA.PConstitution
+        , propPTryFromRoundtrip @PLA.PConstitution
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PCommittee)
+        [ checkLedgerProperties @PLA.PCommittee
+        , propPTryFromRoundtrip @PLA.PCommittee
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PGovernanceAction)
+        [ checkLedgerProperties @PLA.PGovernanceAction
+        , propPTryFromRoundtrip @PLA.PGovernanceAction
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PProposalProcedure)
+        [ checkLedgerProperties @PLA.PProposalProcedure
+        , propPTryFromRoundtrip @PLA.PProposalProcedure
+        ]
+    , testGroup
         (typeName @(S -> Type) @PLA.PAccountId)
         [ checkLedgerProperties @PLA.PAccountId
         , propPTryFromRoundtrip @PLA.PAccountId
@@ -22,6 +62,11 @@ tests =
         (typeName @(S -> Type) @PLA.PAddress)
         [ checkLedgerProperties @PLA.PAddress
         , propPTryFromRoundtrip @PLA.PAddress
+        ]
+    , testGroup
+        (typeName @(S -> Type) @PLA.PTxOutRef)
+        [ checkLedgerProperties @PLA.PTxOutRef
+        , propPTryFromRoundtrip @PLA.PTxOutRef
         ]
     , testGroup
         (typeName @(S -> Type) @PLA.PTxOut)

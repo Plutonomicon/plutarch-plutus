@@ -2,6 +2,12 @@
 
 -- Mirrors the equivalent V4 module in plutus-ledger-api
 module Plutarch.LedgerApi.V4.Contexts (
+  PGovernanceActionId (..),
+  PProtocolVersion (..),
+  PConstitution (..),
+  PCommittee (..),
+  PGovernanceAction (..),
+  PProposalProcedure (..),
   PAccountBalanceInterval (..),
   PAccountBalanceIntervals (..),
   PTxCert (..),
@@ -17,9 +23,11 @@ module Plutarch.LedgerApi.V4.Contexts (
 import Data.Bifunctor (bimap)
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
-import Plutarch.Internal.Lift (LiftError (CouldNotDecodeData))
+import Plutarch.Internal.Lift (
+  LiftError (CouldNotDecodeData),
+  punsafeCoercePLifted,
+ )
 import Plutarch.LedgerApi.AssocMap (PUnsortedMap)
-import Plutarch.LedgerApi.Interval (PInterval)
 import Plutarch.LedgerApi.Utils (PMaybeData)
 import Plutarch.LedgerApi.V1.Credential (PCredential)
 import Plutarch.LedgerApi.V1.Crypto (PPubKeyHash)
@@ -29,27 +37,277 @@ import Plutarch.LedgerApi.V1.Scripts (
   PRedeemer,
   PScriptHash,
  )
-import Plutarch.LedgerApi.V1.Time (PPosixTime)
 import Plutarch.LedgerApi.V3.Contexts (
+  PChangedParameters,
   PColdCommitteeCredential,
   PDRepCredential,
   PDelegatee,
-  PGovernanceActionId,
   PHotCommitteeCredential,
-  PProposalProcedure,
   PVote,
   PVoter,
  )
 import Plutarch.LedgerApi.V3.MintValue (PMintValue)
-import Plutarch.LedgerApi.V3.Tx (PTxId, PTxOutRef)
+import Plutarch.LedgerApi.V3.Tx (PTxId)
 import Plutarch.LedgerApi.V4.Address (PAccountId)
-import Plutarch.LedgerApi.V4.Tx (PTxOut)
+import Plutarch.LedgerApi.V4.Ratio (PRationalData)
+import Plutarch.LedgerApi.V4.Time (PPosixTimeRange)
+import Plutarch.LedgerApi.V4.Tx (PTxOut, PTxOutRef)
 import Plutarch.LedgerApi.Value (PCurrencySymbol, PLovelace)
 import Plutarch.Prelude
 import Plutarch.Unsafe (punsafeBuiltin, punsafeCoerce)
 import PlutusCore qualified as PLC
 import PlutusLedgerApi.V4 qualified as Plutus
 import PlutusTx.AssocMap qualified as PlutusMap
+
+-- | @since 3.8.0
+data PGovernanceActionId (s :: S)
+  = PGovernanceActionId (Term s (PAsData PTxId)) (Term s (PAsData PInteger))
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.8.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataRec PGovernanceActionId)
+
+-- | @since 3.8.0
+instance PLiftable PGovernanceActionId where
+  type AsHaskell PGovernanceActionId = Plutus.GovernanceActionId
+  type PlutusRepr PGovernanceActionId = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PGovernanceActionId is list-represented."
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PGovernanceActionId)
+
+-- | @since 3.8.0
+data PProtocolVersion (s :: S) = PProtocolVersion
+  { pprotocolVersion'major :: Term s (PAsData PInteger)
+  , pprotocolVersion'minor :: Term s (PAsData PInteger)
+  }
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.8.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataRec PProtocolVersion)
+
+-- | @since 3.8.0
+instance PLiftable PProtocolVersion where
+  type AsHaskell PProtocolVersion = Plutus.ProtocolVersion
+  type PlutusRepr PProtocolVersion = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PProtocolVersion is list-represented."
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PProtocolVersion)
+
+{- | A constitution, omitting the optional anchor.
+
+@since 3.8.0
+-}
+newtype PConstitution (s :: S) = PConstitution (Term s (PMaybeData PScriptHash))
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.8.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataRec PConstitution)
+
+-- | @since 3.8.0
+instance PLiftable PConstitution where
+  type AsHaskell PConstitution = Plutus.Constitution
+  type PlutusRepr PConstitution = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PConstitution is list-represented."
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PConstitution)
+
+-- | @since 3.8.0
+data PCommittee (s :: S) = PCommittee
+  { pcommittee'members :: Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger))
+  , pcommittee'quorum :: Term s (PAsData PRationalData)
+  }
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.8.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataRec PCommittee)
+
+-- | @since 3.8.0
+instance PLiftable PCommittee where
+  type AsHaskell PCommittee = Plutus.Committee
+  type PlutusRepr PCommittee = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PCommittee is list-represented."
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PCommittee)
+
+-- | @since 3.8.0
+data PGovernanceAction (s :: S)
+  = PParameterChange (Term s (PMaybeData PGovernanceActionId)) (Term s PChangedParameters) (Term s (PMaybeData PScriptHash))
+  | PHardForkInitiation (Term s (PMaybeData PGovernanceActionId)) (Term s (PAsData PProtocolVersion))
+  | PTreasuryWithdrawals
+      (Term s (PAsData (PUnsortedMap PCredential PLovelace)))
+      (Term s (PMaybeData PScriptHash))
+  | PNoConfidence (Term s (PMaybeData PGovernanceActionId))
+  | PUpdateCommittee
+      (Term s (PMaybeData PGovernanceActionId))
+      (Term s (PAsData (PBuiltinList (PAsData PColdCommitteeCredential))))
+      (Term s (PAsData (PUnsortedMap PColdCommitteeCredential PInteger)))
+      (Term s (PAsData PRationalData))
+  | PNewConstitution (Term s (PMaybeData PGovernanceActionId)) (Term s (PAsData PConstitution))
+  | PInfoAction
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.3.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataStruct PGovernanceAction)
+
+-- | @since 3.8.0
+deriving via
+  DeriveDataPLiftable PGovernanceAction Plutus.GovernanceAction
+  instance
+    PLiftable PGovernanceAction
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PGovernanceAction)
+
+-- | @since 3.8.0
+data PProposalProcedure (s :: S) = PProposalProcedure
+  { pproposalProcedure'deposit :: Term s (PAsData PLovelace)
+  , pproposalProcedure'returnAddr :: Term s PCredential
+  , pproposalProcedure'governanceAction :: Term s PGovernanceAction
+  }
+  deriving stock
+    ( -- | @since 3.8.0
+      Generic
+    )
+  deriving anyclass
+    ( -- | @since 3.8.0
+      SOP.Generic
+    , -- | @since 3.8.0
+      PIsData
+    , -- | @since 3.8.0
+      PEq
+    , -- | @since 3.8.0
+      PShow
+    )
+  deriving
+    ( -- | @since 3.8.0
+      PlutusType
+    , -- | @since 3.8.0
+      PValidateData
+    )
+    via (DeriveAsDataRec PProposalProcedure)
+
+-- | @since 3.8.0
+instance PLiftable PProposalProcedure where
+  type AsHaskell PProposalProcedure = Plutus.ProposalProcedure
+  type PlutusRepr PProposalProcedure = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PProposalProcedure is list-represented."
+
+-- | @since 3.8.0
+instance PTryFrom PData (PAsData PProposalProcedure)
 
 -- | @since 3.8.0
 data PAccountBalanceInterval (s :: S)
@@ -247,13 +505,18 @@ data PTxInInfo (s :: S) = PTxInInfo
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PTxInInfo)
+    via (DeriveAsDataRec PTxInInfo)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTxInInfo Plutus.TxInInfo
-  instance
-    PLiftable PTxInInfo
+instance PLiftable PTxInInfo where
+  type AsHaskell PTxInInfo = Plutus.TxInInfo
+  type PlutusRepr PTxInInfo = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PTxInInfo is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PTxInInfo)
@@ -261,17 +524,16 @@ instance PTryFrom PData (PAsData PTxInInfo)
 -- | @since 3.8.0
 data PTxInfo (s :: S) = PTxInfo
   { ptxInfo'id :: Term s (PAsData PTxId)
-  , ptxInfo'subTxIx :: Term s (PAsData PInteger)
+  , ptxInfo'subTxIx :: Term s (PMaybeData PInteger)
   , ptxInfo'inputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'referenceInputs :: Term s (PAsData (PBuiltinList (PAsData PTxInInfo)))
   , ptxInfo'outputs :: Term s (PAsData (PBuiltinList (PAsData PTxOut)))
-  , ptxInfo'fee :: Term s (PAsData PLovelace)
   , ptxInfo'mint :: Term s (PAsData PMintValue)
   , ptxInfo'txCerts :: Term s (PAsData (PBuiltinList (PAsData PTxCert)))
-  , ptxInfo'withdrawals :: Term s (PAsData (PUnsortedMap PAccountId PLovelace))
-  , ptxInfo'directDeposits :: Term s (PAsData (PUnsortedMap PAccountId PLovelace))
+  , ptxInfo'withdrawals :: Term s (PAsData (PUnsortedMap PCredential PLovelace))
+  , ptxInfo'directDeposits :: Term s (PAsData (PUnsortedMap PCredential PLovelace))
   , ptxInfo'accountBalanceIntervals :: Term s (PAsData PAccountBalanceIntervals)
-  , ptxInfo'validRange :: Term s (PInterval PPosixTime)
+  , ptxInfo'validRange :: Term s (PAsData PPosixTimeRange)
   , ptxInfo'guards :: Term s (PAsData (PBuiltinList (PAsData PCredential)))
   , ptxInfo'requiredTopLevelGuards :: Term s (PAsData (PUnsortedMap PCredential (PMaybeData PDatum)))
   , ptxInfo'redeemers :: Term s (PAsData (PUnsortedMap PScriptPurpose PRedeemer))
@@ -301,13 +563,18 @@ data PTxInfo (s :: S) = PTxInfo
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PTxInfo)
+    via (DeriveAsDataRec PTxInfo)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTxInfo Plutus.TxInfo
-  instance
-    PLiftable PTxInfo
+instance PLiftable PTxInfo where
+  type AsHaskell PTxInfo = Plutus.TxInfo
+  type PlutusRepr PTxInfo = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PTxInfo is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PTxInfo)
@@ -321,11 +588,12 @@ data PTopTxInfoSimplified (s :: S) = PTopTxInfoSimplified
   , pttis'mints :: Term s (PAsData PMintValue)
   , pttis'burns :: Term s (PAsData PMintValue)
   , pttis'txCerts :: Term s (PAsData (PBuiltinList (PAsData PTxCert)))
-  , pttis'withdrawals :: Term s (PAsData (PUnsortedMap PAccountId PLovelace))
-  , pttis'directDeposits :: Term s (PAsData (PUnsortedMap PAccountId PLovelace))
-  , pttis'validRange :: Term s (PAsData (PInterval PPosixTime))
-  , pttis'guards :: Term s (PAsData (PUnsortedMap PCredential PUnit))
-  , pttis'scriptPurposes :: Term s (PAsData (PUnsortedMap PScriptPurpose PUnit))
+  , pttis'withdrawals :: Term s (PAsData (PUnsortedMap PCredential PLovelace))
+  , pttis'directDeposits :: Term s (PAsData (PUnsortedMap PCredential PLovelace))
+  , pttis'validRange :: Term s (PAsData PPosixTimeRange)
+  , pttis'guards :: Term s (PAsData (PBuiltinList (PAsData PCredential)))
+  , pttis'requiredTopLevelGuards :: Term s (PAsData (PBuiltinList (PAsData PCredential)))
+  , pttis'redeemerHashes :: Term s (PAsData (PBuiltinList (PAsData PScriptHash)))
   , pttis'data :: Term s (PAsData (PUnsortedMap PDatumHash PDatum))
   , pttis'votes :: Term s (PAsData (PUnsortedMap PVoter (PUnsortedMap PGovernanceActionId PVote)))
   , pttis'proposalProcedures :: Term s (PAsData (PBuiltinList (PAsData PProposalProcedure)))
@@ -352,13 +620,18 @@ data PTopTxInfoSimplified (s :: S) = PTopTxInfoSimplified
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PTopTxInfoSimplified)
+    via (DeriveAsDataRec PTopTxInfoSimplified)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTopTxInfoSimplified Plutus.TopTxInfoSimplified
-  instance
-    PLiftable PTopTxInfoSimplified
+instance PLiftable PTopTxInfoSimplified where
+  type AsHaskell PTopTxInfoSimplified = Plutus.TopTxInfoSimplified
+  type PlutusRepr PTopTxInfoSimplified = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PTopTxInfoSimplified is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PTopTxInfoSimplified)
@@ -366,7 +639,7 @@ instance PTryFrom PData (PAsData PTopTxInfoSimplified)
 -- | @since 3.8.0
 data PTopTxInfo (s :: S) = PTopTxInfo
   { topTxInfo'subTransactions :: Term s (PAsData (PBuiltinList (PAsData PTxInfo)))
-  , topTxInfo'datums :: Term s (PAsData (PUnsortedMap PInteger PDatum))
+  , topTxInfo'datums :: Term s (PAsData (PUnsortedMap PTxId PDatum))
   , topTxInfo'startingBalanceIntervals :: Term s (PAsData PAccountBalanceIntervals)
   , topTxInfo'simplified :: Term s (PAsData PTopTxInfoSimplified)
   }
@@ -390,13 +663,18 @@ data PTopTxInfo (s :: S) = PTopTxInfo
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PTopTxInfo)
+    via (DeriveAsDataRec PTopTxInfo)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PTopTxInfo Plutus.TopTxInfo
-  instance
-    PLiftable PTopTxInfo
+instance PLiftable PTopTxInfo where
+  type AsHaskell PTopTxInfo = Plutus.TopTxInfo
+  type PlutusRepr PTopTxInfo = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PTopTxInfo is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PTopTxInfo)
@@ -408,7 +686,7 @@ data PScriptInfo (s :: S)
   | PWithdrawingScript (Term s (PAsData PAccountId))
   | PCertifyingScript (Term s (PAsData PInteger)) (Term s (PAsData PTxCert))
   | PVotingScript (Term s (PAsData PVoter))
-  | PProposingScript (Term s (PAsData PInteger)) (Term s (PAsData PProposalProcedure))
+  | PProposingScript (Term s (PAsData PNatural)) (Term s (PAsData PProposalProcedure))
   | PGuardingScript (Term s (PAsData PInteger)) (Term s (PMaybeData PTopTxInfo))
   deriving stock
     ( -- | @since 3.8.0
@@ -468,13 +746,18 @@ data PScriptContext (s :: S) = PScriptContext
     , -- | @since 3.8.0
       PValidateData
     )
-    via (DeriveAsDataStruct PScriptContext)
+    via (DeriveAsDataRec PScriptContext)
 
 -- | @since 3.8.0
-deriving via
-  DeriveDataPLiftable PScriptContext Plutus.ScriptContext
-  instance
-    PLiftable PScriptContext
+instance PLiftable PScriptContext where
+  type AsHaskell PScriptContext = Plutus.ScriptContext
+  type PlutusRepr PScriptContext = Plutus.Data
+  haskToRepr = Plutus.toData
+  reprToHask = maybe (Left CouldNotDecodeData) Right . Plutus.fromData
+  plutToRepr t = fmap Plutus.List $ plutToReprUni @(PBuiltinList PData) $ punsafeCoercePLifted t
+  reprToPlut = \case
+    Plutus.List ell -> punsafeCoercePLifted (reprToPlutUni @(PBuiltinList PData) ell)
+    _ -> error "Impossible: PScriptContext is list-represented."
 
 -- | @since 3.8.0
 instance PTryFrom PData (PAsData PScriptContext)

@@ -1,6 +1,6 @@
 {- | = Note
 
-The 'Value.PValue', 'AssocMap.PMap' and 'Interval.PInterval'-related
+The 'Value.PValue', and 'AssocMap.PMap'-related
 functionality can be found in other modules, as these clash with the Plutarch
 prelude. These should be imported qualified.
 -}
@@ -19,13 +19,13 @@ module Plutarch.LedgerApi.V4 (
   ContextsV4.PTxCert (..),
   Contexts.PVoter (..),
   Contexts.PVote (..),
-  Contexts.PGovernanceActionId (..),
-  Contexts.PCommittee (..),
-  Contexts.PConstitution (..),
-  Contexts.PProtocolVersion (..),
-  Contexts.PGovernanceAction (..),
+  ContextsV4.PGovernanceActionId (..),
+  ContextsV4.PCommittee (..),
+  ContextsV4.PConstitution (..),
+  ContextsV4.PProtocolVersion (..),
+  ContextsV4.PGovernanceAction (..),
   Contexts.PChangedParameters (..),
-  Contexts.PProposalProcedure (..),
+  ContextsV4.PProposalProcedure (..),
 
   -- * Context types
   ContextsV4.PScriptContext (..),
@@ -52,7 +52,8 @@ module Plutarch.LedgerApi.V4 (
   MintValue.ptoMintValue,
 
   -- ** Time
-  Time.PPosixTime (..),
+  V1Time.PPosixTime (..),
+  V4Time.PPosixTimeRange (..),
 
   -- ** Types for representing transactions
   Address.PAddress (..),
@@ -60,18 +61,12 @@ module Plutarch.LedgerApi.V4 (
   V3Tx.PTxId (..),
   ContextsV4.PTxInfo (..),
   Tx.PTxOut (..),
-  V3Tx.PTxOutRef (..),
+  Tx.PTxOutRef (..),
   ContextsV4.PTxInInfo (..),
   V2Tx.POutputDatum (..),
 
-  -- ** Intervals
-  Interval.PInterval (..),
-  Interval.PExtended (..),
-  Interval.PLowerBound (..),
-  Interval.PUpperBound (..),
-
   -- ** Ratio
-  Utils.PRationalData (..),
+  V4Ratio.PRationalData (..),
 
   -- ** Association maps
   AssocMap.PAssocMap (..),
@@ -87,17 +82,17 @@ module Plutarch.LedgerApi.V4 (
 ) where
 
 import Plutarch.LedgerApi.AssocMap qualified as AssocMap
-import Plutarch.LedgerApi.Interval qualified as Interval
-import Plutarch.LedgerApi.Utils qualified as Utils
 import Plutarch.LedgerApi.V1.Credential qualified as Credential
 import Plutarch.LedgerApi.V1.Crypto qualified as Crypto
 import Plutarch.LedgerApi.V1.Scripts qualified as Scripts
-import Plutarch.LedgerApi.V1.Time qualified as Time
+import Plutarch.LedgerApi.V1.Time qualified as V1Time
 import Plutarch.LedgerApi.V2.Tx qualified as V2Tx
 import Plutarch.LedgerApi.V3.Contexts qualified as Contexts
 import Plutarch.LedgerApi.V3.MintValue qualified as MintValue
 import Plutarch.LedgerApi.V3.Tx qualified as V3Tx
 import Plutarch.LedgerApi.V4.Address qualified as Address
 import Plutarch.LedgerApi.V4.Contexts qualified as ContextsV4
+import Plutarch.LedgerApi.V4.Ratio qualified as V4Ratio
+import Plutarch.LedgerApi.V4.Time qualified as V4Time
 import Plutarch.LedgerApi.V4.Tx qualified as Tx
 import Plutarch.LedgerApi.Value qualified as Value
