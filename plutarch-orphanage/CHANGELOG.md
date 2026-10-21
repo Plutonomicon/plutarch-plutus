@@ -6,6 +6,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## UNRELEASED
 
+## 1.4.0 -- 22-10-2026
+
 ### Added
 
 - Support for V4 ledger types
