@@ -77,7 +77,7 @@
                 cabal = { };
                 haskell-language-server = { };
                 hlint = { };
-                # cabal-fmt = "latest";
+                cabal-fmt = "latest";
                 fourmolu = { };
                 hspec-discover = { };
                 markdown-unlit = { };
