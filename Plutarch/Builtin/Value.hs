@@ -12,6 +12,9 @@ module Plutarch.Builtin.Value (
   punValueData,
   pscaleValue,
   ppolicies,
+  pkeepPolicies,
+  pdropPolicies,
+  passetCount,
 ) where
 
 import GHC.Generics (Generic)
@@ -169,8 +172,7 @@ pscaleValue = punsafeBuiltin PLC.ScaleValue
 
 {- | Returns a list of all currency symbols in a 'PBuiltinValue' in ascending
 order. Based on the
-[CIP-168](https://github.com/fallen-icarus/CIPs/blob/value-builtins-ext/CIP-0168/README.md)
-function of the same name.
+[CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
 
 @since 1.15.0
 -}
@@ -178,3 +180,34 @@ ppolicies ::
   forall (s :: S).
   Term s (PBuiltinValue :--> PBuiltinList PByteString)
 ppolicies = punsafeBuiltin PLC.Policies
+
+{- | Returns a new value containing only the entries for the specified policy ids. It returns a
+'BuiltinValue' so that the result can make use of 'lookupCoin'. Based on the
+[CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since wip
+-}
+pkeepPolicies ::
+  forall (s :: S).
+  Term s (PBuiltinList PByteString :--> PBuiltinValue :--> PBuiltinValue)
+pkeepPolicies = punsafeBuiltin PLC.KeepPolicies
+
+{- | Returns a new value without the entries for the specified policy ids. Based
+on the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since wip
+-}
+pdropPolicies ::
+  forall (s :: S).
+  Term s (PBuiltinList PByteString :--> PBuiltinValue :--> PBuiltinValue)
+pdropPolicies = punsafeBuiltin PLC.DropPolicies
+
+{- | The number of distinct (policy id, token name) pairs in the value. Based on
+the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since wip
+-}
+passetCount ::
+  forall (s :: S).
+  Term s (PBuiltinValue :--> PInteger)
+passetCount = punsafeBuiltin PLC.AssetCount
