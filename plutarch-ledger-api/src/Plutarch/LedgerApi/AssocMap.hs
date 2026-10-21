@@ -1,5 +1,6 @@
 {-# LANGUAGE QuantifiedConstraints #-}
 {-# LANGUAGE RankNTypes #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 {- | This module is designed to be imported qualified, as many of its
 identifiers clash with the Plutarch prelude.

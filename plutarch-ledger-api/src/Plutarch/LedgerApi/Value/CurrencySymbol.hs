@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Plutarch.LedgerApi.Value.CurrencySymbol (
   PCurrencySymbol (..),
   padaSymbol,

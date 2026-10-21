@@ -18,7 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ### Removed
 
-- Orphan `Arbitrary1 NonEmpty` instance, as QuickCheck now provides it
+- Orphan `Arbitrary1 NonEmpty` instance, as our pinned QuickCheck now provides
+  it
 
 ## 1.3.0 -- 26-05-2026
 

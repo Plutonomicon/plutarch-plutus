@@ -72,6 +72,8 @@ and a way to go from @a@ to @b@.
 Laws:
 - @(punsafeCoerce . fst) <$> tcont (ptryFrom x) ≡ pure x@
 -}
+{-# DEPRECATED PTryFrom "Use PValidateData for PData instances" #-}
+
 class PSubtype a b => PTryFrom (a :: S -> Type) (b :: S -> Type) where
   type PTryFromExcess a b :: S -> Type
   type PTryFromExcess a b = PTryFromExcess a (PInner b)
@@ -79,6 +81,7 @@ class PSubtype a b => PTryFrom (a :: S -> Type) (b :: S -> Type) where
   default ptryFrom' :: forall s r. (PTryFrom a (PInner b), PTryFromExcess a b ~ PTryFromExcess a (PInner b)) => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
   ptryFrom' opq f = ptryFrom @(PInner b) @a opq \(inn, exc) -> f (punsafeCoerce inn, exc)
 
+{-# DEPRECATED ptryFrom "Use pparseData for PData validation" #-}
 ptryFrom :: forall b a s r. PTryFrom a b => Term s a -> ((Term s b, Reduce (PTryFromExcess a b s)) -> Term s r) -> Term s r
 ptryFrom = ptryFrom'
 

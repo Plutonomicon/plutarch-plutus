@@ -15,6 +15,7 @@
 ## Changed
 
 - Bump `plutus-core` to 1.71.0.0
+- `PTryFrom` and `ptryFrom` are now deprecated
 
 ## Fixed
 

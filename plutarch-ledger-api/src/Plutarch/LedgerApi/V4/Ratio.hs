@@ -1,5 +1,6 @@
 {-# LANGUAGE PolyKinds #-}
 {-# LANGUAGE RankNTypes #-}
+{-# OPTIONS_GHC -Wno-deprecations #-}
 
 -- Mirrors the equivalent V4 module in plutus-ledger-api
 module Plutarch.LedgerApi.V4.Ratio (
