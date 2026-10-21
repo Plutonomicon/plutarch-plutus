@@ -181,6 +181,6 @@ instance PEq PBuiltinBLS12_381_G2_Element where
 -- | @since 1.10.0
 deriving anyclass instance PEq PEndianness
 
--- | @since wip
+-- | @since 1.15.0
 instance PEq PBuiltinValue where
   v1 #== v2 = (pvalueData # v1) #== (pvalueData # v2)

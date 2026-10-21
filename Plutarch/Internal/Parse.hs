@@ -167,7 +167,7 @@ instance PValidateData PPositive where
 
 {- | Checks that we have a non-negative @I@.
 
-@since wip
+@since 1.15.0
 -}
 instance PValidateData PNatural where
   pwithValidated opq x =

@@ -185,7 +185,7 @@ ppolicies = punsafeBuiltin PLC.Policies
 'BuiltinValue' so that the result can make use of 'lookupCoin'. Based on the
 [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
 
-@since wip
+@since 1.15.0
 -}
 pkeepPolicies ::
   forall (s :: S).
@@ -195,7 +195,7 @@ pkeepPolicies = punsafeBuiltin PLC.KeepPolicies
 {- | Returns a new value without the entries for the specified policy ids. Based
 on the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
 
-@since wip
+@since 1.15.0
 -}
 pdropPolicies ::
   forall (s :: S).
@@ -205,7 +205,7 @@ pdropPolicies = punsafeBuiltin PLC.DropPolicies
 {- | The number of distinct (policy id, token name) pairs in the value. Based on
 the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
 
-@since wip
+@since 1.15.0
 -}
 passetCount ::
   forall (s :: S).

@@ -2,15 +2,24 @@
 
 # UNRELEASED
 
+# 1.15.0 -- 22-10-2026
+
 ## Added
 
 - Support for CIP-156 (in `pmultiIndexArray`)
-- Support for the `policies` function from CIP-168 (in `ppolicies`)
+- Support for CIP-168 (in `ppolicies`, `pkeepPolicies`, `pdropPolicies`,
+  `passetCount`)
 - `PValidateData` instances for `PUnit` and `PNatural`
+- `PEq` instance for `PBuiltinValue`
 
 ## Changed
 
 - Bump `plutus-core` to 1.71.0.0
+
+## Fixed
+
+- `PValidateData` now ensures that any data type encoded as `Constr` or `List`
+  has exactly the expected number of fields.
 
 # 1.14.0 -- 26-05-2026
 
