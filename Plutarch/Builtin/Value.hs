@@ -11,13 +11,17 @@ module Plutarch.Builtin.Value (
   pvalueData,
   punValueData,
   pscaleValue,
+  ppolicies,
+  pkeepPolicies,
+  pdropPolicies,
+  passetCount,
 ) where
 
 import GHC.Generics (Generic)
 import Generics.SOP qualified as SOP
 import Plutarch.Builtin.Bool (PBool)
 import Plutarch.Builtin.ByteString (PByteString)
-import Plutarch.Builtin.Data (PData)
+import Plutarch.Builtin.Data (PBuiltinList, PData)
 import Plutarch.Builtin.Integer (PInteger)
 import Plutarch.Builtin.Opaque (POpaque)
 import Plutarch.Internal.Term (S, Term, punsafeBuiltin, (:-->))
@@ -165,3 +169,45 @@ pscaleValue ::
   forall (s :: S).
   Term s (PInteger :--> PBuiltinValue :--> PBuiltinValue)
 pscaleValue = punsafeBuiltin PLC.ScaleValue
+
+{- | Returns a list of all currency symbols in a 'PBuiltinValue' in ascending
+order. Based on the
+[CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since 1.15.0
+-}
+ppolicies ::
+  forall (s :: S).
+  Term s (PBuiltinValue :--> PBuiltinList PByteString)
+ppolicies = punsafeBuiltin PLC.Policies
+
+{- | Returns a new value containing only the entries for the specified policy ids. It returns a
+'BuiltinValue' so that the result can make use of 'lookupCoin'. Based on the
+[CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since 1.15.0
+-}
+pkeepPolicies ::
+  forall (s :: S).
+  Term s (PBuiltinList PByteString :--> PBuiltinValue :--> PBuiltinValue)
+pkeepPolicies = punsafeBuiltin PLC.KeepPolicies
+
+{- | Returns a new value without the entries for the specified policy ids. Based
+on the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since 1.15.0
+-}
+pdropPolicies ::
+  forall (s :: S).
+  Term s (PBuiltinList PByteString :--> PBuiltinValue :--> PBuiltinValue)
+pdropPolicies = punsafeBuiltin PLC.DropPolicies
+
+{- | The number of distinct (policy id, token name) pairs in the value. Based on
+the [CIP-168](https://cips.cardano.org/cip/CIP-0168) function of the same name.
+
+@since 1.15.0
+-}
+passetCount ::
+  forall (s :: S).
+  Term s (PBuiltinValue :--> PInteger)
+passetCount = punsafeBuiltin PLC.AssetCount

@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 module Plutarch.LedgerApi.V3.Tx (

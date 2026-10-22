@@ -62,10 +62,10 @@ import Data.Aeson (
   (.=),
  )
 import Data.Default (def)
+import Data.Foldable (foldl')
 import Data.HashMap.Strict qualified as HM
 import Data.Hashable (Hashable (hash, hashWithSalt), defaultHashWithSalt)
 import Data.Kind (Type)
-import Data.List (foldl')
 import Data.Monoid (Last (Last))
 import Data.String (fromString)
 import Data.Text (Text)

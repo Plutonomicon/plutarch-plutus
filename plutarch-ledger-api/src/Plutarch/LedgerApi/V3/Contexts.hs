@@ -1,3 +1,4 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
 {-# OPTIONS_GHC -Wno-orphans #-}
 
 -- Mirrors the equivalent V3 module in plutus-ledger-api
@@ -410,8 +411,6 @@ instance PValidateData PGovernanceActionId where
                 x
         )
         perror
-
--- TODO: Investigate what guarantees this provides on the Map, if any
 
 -- | @since 3.1.0
 data PCommittee (s :: S) = PCommittee
