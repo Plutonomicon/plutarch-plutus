@@ -199,7 +199,7 @@ instance Arbitrary PLA.AccountBalanceInterval where
       , PLA.AccountBalanceUpperBound <$> arbitrary
       , do
           lb <- arbitrary
-          delta <- arbitrary
+          delta <- getPositive <$> arbitrary
           pure . PLA.AccountBalanceBothBounds lb $ lb + delta
       , PLA.AccountBalanceExact <$> arbitrary
       ]
@@ -443,7 +443,7 @@ instance Arbitrary PLA.POSIXTimeRange where
       , -- lower and upper
         do
           range <- arbitrary
-          start <- arbitrary
+          start <- getPositive <$> arbitrary
           pure . PLA.POSIXTimeRange (Just start) . Just $ start + range
       ]
 
