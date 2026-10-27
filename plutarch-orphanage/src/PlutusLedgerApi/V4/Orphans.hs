@@ -2,10 +2,9 @@
 
 module PlutusLedgerApi.V4.Orphans where
 
-import Control.Applicative ((<|>))
+import Control.Applicative (asum, (<|>))
 import Control.Monad (guard)
 import Data.Coerce (coerce)
-import Data.Foldable (foldl')
 import Data.Maybe (fromJust)
 import Data.These (These (That, These, This), these)
 import PlutusLedgerApi.V1.Orphans.Value qualified as Value
@@ -122,10 +121,7 @@ instance Arbitrary PLA.Address where
   {-# INLINEABLE arbitrary #-}
   arbitrary = PLA.Address <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
-  shrink (PLA.Address cred mAccId) = do
-    cred' <- shrink cred
-    mAccId' <- shrink mAccId
-    (pure . PLA.Address cred $ mAccId') <|> (pure . PLA.Address cred' $ mAccId)
+  shrink (PLA.Address cred mAccId) = PLA.Address cred <$> shrink mAccId
 
 -- | @since 1.4.0
 instance CoArbitrary PLA.Address where
@@ -152,16 +148,24 @@ instance Arbitrary PLA.TxOut where
       <*> arbitrary
       <*> arbitrary
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxOut addr val outD refScript) = do
-    addr' <- shrink addr
-    Value.UTxOValue val' <- shrink (Value.UTxOValue val)
-    outD' <- shrink outD
-    refScript' <- shrink refScript
-    let shrink1 = PLA.TxOut addr val outD refScript'
-    let shrink2 = PLA.TxOut addr val outD' refScript
-    let shrink3 = PLA.TxOut addr val' outD refScript
-    let shrink4 = PLA.TxOut addr' val outD refScript
-    foldl' (<|>) [shrink1] [[shrink2], [shrink3], [shrink4]]
+  shrink (PLA.TxOut addr val outD refScript) =
+    asum
+      [ shrAddr
+      , shrVal
+      , shrOutD
+      , shrRefScript
+      ]
+    where
+      shrAddr :: [PLA.TxOut]
+      shrAddr = PLA.TxOut <$> shrink addr <*> pure val <*> pure outD <*> pure refScript
+      shrVal :: [PLA.TxOut]
+      shrVal = do
+        Value.UTxOValue val' <- shrink (Value.UTxOValue val)
+        pure . PLA.TxOut addr val' outD $ refScript
+      shrOutD :: [PLA.TxOut]
+      shrOutD = PLA.TxOut addr val <$> shrink outD <*> pure refScript
+      shrRefScript :: [PLA.TxOut]
+      shrRefScript = PLA.TxOut addr val outD <$> shrink refScript
 
 -- | @since 1.4.0
 instance CoArbitrary PLA.TxOut where
@@ -274,55 +278,17 @@ instance Arbitrary PLA.TxCert where
       ]
   {-# INLINEABLE shrink #-}
   shrink = \case
-    PLA.TxCertRegAccount aid ll -> do
-      aid' <- shrink aid
-      ll' <- shrink ll
-      (pure . PLA.TxCertRegAccount aid $ ll')
-        <|> (pure . PLA.TxCertRegAccount aid' $ ll)
-    PLA.TxCertUnRegAccount aid ll -> do
-      aid' <- shrink aid
-      ll' <- shrink ll
-      (pure . PLA.TxCertUnRegAccount aid $ ll')
-        <|> (pure . PLA.TxCertUnRegAccount aid' $ ll)
-    PLA.TxCertDelegAccount aid d -> do
-      aid' <- shrink aid
-      d' <- shrink d
-      (pure . PLA.TxCertDelegAccount aid $ d')
-        <|> (pure . PLA.TxCertDelegAccount aid' $ d)
-    PLA.TxCertRegAccountDeleg aid d ll -> do
-      aid' <- shrink aid
-      d' <- shrink d
-      ll' <- shrink ll
-      (pure . PLA.TxCertRegAccountDeleg aid d $ ll')
-        <|> (pure . PLA.TxCertRegAccountDeleg aid d' $ ll)
-        <|> (pure . PLA.TxCertRegAccountDeleg aid' d $ ll)
-    PLA.TxCertRegDRep cred ll -> do
-      cred' <- shrink cred
-      ll' <- shrink ll
-      (pure . PLA.TxCertRegDRep cred $ ll')
-        <|> (pure . PLA.TxCertRegDRep cred' $ ll)
-    PLA.TxCertUpdateDRep cred -> PLA.TxCertUpdateDRep <$> shrink cred
-    PLA.TxCertUnRegDRep cred ll -> do
-      cred' <- shrink cred
-      ll' <- shrink ll
-      (pure . PLA.TxCertUnRegDRep cred $ ll')
-        <|> (pure . PLA.TxCertUnRegDRep cred' $ ll)
-    PLA.TxCertPoolRegister pkh1 pkh2 -> do
-      pkh1' <- shrink pkh1
-      pkh2' <- shrink pkh2
-      (pure . PLA.TxCertPoolRegister pkh1 $ pkh2')
-        <|> (pure . PLA.TxCertPoolRegister pkh1' $ pkh2)
-    PLA.TxCertPoolRetire pkh i -> do
-      pkh' <- shrink pkh
-      i' <- shrink i
-      (pure . PLA.TxCertPoolRetire pkh $ i')
-        <|> (pure . PLA.TxCertPoolRetire pkh' $ i)
-    PLA.TxCertAuthHotCommittee ccc hcc -> do
-      ccc' <- shrink ccc
-      hcc' <- shrink hcc
-      (pure . PLA.TxCertAuthHotCommittee ccc' $ hcc)
-        <|> (pure . PLA.TxCertAuthHotCommittee ccc $ hcc')
-    PLA.TxCertResignColdCommittee ccc -> PLA.TxCertResignColdCommittee <$> shrink ccc
+    PLA.TxCertRegAccount aid ll -> PLA.TxCertRegAccount aid <$> shrink ll
+    PLA.TxCertUnRegAccount aid ll -> PLA.TxCertUnRegAccount aid <$> shrink ll
+    PLA.TxCertDelegAccount _ _ -> []
+    PLA.TxCertRegAccountDeleg aid d ll -> PLA.TxCertRegAccountDeleg aid d <$> shrink ll
+    PLA.TxCertRegDRep cred ll -> PLA.TxCertRegDRep cred <$> shrink ll
+    PLA.TxCertUpdateDRep _ -> []
+    PLA.TxCertUnRegDRep cred ll -> PLA.TxCertUnRegDRep cred <$> shrink ll
+    PLA.TxCertPoolRegister _ _ -> []
+    PLA.TxCertPoolRetire pkh i -> PLA.TxCertPoolRetire pkh <$> shrink i
+    PLA.TxCertAuthHotCommittee _ _ -> []
+    PLA.TxCertResignColdCommittee _ -> []
 
 -- TODO: CoArbitrary, Function
 
@@ -334,7 +300,7 @@ instance Arbitrary PLA.TxOutRef where
     refIdX <- getNonNegative <$> arbitrary
     pure . PLA.TxOutRef refId $ refIdX
   shrink (PLA.TxOutRef tid ix) =
-    PLA.TxOutRef <$> shrink tid <*> (fmap getNonNegative . shrink . NonNegative $ ix)
+    PLA.TxOutRef tid <$> (fmap getNonNegative . shrink . NonNegative $ ix)
 
 -- TODO: CoArbitrary, Function
 
@@ -433,7 +399,7 @@ instance Arbitrary PLA.ProposalProcedure where
   arbitrary = PLA.ProposalProcedure <$> arbitrary <*> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.ProposalProcedure dep raddr ga) =
-    PLA.ProposalProcedure <$> shrink dep <*> shrink raddr <*> shrink ga
+    PLA.ProposalProcedure <$> shrink dep <*> pure raddr <*> shrink ga
 
 -- | @since 1.4.0
 instance Arbitrary PLA.ScriptPurpose where
@@ -450,45 +416,13 @@ instance Arbitrary PLA.ScriptPurpose where
       ]
   {-# INLINEABLE shrink #-}
   shrink = \case
-    PLA.Minting sh cs -> do
-      sh' <- shrink sh
-      cs' <- shrink cs
-      (pure . PLA.Minting sh $ cs')
-        <|> (pure . PLA.Minting sh' $ cs)
-    PLA.Spending sh tor -> do
-      sh' <- shrink sh
-      tor' <- shrink tor
-      (pure . PLA.Spending sh $ tor')
-        <|> (pure . PLA.Spending sh' $ tor)
-    PLA.Withdrawing sh cred -> do
-      sh' <- shrink sh
-      cred' <- shrink cred
-      (pure . PLA.Withdrawing sh $ cred')
-        <|> (pure . PLA.Withdrawing sh' $ cred)
-    PLA.Certifying sh i cert -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      cert' <- shrink cert
-      (pure . PLA.Certifying sh i $ cert')
-        <|> (pure . PLA.Certifying sh i' $ cert)
-        <|> (pure . PLA.Certifying sh' i $ cert)
-    PLA.Voting sh v -> do
-      sh' <- shrink sh
-      v' <- shrink v
-      (pure . PLA.Voting sh $ v')
-        <|> (pure . PLA.Voting sh' $ v)
-    PLA.Proposing sh i pp -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      pp' <- shrink pp
-      (pure . PLA.Proposing sh i $ pp')
-        <|> (pure . PLA.Proposing sh i' $ pp)
-        <|> (pure . PLA.Proposing sh' i $ pp)
-    PLA.Guarding sh i -> do
-      sh' <- shrink sh
-      i' <- shrink i
-      (pure . PLA.Guarding sh $ i')
-        <|> (pure . PLA.Guarding sh' $ i)
+    PLA.Minting sh cs -> PLA.Minting sh <$> shrink cs
+    PLA.Spending sh tor -> PLA.Spending sh <$> shrink tor
+    PLA.Withdrawing _ _ -> []
+    PLA.Certifying sh i cert -> PLA.Certifying sh <$> shrink i <*> shrink cert
+    PLA.Voting sh v -> PLA.Voting sh <$> shrink v
+    PLA.Proposing sh i pp -> PLA.Proposing sh <$> shrink i <*> shrink pp
+    PLA.Guarding sh i -> PLA.Guarding sh <$> shrink i
 
 -- TODO: CoArbitrary, Function
 
@@ -561,9 +495,8 @@ instance Arbitrary PLA.TxInfo where
   shrink (PLA.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
     ins' <- getNonEmpty <$> shrink (NonEmpty ins)
     outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    PLA.TxInfo
-      <$> shrink iid
-      <*> shrink subTxIx
+    PLA.TxInfo iid
+      <$> shrink subTxIx
       <*> pure ins'
       <*> shrink refIns
       <*> pure outs'
@@ -572,7 +505,7 @@ instance Arbitrary PLA.TxInfo where
       <*> shrink wdrls
       <*> shrink directs
       <*> shrink abints
-      <*> shrink valid
+      <*> pure valid
       <*> shrink guards
       <*> shrink reqGuards
       <*> shrink reds
@@ -640,7 +573,7 @@ instance Arbitrary PLA.TopTxInfoSimplified where
       <*> shrink certs
       <*> shrink wdrls
       <*> shrink dds
-      <*> shrink valid
+      <*> pure valid
       <*> shrink guards
       <*> shrink reqGuards
       <*> shrink reds
@@ -714,6 +647,6 @@ instance Arbitrary PLA.ScriptContext where
   arbitrary = PLA.ScriptContext <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.ScriptContext info red si sh) =
-    PLA.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> shrink sh
+    PLA.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> pure sh
 
 -- TODO: CoArbitrary, Function
