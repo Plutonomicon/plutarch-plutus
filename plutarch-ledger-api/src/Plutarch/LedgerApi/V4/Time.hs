@@ -20,7 +20,7 @@ import PlutusLedgerApi.V4 qualified as Plutus
 -- | @since 3.8.0
 data PPosixTimeRange (s :: S) = PPosixTimeRange
   { pposixTimeRange'fromInclusive :: Term s (PMaybeData PPosixTime)
-  , pposixTimeRange'toInclusive :: Term s (PMaybeData PPosixTime)
+  , pposixTimeRange'untilExclusive :: Term s (PMaybeData PPosixTime)
   }
   deriving stock
     ( -- | @since 3.8.0
