@@ -2,12 +2,33 @@
 
 # UNRELEASED
 
+# 1.15.0 -- 22-10-2026
+
+## Added
+
+- Support for CIP-156 (in `pmultiIndexArray`)
+- Support for CIP-168 (in `ppolicies`, `pkeepPolicies`, `pdropPolicies`,
+  `passetCount`)
+- `PValidateData` instances for `PUnit` and `PNatural`
+- `PEq` instance for `PBuiltinValue`
+
+## Changed
+
+- Bump `plutus-core` to 1.71.0.0
+- `PTryFrom` and `ptryFrom` are now deprecated
+
+## Fixed
+
+- `PValidateData` now ensures that any data type encoded as `Constr` or `List`
+  has exactly the expected number of fields.
+
 # 1.14.0 -- 26-05-2026
 
 ## Added
 
 - `PBuiltinValue`, and bindings to primitive functions for this
 - Support for CIP-133 multi-scalar multiplications of BLS primitives
+- `PEq` instance for `PBuiltinValue`
 
 ## Changed
 
@@ -18,6 +39,11 @@
 
 - Removed `pfindPlaceholder` from `Internal.TermCont`. It isn't used for
   anything (though the `findAllPlaceholders` version is)
+
+## Fixed
+
+- `PValidateData` now checks for an exact match for field count, rather than
+  just sufficient fields.
 
 # 1.13.0 -- 04-03-2026
 

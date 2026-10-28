@@ -1,3 +1,5 @@
+{-# OPTIONS_GHC -Wno-deprecations #-}
+
 module Plutarch.LedgerApi.V3.MintValue (
   PMintValue,
   pemptyMintValue,

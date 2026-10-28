@@ -1,12 +1,12 @@
 cabal-version:      3.0
 name:               plutarch
-version:            1.14.0
+version:            1.15.0
 author:
   Las Safin <me@las.rs>, Koz Ross <koz@mlabs.city>, Seungheon Oh <seungheon.oh@mlabs.city>, Philip DiSarro <philipdisarro@gmail.com>
 
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.6.4
+tested-with:        GHC ==9.8.4
 
 common c
   default-language:   GHC2021
@@ -159,7 +159,7 @@ library
     , hashable
     , lens
     , mtl
-    , plutus-core           ==1.65.0.0
+    , plutus-core           ==1.71.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
