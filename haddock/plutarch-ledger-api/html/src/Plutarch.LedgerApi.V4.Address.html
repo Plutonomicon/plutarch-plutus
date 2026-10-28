@@ -1,0 +1,342 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"><html xmlns="http://www.w3.org/1999/xhtml"><head><link rel="stylesheet" type="text/css" href="style.css" /><script type="text/javascript" src="highlight.js"></script></head><body><pre><span class="hs-pragma">{-# OPTIONS_GHC -Wno-deprecations #-}</span><span>
+</span><span id="line-2"></span><span class="hs-pragma">{-# OPTIONS_GHC -Wno-orphans #-}</span><span>
+</span><span id="line-3"></span><span>
+</span><span id="line-4"></span><span class="hs-comment">-- Mirrors the equivalent V4 module in plutus-ledger-api</span><span>
+</span><span id="line-5"></span><span class="hs-keyword">module</span><span> </span><span class="hs-identifier">Plutarch.LedgerApi.V4.Address</span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-6"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier">PAccountId</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-7"></span><span>  </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier">PAddress</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-glyph">..</span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-8"></span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-9"></span><span>
+</span><span id="line-10"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-11"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Generics.SOP</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">SOP</span></span><span>
+</span><span id="line-12"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Internal.Lift</span></span><span> </span><span class="hs-special">(</span><span>
+</span><span id="line-13"></span><span>  </span><span class="annot"><span class="hs-identifier">LiftError</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">CouldNotDecodeData</span></span><span class="hs-special">)</span><span class="hs-special">,</span><span>
+</span><span id="line-14"></span><span>  </span><span class="annot"><span class="hs-identifier">punsafeCoercePLifted</span></span><span class="hs-special">,</span><span>
+</span><span id="line-15"></span><span> </span><span class="hs-special">)</span><span>
+</span><span id="line-16"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html"><span class="hs-identifier">Plutarch.LedgerApi.Utils</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#PMaybeData"><span class="hs-identifier">PMaybeData</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-17"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html"><span class="hs-identifier">Plutarch.LedgerApi.V1.Credential</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PCredential"><span class="hs-identifier">PCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-18"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Plutarch.Prelude</span></span><span>
+</span><span id="line-19"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">PlutusLedgerApi.V4</span></span><span> </span><span class="hs-keyword">qualified</span><span> </span><span class="hs-keyword">as</span><span> </span><span class="annot"><span class="hs-identifier">Plutus</span></span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-22"></span><span class="hs-keyword">newtype</span><span> </span><span id="PAccountId"><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-var">PAccountId</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679448392"><span class="annot"><a href="#local-6989586621679448392"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PAccountId"><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-var">PAccountId</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679448392"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PCredential"><span class="hs-identifier hs-type">PCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-24"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-25"></span><span>      </span><span id="local-6989586621679448395"><span id="local-6989586621679448397"><span class="annot"><span class="annottext">(forall x. PAccountId s -&gt; Rep (PAccountId s) x)
+-&gt; (forall x. Rep (PAccountId s) x -&gt; PAccountId s)
+-&gt; Generic (PAccountId s)
+forall x. Rep (PAccountId s) x -&gt; PAccountId s
+forall x. PAccountId s -&gt; Rep (PAccountId s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PAccountId s) x -&gt; PAccountId s
+forall (s :: S) x. PAccountId s -&gt; Rep (PAccountId s) x
+$cfrom :: forall (s :: S) x. PAccountId s -&gt; Rep (PAccountId s) x
+from :: forall x. PAccountId s -&gt; Rep (PAccountId s) x
+$cto :: forall (s :: S) x. Rep (PAccountId s) x -&gt; PAccountId s
+to :: forall x. Rep (PAccountId s) x -&gt; PAccountId s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-26"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-27"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-28"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-29"></span><span>      </span><span id="local-6989586621679448404"><span id="local-6989586621679448413"><span class="annot"><span class="annottext">All SListI (Code (PAccountId s))
+All SListI (Code (PAccountId s)) =&gt;
+(PAccountId s -&gt; Rep (PAccountId s))
+-&gt; (Rep (PAccountId s) -&gt; PAccountId s) -&gt; Generic (PAccountId s)
+Rep (PAccountId s) -&gt; PAccountId s
+PAccountId s -&gt; Rep (PAccountId s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PAccountId s))
+forall (s :: S). Rep (PAccountId s) -&gt; PAccountId s
+forall (s :: S). PAccountId s -&gt; Rep (PAccountId s)
+$cfrom :: forall (s :: S). PAccountId s -&gt; Rep (PAccountId s)
+from :: PAccountId s -&gt; Rep (PAccountId s)
+$cto :: forall (s :: S). Rep (PAccountId s) -&gt; PAccountId s
+to :: Rep (PAccountId s) -&gt; PAccountId s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-30"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-31"></span><span>      </span><span id="local-6989586621679448443"><span id="local-6989586621679448449"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PAccountId) -&gt; Term s PAccountId)
+-&gt; (forall (s :: S). Term s PAccountId -&gt; Term s PData)
+-&gt; PIsData PAccountId
+forall (s :: S). Term s (PAsData PAccountId) -&gt; Term s PAccountId
+forall (s :: S). Term s PAccountId -&gt; Term s PData
+forall (a :: S -&gt; Type).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PAccountId) -&gt; Term s PAccountId
+pfromDataImpl :: forall (s :: S). Term s (PAsData PAccountId) -&gt; Term s PAccountId
+$cpdataImpl :: forall (s :: S). Term s PAccountId -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s PAccountId -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
+</span><span id="line-32"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-33"></span><span>      </span><span id="local-6989586621679448456"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PAccountId -&gt; Term s PAccountId -&gt; Term s PBool)
+-&gt; PEq PAccountId
+forall (s :: S).
+Term s PAccountId -&gt; Term s PAccountId -&gt; Term s PBool
+forall (t :: S -&gt; Type).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S).
+Term s PAccountId -&gt; Term s PAccountId -&gt; Term s PBool
+#== :: forall (s :: S).
+Term s PAccountId -&gt; Term s PAccountId -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
+</span><span id="line-34"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-35"></span><span>      </span><span id="local-6989586621679448473"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PAccountId -&gt; Term s PString)
+-&gt; PShow PAccountId
+forall (s :: S). Bool -&gt; Term s PAccountId -&gt; Term s PString
+forall (t :: S -&gt; Type).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+$cpshow' :: forall (s :: S). Bool -&gt; Term s PAccountId -&gt; Term s PString
+pshow' :: forall (s :: S). Bool -&gt; Term s PAccountId -&gt; Term s PString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
+</span><span id="line-36"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-37"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-38"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-39"></span><span>      </span><span id="local-6989586621679448488"><span id="local-6989586621679448496"><span class="annot"><span class="annottext">(forall (s :: S). PAccountId s -&gt; Term s (PInner PAccountId))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PAccountId)
+    -&gt; (PAccountId s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PAccountId
+forall (s :: S). PAccountId s -&gt; Term s (PInner PAccountId)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAccountId)
+-&gt; (PAccountId s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PAccountId s -&gt; Term s (PInner PAccountId)
+pcon' :: forall (s :: S). PAccountId s -&gt; Term s (PInner PAccountId)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAccountId)
+-&gt; (PAccountId s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAccountId)
+-&gt; (PAccountId s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-40"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-41"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePlutusType</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-42"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-43"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-44"></span><span>      </span><span id="local-6989586621679448506"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData PAccountId
+forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+forall (a :: S -&gt; Type).
+(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData a
+$cpwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+pwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PValidateData</span></span></span><span>
+</span><span id="line-45"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-46"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveNewtypePValidateData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PCredential"><span class="hs-identifier hs-type">PCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-47"></span><span>
+</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-49"></span><span id="local-6989586621679448517"><span id="local-6989586621679448527"><span id="local-6989586621679448536"><span id="local-6989586621679448545"><span class="hs-keyword">deriving</span><span> </span><span class="hs-keyword">via</span><span>
+</span><span id="line-50"></span><span>  </span><span class="annot"><span class="hs-identifier hs-type">DeriveDataPLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.AccountId</span></span><span>
+</span><span id="line-51"></span><span>  </span><span class="hs-keyword">instance</span><span>
+</span><span id="line-52"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span></span></span></span></span><span>
+</span><span id="line-53"></span><span>
+</span><span id="line-54"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-55"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679448573"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-58"></span><span class="hs-keyword">data</span><span> </span><span id="PAddress"><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-var">PAddress</span></a></span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621679448286"><span class="annot"><a href="#local-6989586621679448286"><span class="hs-identifier hs-type">s</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">S</span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span id="PAddress"><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-var">PAddress</span></a></span></span><span>
+</span><span id="line-59"></span><span>  </span><span class="hs-special">{</span><span> </span><span id="paddress%27credential"><span class="annot"><span class="annottext">forall (s :: S). PAddress s -&gt; Term s (PAsData PCredential)
+</span><a href="Plutarch.LedgerApi.V4.Address.html#paddress%27credential"><span class="hs-identifier hs-var hs-var">paddress'credential</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679448286"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V1.Credential.html#PCredential"><span class="hs-identifier hs-type">PCredential</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-60"></span><span>  </span><span class="hs-special">,</span><span> </span><span id="paddress%27stakingAccountId"><span class="annot"><span class="annottext">forall (s :: S). PAddress s -&gt; Term s (PMaybeData PAccountId)
+</span><a href="Plutarch.LedgerApi.V4.Address.html#paddress%27stakingAccountId"><span class="hs-identifier hs-var hs-var">paddress'stakingAccountId</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Term</span></span><span> </span><span class="annot"><a href="#local-6989586621679448286"><span class="hs-identifier hs-type">s</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="Plutarch.LedgerApi.Utils.html#PMaybeData"><span class="hs-identifier hs-type">PMaybeData</span></a></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAccountId"><span class="hs-identifier hs-type">PAccountId</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-61"></span><span>  </span><span class="hs-special">}</span><span>
+</span><span id="line-62"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span>
+</span><span id="line-63"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-64"></span><span>      </span><span id="local-6989586621679448588"><span id="local-6989586621679448590"><span class="annot"><span class="annottext">(forall x. PAddress s -&gt; Rep (PAddress s) x)
+-&gt; (forall x. Rep (PAddress s) x -&gt; PAddress s)
+-&gt; Generic (PAddress s)
+forall x. Rep (PAddress s) x -&gt; PAddress s
+forall x. PAddress s -&gt; Rep (PAddress s) x
+forall a.
+(forall x. a -&gt; Rep a x) -&gt; (forall x. Rep a x -&gt; a) -&gt; Generic a
+forall (s :: S) x. Rep (PAddress s) x -&gt; PAddress s
+forall (s :: S) x. PAddress s -&gt; Rep (PAddress s) x
+$cfrom :: forall (s :: S) x. PAddress s -&gt; Rep (PAddress s) x
+from :: forall x. PAddress s -&gt; Rep (PAddress s) x
+$cto :: forall (s :: S) x. Rep (PAddress s) x -&gt; PAddress s
+to :: forall x. Rep (PAddress s) x -&gt; PAddress s
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span>
+</span><span id="line-65"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-66"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">anyclass</span></span><span>
+</span><span id="line-67"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-68"></span><span>      </span><span id="local-6989586621679448596"><span id="local-6989586621679448605"><span class="annot"><span class="annottext">All SListI (Code (PAddress s))
+All SListI (Code (PAddress s)) =&gt;
+(PAddress s -&gt; Rep (PAddress s))
+-&gt; (Rep (PAddress s) -&gt; PAddress s) -&gt; Generic (PAddress s)
+Rep (PAddress s) -&gt; PAddress s
+PAddress s -&gt; Rep (PAddress s)
+forall a.
+All SListI (Code a) =&gt;
+(a -&gt; Rep a) -&gt; (Rep a -&gt; a) -&gt; Generic a
+forall (s :: S). All SListI (Code (PAddress s))
+forall (s :: S). Rep (PAddress s) -&gt; PAddress s
+forall (s :: S). PAddress s -&gt; Rep (PAddress s)
+$cfrom :: forall (s :: S). PAddress s -&gt; Rep (PAddress s)
+from :: PAddress s -&gt; Rep (PAddress s)
+$cto :: forall (s :: S). Rep (PAddress s) -&gt; PAddress s
+to :: Rep (PAddress s) -&gt; PAddress s
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var">SOP.Generic</span></span></span></span><span>
+</span><span id="line-69"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-70"></span><span>      </span><span id="local-6989586621679448633"><span id="local-6989586621679448639"><span class="annot"><span class="annottext">(forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress)
+-&gt; (forall (s :: S). Term s PAddress -&gt; Term s PData)
+-&gt; PIsData PAddress
+forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress
+forall (s :: S). Term s PAddress -&gt; Term s PData
+forall (a :: S -&gt; Type).
+(forall (s :: S). Term s (PAsData a) -&gt; Term s a)
+-&gt; (forall (s :: S). Term s a -&gt; Term s PData) -&gt; PIsData a
+$cpfromDataImpl :: forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress
+pfromDataImpl :: forall (s :: S). Term s (PAsData PAddress) -&gt; Term s PAddress
+$cpdataImpl :: forall (s :: S). Term s PAddress -&gt; Term s PData
+pdataImpl :: forall (s :: S). Term s PAddress -&gt; Term s PData
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PIsData</span></span></span></span><span>
+</span><span id="line-71"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-72"></span><span>      </span><span id="local-6989586621679448645"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool)
+-&gt; PEq PAddress
+forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool
+forall (t :: S -&gt; Type).
+(forall (s :: S). Term s t -&gt; Term s t -&gt; Term s PBool) -&gt; PEq t
+$c#== :: forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool
+#== :: forall (s :: S). Term s PAddress -&gt; Term s PAddress -&gt; Term s PBool
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PEq</span></span></span><span>
+</span><span id="line-73"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-74"></span><span>      </span><span id="local-6989586621679448663"><span class="annot"><span class="annottext">(forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString)
+-&gt; PShow PAddress
+forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
+forall (t :: S -&gt; Type).
+(forall (s :: S). Bool -&gt; Term s t -&gt; Term s PString) -&gt; PShow t
+$cpshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
+pshow' :: forall (s :: S). Bool -&gt; Term s PAddress -&gt; Term s PString
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PShow</span></span></span><span>
+</span><span id="line-75"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-76"></span><span>  </span><span class="hs-keyword">deriving</span><span>
+</span><span id="line-77"></span><span>    </span><span class="hs-special">(</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-78"></span><span>      </span><span id="local-6989586621679448684"><span id="local-6989586621679448697"><span class="annot"><span class="annottext">(forall (s :: S). PAddress s -&gt; Term s (PInner PAddress))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType PAddress
+forall (s :: S). PAddress s -&gt; Term s (PInner PAddress)
+forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b
+forall (a :: S -&gt; Type).
+(forall (s :: S). a s -&gt; Term s (PInner a))
+-&gt; (forall (s :: S) (b :: S -&gt; Type).
+    Term s (PInner a) -&gt; (a s -&gt; Term s b) -&gt; Term s b)
+-&gt; PlutusType a
+$cpcon' :: forall (s :: S). PAddress s -&gt; Term s (PInner PAddress)
+pcon' :: forall (s :: S). PAddress s -&gt; Term s (PInner PAddress)
+$cpmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b
+pmatch' :: forall (s :: S) (b :: S -&gt; Type).
+Term s (PInner PAddress) -&gt; (PAddress s -&gt; Term s b) -&gt; Term s b
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">PlutusType</span></span></span></span><span>
+</span><span id="line-79"></span><span>    </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-80"></span><span>      </span><span id="local-6989586621679448746"><span class="annot"><span class="annottext">(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData PAddress
+forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+forall (a :: S -&gt; Type).
+(forall (s :: S).
+ Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r)
+-&gt; PValidateData a
+$cpwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+pwithValidated :: forall (s :: S).
+Term s PData -&gt; forall (r :: S -&gt; Type). Term s r -&gt; Term s r
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var">PValidateData</span></span></span><span>
+</span><span id="line-81"></span><span>    </span><span class="hs-special">)</span><span>
+</span><span id="line-82"></span><span>    </span><span class="hs-keyword">via</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">DeriveAsDataRec</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-83"></span><span>
+</span><span id="line-84"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-85"></span><span class="hs-keyword">instance</span><span> </span><span class="annot"><span class="hs-identifier hs-type">PLiftable</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-86"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="AsHaskell"><span class="annot"><span class="hs-identifier hs-var">AsHaskell</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Address</span></span><span>
+</span><span id="line-87"></span><span>  </span><span class="hs-keyword">type</span><span> </span><span id="PlutusRepr"><span class="annot"><span class="hs-identifier hs-var">PlutusRepr</span></span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="hs-identifier hs-type">Plutus.Data</span></span><span>
+</span><span id="line-88"></span><span>  </span><span id="local-6989586621679448794"><span class="annot"><span class="annottext">haskToRepr :: AsHaskell PAddress -&gt; PlutusRepr PAddress
+</span><a href="#local-6989586621679448794"><span class="hs-identifier hs-var hs-var hs-var hs-var">haskToRepr</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">AsHaskell PAddress -&gt; PlutusRepr PAddress
+Address -&gt; Data
+forall a. ToData a =&gt; a -&gt; Data
+</span><span class="hs-identifier hs-var">Plutus.toData</span></span><span>
+</span><span id="line-89"></span><span>  </span><span id="local-6989586621679448799"><span class="annot"><span class="annottext">reprToHask :: PlutusRepr PAddress -&gt; Either LiftError (AsHaskell PAddress)
+</span><a href="#local-6989586621679448799"><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToHask</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Either LiftError Address
+-&gt; (Address -&gt; Either LiftError Address)
+-&gt; Maybe Address
+-&gt; Either LiftError Address
+forall b a. b -&gt; (a -&gt; b) -&gt; Maybe a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Maybe.html#maybe"><span class="hs-identifier hs-var">maybe</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">LiftError -&gt; Either LiftError Address
+forall a b. a -&gt; Either a b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Left"><span class="hs-identifier hs-var">Left</span></a></span><span> </span><span class="annot"><span class="annottext">LiftError
+</span><span class="hs-identifier hs-var">CouldNotDecodeData</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">Address -&gt; Either LiftError Address
+forall a b. b -&gt; Either a b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/Data.Either.html#Right"><span class="hs-identifier hs-var">Right</span></a></span><span> </span><span class="annot"><span class="annottext">(Maybe Address -&gt; Either LiftError Address)
+-&gt; (Data -&gt; Maybe Address) -&gt; Data -&gt; Either LiftError Address
+forall b c a. (b -&gt; c) -&gt; (a -&gt; b) -&gt; a -&gt; c
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#."><span class="hs-operator hs-var">.</span></a></span><span> </span><span class="annot"><span class="annottext">Data -&gt; Maybe Address
+forall a. FromData a =&gt; Data -&gt; Maybe a
+</span><span class="hs-identifier hs-var">Plutus.fromData</span></span><span>
+</span><span id="line-90"></span><span>  </span><span id="local-6989586621679448833"><span class="annot"><span class="annottext">plutToRepr :: (forall (s :: S). PLifted s PAddress)
+-&gt; Either LiftError (PlutusRepr PAddress)
+</span><a href="#local-6989586621679448833"><span class="hs-identifier hs-var hs-var hs-var hs-var">plutToRepr</span></a></span></span><span> </span><span id="local-6989586621679448835"><span class="annot"><span class="annottext">forall (s :: S). PLifted s PAddress
+</span><a href="#local-6989586621679448835"><span class="hs-identifier hs-var">t</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">([Data] -&gt; PlutusRepr PAddress)
+-&gt; Either LiftError [Data]
+-&gt; Either LiftError (PlutusRepr PAddress)
+forall a b. (a -&gt; b) -&gt; Either LiftError a -&gt; Either LiftError b
+forall (f :: Type -&gt; Type) a b. Functor f =&gt; (a -&gt; b) -&gt; f a -&gt; f b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#fmap"><span class="hs-identifier hs-var">fmap</span></a></span><span> </span><span class="annot"><span class="annottext">[Data] -&gt; PlutusRepr PAddress
+[Data] -&gt; Data
+</span><span class="hs-identifier hs-var">Plutus.List</span></span><span> </span><span class="annot"><span class="annottext">(Either LiftError [Data] -&gt; Either LiftError (PlutusRepr PAddress))
+-&gt; Either LiftError [Data]
+-&gt; Either LiftError (PlutusRepr PAddress)
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type).
+KnownBuiltinType
+  (Term DeBruijn DefaultUni DefaultFun ()) (PlutusRepr a) =&gt;
+(forall (s :: S). PLifted s a) -&gt; Either LiftError (PlutusRepr a)
+</span><span class="hs-identifier hs-var">plutToReprUni</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinList</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">((forall (s :: S). PLifted s (PBuiltinList PData))
+ -&gt; Either LiftError (PlutusRepr (PBuiltinList PData)))
+-&gt; (forall (s :: S). PLifted s (PBuiltinList PData))
+-&gt; Either LiftError (PlutusRepr (PBuiltinList PData))
+forall a b. (a -&gt; b) -&gt; a -&gt; b
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Base.html#%24"><span class="hs-operator hs-var">$</span></a></span><span> </span><span class="annot"><span class="annottext">PLifted s PAddress -&gt; PLifted s (PBuiltinList PData)
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+PLifted s a -&gt; PLifted s b
+</span><span class="hs-identifier hs-var">punsafeCoercePLifted</span></span><span> </span><span class="annot"><span class="annottext">PLifted s PAddress
+forall (s :: S). PLifted s PAddress
+</span><a href="#local-6989586621679448835"><span class="hs-identifier hs-var">t</span></a></span><span>
+</span><span id="line-91"></span><span>  </span><span id="local-6989586621679448845"><span class="annot"><span class="annottext">reprToPlut :: forall (s :: S). PlutusRepr PAddress -&gt; PLifted s PAddress
+</span><a href="#local-6989586621679448845"><span class="hs-identifier hs-var hs-var hs-var hs-var">reprToPlut</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-glyph">\</span><span class="hs-glyph">case</span><span>
+</span><span id="line-92"></span><span>    </span><span class="annot"><span class="hs-identifier hs-type">Plutus.List</span></span><span> </span><span id="local-6989586621679448847"><span class="annot"><span class="annottext">[Data]
+</span><a href="#local-6989586621679448847"><span class="hs-identifier hs-var">ell</span></a></span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">PLifted s (PBuiltinList PData) -&gt; PLifted s PAddress
+forall (s :: S) (a :: S -&gt; Type) (b :: S -&gt; Type).
+PLifted s a -&gt; PLifted s b
+</span><span class="hs-identifier hs-var">punsafeCoercePLifted</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">forall (a :: S -&gt; Type) (s :: S).
+Includes DefaultUni (PlutusRepr a) =&gt;
+PlutusRepr a -&gt; PLifted s a
+</span><span class="hs-identifier hs-var">reprToPlutUni</span></span><span> </span><span class="hs-glyph">@</span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PBuiltinList</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span class="hs-special">)</span><span> </span><span class="annot"><span class="annottext">[Data]
+PlutusRepr (PBuiltinList PData)
+</span><a href="#local-6989586621679448847"><span class="hs-identifier hs-var">ell</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-93"></span><span>    </span><span class="annot"><span class="annottext">PlutusRepr PAddress
+</span><span class="hs-identifier">_</span></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><span class="annottext">[Char] -&gt; PLifted s PAddress
+forall a. HasCallStack =&gt; [Char] -&gt; a
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Err.html#error"><span class="hs-identifier hs-var">error</span></a></span><span> </span><span class="annot"><span class="annottext">[Char]
+</span><span class="hs-string">&quot;Impossible: PAddress is list-represented.&quot;</span></span><span>
+</span><span id="line-94"></span><span>
+</span><span id="line-95"></span><span class="annot"><span class="hs-comment">-- | @since 3.8.0</span></span><span>
+</span><span id="line-96"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621679448854"><span class="annot"><span class="hs-identifier hs-type">PTryFrom</span></span><span> </span><span class="annot"><span class="hs-identifier hs-type">PData</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier hs-type">PAsData</span></span><span> </span><span class="annot"><a href="Plutarch.LedgerApi.V4.Address.html#PAddress"><span class="hs-identifier hs-type">PAddress</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-97"></span></pre></body></html>

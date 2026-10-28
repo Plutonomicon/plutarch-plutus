@@ -16,46 +16,39 @@ be used elsewhere. -}</span></span><span>
 </span><a href="PlutusTx.Builtins.Internal.html#unsafeDataAsConstr"><span class="hs-identifier hs-var">BI.unsafeDataAsConstr</span></a></span><span>
 </span><span id="line-15"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapUnsafeDataAsConstr"><span class="hs-pragma hs-type">wrapUnsafeDataAsConstr</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
 </span><span id="line-16"></span><span>
-</span><span id="line-17"></span><span class="hs-comment">-- This will no longer be needed post the van Rossem HF, since we will be using</span><span>
-</span><span id="line-18"></span><span class="hs-comment">-- `case` to unpack builtin lists.</span><span>
-</span><span id="line-19"></span><span id="local-6989586621680153277"><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapTail"><span class="hs-identifier hs-type">wrapTail</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153277"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153277"><span class="hs-identifier hs-type">a</span></a></span></span><span>
-</span><span id="line-20"></span><span id="wrapTail"><span class="annot"><span class="annottext">wrapTail :: forall a. BuiltinList a -&gt; BuiltinList a
-</span><a href="PlutusTx.AsData.Internal.html#wrapTail"><span class="hs-identifier hs-var hs-var">wrapTail</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinList a -&gt; BuiltinList a
-forall a. BuiltinList a -&gt; BuiltinList a
-</span><a href="PlutusTx.Builtins.Internal.html#tail"><span class="hs-identifier hs-var">BI.tail</span></a></span><span>
-</span><span id="line-21"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapTail"><span class="hs-pragma hs-type">wrapTail</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-22"></span><span>
-</span><span id="line-23"></span><span class="hs-comment">-- Like `unsafeUncons` but uses `wrapTail` instead of the regular `tail`.</span><span>
-</span><span id="line-24"></span><span class="hs-comment">--</span><span>
-</span><span id="line-25"></span><span class="hs-comment">-- This function can be inlined, because the Plinth compiler does not rely on it being present.</span><span>
-</span><span id="line-26"></span><span class="hs-comment">--</span><span>
-</span><span id="line-27"></span><span class="hs-comment">-- We don't need a `wrapHead`, because there are no strict dead bindings of the form</span><span>
-</span><span id="line-28"></span><span class="hs-comment">-- `let !y = head xs`. The dead bindings are only in the form of `let !ys = tail xs`</span><span>
-</span><span id="line-29"></span><span class="hs-comment">-- and `let !y = unsafeFromBuiltinData (head xs)`.</span><span>
-</span><span id="line-30"></span><span class="hs-comment">--</span><span>
-</span><span id="line-31"></span><span class="hs-comment">-- This will no longer be needed post the van Rossem HF, since we will be using</span><span>
-</span><span id="line-32"></span><span class="hs-comment">-- `case` to unpack builtin lists.</span><span>
-</span><span id="line-33"></span><span id="local-6989586621680153279"><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapUnsafeUncons"><span class="hs-identifier hs-type">wrapUnsafeUncons</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153279"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621680153279"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153279"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
-</span><span id="line-34"></span><span id="wrapUnsafeUncons"><span class="annot"><span class="annottext">wrapUnsafeUncons :: forall a. BuiltinList a -&gt; (a, BuiltinList a)
-</span><a href="PlutusTx.AsData.Internal.html#wrapUnsafeUncons"><span class="hs-identifier hs-var hs-var">wrapUnsafeUncons</span></a></span></span><span> </span><span id="local-6989586621680153291"><span class="annot"><span class="annottext">BuiltinList a
-</span><a href="#local-6989586621680153291"><span class="hs-identifier hs-var">l</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="hs-special">(</span><span class="annot"><span class="annottext">BuiltinList a -&gt; a
-forall a. BuiltinList a -&gt; a
-</span><a href="PlutusTx.Builtins.Internal.html#head"><span class="hs-identifier hs-var">BI.head</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinList a
-</span><a href="#local-6989586621680153291"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">BuiltinList a -&gt; BuiltinList a
-forall a. BuiltinList a -&gt; BuiltinList a
-</span><a href="PlutusTx.AsData.Internal.html#wrapTail"><span class="hs-identifier hs-var">wrapTail</span></a></span><span> </span><span class="annot"><span class="annottext">BuiltinList a
-</span><a href="#local-6989586621680153291"><span class="hs-identifier hs-var">l</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-35"></span><span class="hs-pragma">{-# INLINE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapUnsafeUncons"><span class="hs-pragma hs-type">wrapUnsafeUncons</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="hs-comment">-- See Note [Dropping redundant unsafeCaseList calls produced by AsData]</span><span>
-</span><span id="line-38"></span><span class="annot"><a href="PlutusTx.AsData.Internal.html#droppableUnsafeCaseList"><span class="hs-identifier hs-type">droppableUnsafeCaseList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621680153282"><span class="annot"><a href="#local-6989586621680153282"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621680153283"><span class="annot"><a href="#local-6989586621680153283"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621680153282"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153282"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680153283"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680153282"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680153283"><span class="hs-identifier hs-type">r</span></a></span><span>
-</span><span id="line-39"></span><span id="droppableUnsafeCaseList"><span class="annot"><span class="annottext">droppableUnsafeCaseList :: forall a r. (a -&gt; BuiltinList a -&gt; r) -&gt; BuiltinList a -&gt; r
+</span><span id="line-17"></span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapUnsafeDataAsList"><span class="hs-identifier hs-type">wrapUnsafeDataAsList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinData"><span class="hs-identifier hs-type">BuiltinData</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinData"><span class="hs-identifier hs-type">BuiltinData</span></a></span><span>
+</span><span id="line-18"></span><span id="wrapUnsafeDataAsList"><span class="annot"><span class="annottext">wrapUnsafeDataAsList :: BuiltinData -&gt; BuiltinList BuiltinData
+</span><a href="PlutusTx.AsData.Internal.html#wrapUnsafeDataAsList"><span class="hs-identifier hs-var hs-var">wrapUnsafeDataAsList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinData -&gt; BuiltinList BuiltinData
+</span><a href="PlutusTx.Builtins.Internal.html#unsafeDataAsList"><span class="hs-identifier hs-var">BI.unsafeDataAsList</span></a></span><span>
+</span><span id="line-19"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapUnsafeDataAsList"><span class="hs-pragma hs-type">wrapUnsafeDataAsList</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-comment">-- We need this to let compiler know applications to asData deconstructors can be inlined directly.</span><span>
+</span><span id="line-22"></span><span class="hs-comment">-- See Note [Compiling AsData Matchers and Their Invocations]</span><span>
+</span><span id="line-23"></span><span id="local-6989586621680196666"><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapCaseData"><span class="hs-identifier hs-type">wrapCaseData</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinData"><span class="hs-identifier hs-type">BuiltinData</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinData"><span class="hs-identifier hs-type">BuiltinData</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680196666"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">]</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680196666"><span class="hs-identifier hs-type">a</span></a></span></span><span>
+</span><span id="line-24"></span><span id="wrapCaseData"><span class="annot"><span class="annottext">wrapCaseData :: forall a. BuiltinData -&gt; [BuiltinList BuiltinData -&gt; a] -&gt; a
+</span><a href="PlutusTx.AsData.Internal.html#wrapCaseData"><span class="hs-identifier hs-var hs-var">wrapCaseData</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">BuiltinData -&gt; [BuiltinList BuiltinData -&gt; a] -&gt; a
+forall a. BuiltinData -&gt; [BuiltinList BuiltinData -&gt; a] -&gt; a
+</span><a href="PlutusTx.Builtins.Internal.html#caseData"><span class="hs-identifier hs-var">BI.caseData</span></a></span><span>
+</span><span id="line-25"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#wrapCaseData"><span class="hs-pragma hs-type">wrapCaseData</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-26"></span><span>
+</span><span id="line-27"></span><span class="hs-comment">-- See Note [Dropping redundant unsafeCaseList calls produced by AsData]</span><span>
+</span><span id="line-28"></span><span class="annot"><a href="PlutusTx.AsData.Internal.html#droppableUnsafeCaseList"><span class="hs-identifier hs-type">droppableUnsafeCaseList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-keyword">forall</span><span> </span><span id="local-6989586621680196668"><span class="annot"><a href="#local-6989586621680196668"><span class="hs-identifier hs-type">a</span></a></span></span><span> </span><span id="local-6989586621680196669"><span class="annot"><a href="#local-6989586621680196669"><span class="hs-identifier hs-type">r</span></a></span></span><span class="hs-operator">.</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621680196668"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680196668"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680196669"><span class="hs-identifier hs-type">r</span></a></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680196668"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="annot"><a href="#local-6989586621680196669"><span class="hs-identifier hs-type">r</span></a></span><span>
+</span><span id="line-29"></span><span id="droppableUnsafeCaseList"><span class="annot"><span class="annottext">droppableUnsafeCaseList :: forall a r. (a -&gt; BuiltinList a -&gt; r) -&gt; BuiltinList a -&gt; r
 </span><a href="PlutusTx.AsData.Internal.html#droppableUnsafeCaseList"><span class="hs-identifier hs-var hs-var">droppableUnsafeCaseList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; BuiltinList a -&gt; r) -&gt; BuiltinList a -&gt; r
 forall a r. (a -&gt; BuiltinList a -&gt; r) -&gt; BuiltinList a -&gt; r
 </span><a href="PlutusTx.Builtins.Internal.html#unsafeCaseList"><span class="hs-identifier hs-var">BI.unsafeCaseList</span></a></span><span>
-</span><span id="line-40"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#droppableUnsafeCaseList"><span class="hs-pragma hs-type">droppableUnsafeCaseList</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
-</span><span id="line-41"></span><span>
-</span><span id="line-42"></span><span class="hs-comment">{- Note [Compiling AsData Matchers and Their Invocations]
+</span><span id="line-30"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#droppableUnsafeCaseList"><span class="hs-pragma hs-type">droppableUnsafeCaseList</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-31"></span><span>
+</span><span id="line-32"></span><span class="hs-comment">-- See Note [Use list casing in AsData pattern synonyms]</span><span>
+</span><span id="line-33"></span><span id="local-6989586621680196672"><span class="annot"><a href="PlutusTx.AsData.Internal.html#directUnsafeCaseList"><span class="hs-identifier hs-type">directUnsafeCaseList</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680196672"><span class="hs-identifier hs-type">a</span></a></span><span> </span><span class="hs-glyph">-&gt;</span><span> </span><span class="hs-special">(</span><span class="annot"><a href="#local-6989586621680196672"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusTx.Builtins.Internal.html#BuiltinList"><span class="hs-identifier hs-type">BuiltinList</span></a></span><span> </span><span class="annot"><a href="#local-6989586621680196672"><span class="hs-identifier hs-type">a</span></a></span><span class="hs-special">)</span></span><span>
+</span><span id="line-34"></span><span id="directUnsafeCaseList"><span class="annot"><span class="annottext">directUnsafeCaseList :: forall a. BuiltinList a -&gt; (a, BuiltinList a)
+</span><a href="PlutusTx.AsData.Internal.html#directUnsafeCaseList"><span class="hs-identifier hs-var hs-var">directUnsafeCaseList</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">(a -&gt; BuiltinList a -&gt; (a, BuiltinList a))
+-&gt; BuiltinList a -&gt; (a, BuiltinList a)
+forall a r. (a -&gt; BuiltinList a -&gt; r) -&gt; BuiltinList a -&gt; r
+</span><a href="PlutusTx.Builtins.Internal.html#unsafeCaseList"><span class="hs-identifier hs-var">BI.unsafeCaseList</span></a></span><span> </span><span class="hs-special">(</span><span class="hs-special">,</span><span class="hs-special">)</span><span>
+</span><span id="line-35"></span><span class="hs-pragma">{-# OPAQUE</span><span> </span><span class="annot"><a href="PlutusTx.AsData.Internal.html#directUnsafeCaseList"><span class="hs-pragma hs-type">directUnsafeCaseList</span></a></span><span> </span><span class="hs-pragma">#-}</span><span>
+</span><span id="line-36"></span><span>
+</span><span id="line-37"></span><span class="hs-comment">{- Note [Compiling AsData Matchers and Their Invocations]
 
 The AsData matchers, such as `AsData.Budget.Types.$mInts`, eagerly unpack all fields,
 even for unused fields. This leads to strict dead bindings. Since they are strict and
@@ -68,11 +61,11 @@ The matches are generated by GHC for pattern synonyms, not written by hand. As a
 they are unfortunately not customizable - for example, by attaching certain annotations
 to certain variables as signals for the Plinth compiler.
 
-The workaround are the wrapper functions in this module. `wrapUnsafeDataAsConstr`
-is marked OPAQUE so that GHC doesn't inline it, yet its unfolding is made available
-via `-fexpose-all-unfoldings`. `wrapUnsafeDataAsConstr` is supposed to be used by
-AsData only, and not elsewhere, and the Plinth compiler relies on it to identify
-which functions are AsData matchers.
+The workaround are the wrapper functions in this module. `wrapUnsafeDataAsConstr` and
+`wrapCaseData` are marked OPAQUE so that GHC doesn't inline it, yet its unfolding is
+made available via `-fexpose-all-unfoldings`. `wrapUnsafeDataAsConstr` and `wrapCaseData`
+are supposed to be used by AsData only, and not elsewhere, and the Plinth compiler relies
+on it to identify which functions are AsData matchers.
 
 An AsData matcher unpacks the fields and passes them to a continuation. What we need is
 to mark the variables bound in the continuation as safe to inline. For instance, if the
@@ -80,19 +73,14 @@ continuation is `\x y z w -&gt; f x` (indicating a data type with 4 fields, of w
 first is used), marking `x`, `y`, `z` and `w` as safe to inline allows the inliner to
 drop the unused ones.
 
-This eliminates unused field accessors, but there are still the `tailList` dead bindings, which
-are intermediate artifacts in generating the field accessors. This is what `wrapTail` is for.
-`wrapTail` appears in `case` scrutinees, as in `case wrapTail @BuiltinData l of l' -&gt; ...`.
-So the compiler detects such `case` expressions, and mark the binder, `l'`, as
-safe to inline.
-
-`wrapUnsafeUncons` and `wrapTail` will no longer be needed post the van Rossem HF, since
-we will be using `case` to unpack builtin lists. We may no longer need `wrapUnsafeDataAsConstr`
-either, but this needs to be examined and verified.
-
+TODO:
+Currently, this optimization only works when each branch handlers are directly
+lambda-expressions. When we have non-lambda branch handlers, the inliner is unable to
+drop the unused variables. We want to explore there's other approaches to remove unused
+field bindings.
 -}</span><span>
-</span><span id="line-78"></span><span>
-</span><span id="line-79"></span><span class="hs-comment">{- Note [Dropping redundant unsafeCaseList calls produced by AsData]
+</span><span id="line-68"></span><span>
+</span><span id="line-69"></span><span class="hs-comment">{- Note [Dropping redundant unsafeCaseList calls produced by AsData]
 
 AsData generates `unsafeCaseList` calls to unpack lists in the Data. It unpacks a list
 completely, obtaining all fields, then calls the continuation with the fields. This
@@ -109,4 +97,19 @@ to empty lists, so redundant ones can be dropped safely. To do so, we annotate t
 redundant ones.
 
 -}</span><span>
-</span><span id="line-96"></span></pre></body></html>
+</span><span id="line-86"></span><span>
+</span><span id="line-87"></span><span class="hs-comment">{- Note [Use list casing in AsData pattern synonyms]
+
+AsData pattern synonyms cannot directly call `unsafeCaseList` or `droppableUnsafeCaseList`
+because they are CPS-style functions and aren't compatible with view patterns. The
+solution is to introduce an opaque, direct-style `directUnsafeCaseList`, and rewrite it
+to `droppableUnsafeCaseList` in the plugin. Specifically, the plugin turns
+
+case directUnsafeCaseList xs of (hd, tl) -&gt; body
+
+into
+
+droppableUnsafeCaseList (\hd tl -&gt; body) xs
+
+-}</span><span>
+</span><span id="line-101"></span></pre></body></html>

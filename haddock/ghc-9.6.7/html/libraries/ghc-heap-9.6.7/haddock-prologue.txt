@@ -1,2 +1,0 @@
-This package provides functions for walking the GHC heap data structures
-and retrieving information about those data structures.

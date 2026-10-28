@@ -1,3 +1,0 @@
-This library offers interfaces which mediate interactions between the
-@ghci@ interactive shell and @iserv@, GHC's out-of-process interpreter
-backend.

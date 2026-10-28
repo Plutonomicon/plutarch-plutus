@@ -6,7 +6,7 @@ author:
 
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.6.4
+tested-with:        GHC ==9.8.4
 
 common c
   default-language:   GHC2021
@@ -159,7 +159,7 @@ library
     , hashable
     , lens
     , mtl
-    , plutus-core           ==1.65.0.0
+    , plutus-core           ==1.71.0.0
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter

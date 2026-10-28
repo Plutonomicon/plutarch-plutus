@@ -12,35 +12,36 @@
 </span><span id="line-12"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier">changPV</span></a></span><span>
 </span><span id="line-13"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier">plominPV</span></a></span><span>
 </span><span id="line-14"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier">vanRossemPV</span></a></span><span>
-</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#newestPV"><span class="hs-identifier">newestPV</span></a></span><span>
-</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#knownPVs"><span class="hs-identifier">knownPVs</span></a></span><span>
-</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#futurePV"><span class="hs-identifier">futurePV</span></a></span><span>
-</span><span id="line-18"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-19"></span><span>
-</span><span id="line-20"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Codec.Serialise</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Serialise</span></span><span class="hs-special">)</span><span>
-</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
-</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span>
-</span><span id="line-23"></span><span>
-</span><span id="line-24"></span><span class="hs-comment">{- Note [Adding new builtins: protocol versions]
+</span><span id="line-15"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#dijkstraPV"><span class="hs-identifier">dijkstraPV</span></a></span><span>
+</span><span id="line-16"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#newestPV"><span class="hs-identifier">newestPV</span></a></span><span>
+</span><span id="line-17"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#knownPVs"><span class="hs-identifier">knownPVs</span></a></span><span>
+</span><span id="line-18"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#futurePV"><span class="hs-identifier">futurePV</span></a></span><span>
+</span><span id="line-19"></span><span>  </span><span class="hs-special">)</span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-20"></span><span>
+</span><span id="line-21"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Codec.Serialise</span></span><span> </span><span class="hs-special">(</span><span class="annot"><span class="hs-identifier">Serialise</span></span><span class="hs-special">)</span><span>
+</span><span id="line-22"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html"><span class="hs-identifier">GHC.Generics</span></a></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier">Generic</span></a></span><span class="hs-special">)</span><span>
+</span><span id="line-23"></span><span class="hs-keyword">import</span><span> </span><span class="annot"><span class="hs-identifier">Prettyprinter</span></span><span>
+</span><span id="line-24"></span><span>
+</span><span id="line-25"></span><span class="hs-comment">{- Note [Adding new builtins: protocol versions]
 
   *** ATTENTION! *** New built-in functions must initially be added in a batch
   under `futurePV` in `builtinsAvailableIn` in `Common.Versions` and should only
   be moved to an earlier MajorProtocolVersion once they have been fully
   implemented and costed and their release under the relevant protocol version
   has been officially approved.  Remember to update the tests in `Spec.Versions`
-  and `Spec.Data.Versions` when this happens.  If there are some builtins that
+  when this happens.  If there are some builtins that
   are not to be released then leave them under `futurePV` (splitting the batch
   if necessary) and also make sure that the names of their cost model parameters
   come at the end of the `ParamName` types.
 -}</span><span>
-</span><span id="line-36"></span><span>
-</span><span id="line-37"></span><span class="annot"><span class="hs-comment">{-| This represents the major component of the Cardano protocol version.
+</span><span id="line-37"></span><span>
+</span><span id="line-38"></span><span class="annot"><span class="hs-comment">{-| This represents the major component of the Cardano protocol version.
 The ledger can only supply the major component of the protocol version, not the minor
 component, and Plutus should only need to care about the major component anyway.
 This relies on careful understanding between us and the ledger as to what this means. -}</span></span><span>
-</span><span id="line-41"></span><span class="hs-keyword">newtype</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getMajorProtocolVersion"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; Int
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#getMajorProtocolVersion"><span class="hs-identifier hs-var hs-var">getMajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">}</span><span>
-</span><span id="line-42"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681226213"><span id="local-6989586621681226218"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
+</span><span id="line-42"></span><span class="hs-keyword">newtype</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span id="MajorProtocolVersion"><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-special">{</span><span id="getMajorProtocolVersion"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; Int
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#getMajorProtocolVersion"><span class="hs-identifier hs-var hs-var">getMajorProtocolVersion</span></a></span></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Types.html#Int"><span class="hs-identifier hs-type">Int</span></a></span><span class="hs-special">}</span><span>
+</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">newtype</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682246387"><span id="local-6989586621682246392"><span class="annot"><span class="annottext">MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
 -&gt; (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
 -&gt; Eq MajorProtocolVersion
@@ -49,7 +50,7 @@ $c== :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 == :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 $c/= :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
 /= :: MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool
-</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681226226"><span id="local-6989586621681226231"><span id="local-6989586621681226235"><span id="local-6989586621681226239"><span id="local-6989586621681226243"><span id="local-6989586621681226247"><span id="local-6989586621681226251"><span class="annot"><span class="annottext">Eq MajorProtocolVersion
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Eq"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Eq</span></a></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682246400"><span id="local-6989586621682246405"><span id="local-6989586621682246409"><span id="local-6989586621682246413"><span id="local-6989586621682246417"><span id="local-6989586621682246421"><span id="local-6989586621682246425"><span class="annot"><span class="annottext">Eq MajorProtocolVersion
 Eq MajorProtocolVersion =&gt;
 (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Ordering)
 -&gt; (MajorProtocolVersion -&gt; MajorProtocolVersion -&gt; Bool)
@@ -93,7 +94,7 @@ $cmin :: MajorProtocolVersion
 -&gt; MajorProtocolVersion -&gt; MajorProtocolVersion
 min :: MajorProtocolVersion
 -&gt; MajorProtocolVersion -&gt; MajorProtocolVersion
-</span><a href="../../../ghc-9.6.7/html/libraries/ghc-prim-0.10.0/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681226257"><span id="local-6989586621681226262"><span id="local-6989586621681226266"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion -&gt; ShowS
+</span><a href="../../../ghc-9.8.4/html/libraries/ghc-prim-0.11.0-inplace/src/GHC.Classes.html#Ord"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Ord</span></a></span></span></span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682246431"><span id="local-6989586621682246436"><span id="local-6989586621682246440"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion -&gt; ShowS
 [MajorProtocolVersion] -&gt; ShowS
 MajorProtocolVersion -&gt; String
 (Int -&gt; MajorProtocolVersion -&gt; ShowS)
@@ -108,7 +109,7 @@ $cshow :: MajorProtocolVersion -&gt; String
 show :: MajorProtocolVersion -&gt; String
 $cshowList :: [MajorProtocolVersion] -&gt; ShowS
 showList :: [MajorProtocolVersion] -&gt; ShowS
-</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681226272"><span id="local-6989586621681226277"><span id="local-6989586621681226281"><span id="local-6989586621681226285"><span class="annot"><span class="annottext">[MajorProtocolVersion] -&gt; Encoding
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Show.html#Show"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Show</span></a></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682246446"><span id="local-6989586621682246451"><span id="local-6989586621682246455"><span id="local-6989586621682246459"><span class="annot"><span class="annottext">[MajorProtocolVersion] -&gt; Encoding
 MajorProtocolVersion -&gt; Encoding
 (MajorProtocolVersion -&gt; Encoding)
 -&gt; (forall s. Decoder s MajorProtocolVersion)
@@ -131,7 +132,7 @@ $cencodeList :: [MajorProtocolVersion] -&gt; Encoding
 encodeList :: [MajorProtocolVersion] -&gt; Encoding
 $cdecodeList :: forall s. Decoder s [MajorProtocolVersion]
 decodeList :: forall s. Decoder s [MajorProtocolVersion]
-</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621681226291"><span id="local-6989586621681226296"><span id="local-6989586621681226300"><span id="local-6989586621681226304"><span id="local-6989586621681226308"><span id="local-6989586621681226312"><span id="local-6989586621681226316"><span id="local-6989586621681226320"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
+</span><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Serialise</span></span></span></span></span></span><span class="hs-special">,</span><span> </span><span id="local-6989586621682246465"><span id="local-6989586621682246470"><span id="local-6989586621682246474"><span id="local-6989586621682246478"><span id="local-6989586621682246482"><span id="local-6989586621682246486"><span id="local-6989586621682246490"><span id="local-6989586621682246494"><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 MajorProtocolVersion -&gt; Int
 MajorProtocolVersion -&gt; [MajorProtocolVersion]
 MajorProtocolVersion -&gt; MajorProtocolVersion
@@ -191,8 +192,8 @@ enumFromThenTo :: MajorProtocolVersion
 -&gt; MajorProtocolVersion
 -&gt; MajorProtocolVersion
 -&gt; [MajorProtocolVersion]
-</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Enum.html#Enum"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></a></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-43"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621681226326"><span id="local-6989586621681226328"><span class="annot"><span class="annottext">(forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x)
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#Enum"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var hs-var">Enum</span></a></span></span></span></span></span></span></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-44"></span><span>  </span><span class="hs-keyword">deriving</span><span> </span><span class="annot"><span class="hs-keyword">stock</span></span><span> </span><span class="hs-special">(</span><span id="local-6989586621682246500"><span id="local-6989586621682246502"><span class="annot"><span class="annottext">(forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x)
 -&gt; (forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion)
 -&gt; Generic MajorProtocolVersion
 forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
@@ -203,143 +204,153 @@ $cfrom :: forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x
 from :: forall x. MajorProtocolVersion -&gt; Rep MajorProtocolVersion x
 $cto :: forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
 to :: forall x. Rep MajorProtocolVersion x -&gt; MajorProtocolVersion
-</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
-</span><span id="line-44"></span><span>
-</span><span id="line-45"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621681226333"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
-</span><span id="line-46"></span><span>  </span><span id="local-6989586621681226339"><span class="annot"><span class="annottext">pretty :: forall ann. MajorProtocolVersion -&gt; Doc ann
-</span><a href="#local-6989586621681226339"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span> </span><span id="local-6989586621681226341"><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681226341"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Generics.html#Generic"><span class="hs-identifier hs-var hs-var hs-var hs-var hs-var hs-var">Generic</span></a></span></span></span><span class="hs-special">)</span><span>
+</span><span id="line-45"></span><span>
+</span><span id="line-46"></span><span class="hs-keyword">instance</span><span> </span><span id="local-6989586621682246507"><span class="annot"><span class="hs-identifier hs-type">Pretty</span></span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span></span><span> </span><span class="hs-keyword">where</span><span>
+</span><span id="line-47"></span><span>  </span><span id="local-6989586621682246513"><span class="annot"><span class="annottext">pretty :: forall ann. MajorProtocolVersion -&gt; Doc ann
+</span><a href="#local-6989586621682246513"><span class="hs-identifier hs-var hs-var hs-var hs-var">pretty</span></a></span></span><span> </span><span class="hs-special">(</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span> </span><span id="local-6989586621682246515"><span class="annot"><span class="annottext">Int
+</span><a href="#local-6989586621682246515"><span class="hs-identifier hs-var">v</span></a></span></span><span class="hs-special">)</span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; Doc ann
 forall ann. Int -&gt; Doc ann
 forall a ann. Pretty a =&gt; a -&gt; Doc ann
 </span><span class="hs-identifier hs-var">pretty</span></span><span> </span><span class="annot"><span class="annottext">Int
-</span><a href="#local-6989586621681226341"><span class="hs-identifier hs-var">v</span></a></span><span>
-</span><span id="line-47"></span><span>
-</span><span id="line-48"></span><span class="annot"><span class="hs-comment">-- | Shelley era was introduced in protocol version 2.0</span></span><span>
-</span><span id="line-49"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#shelleyPV"><span class="hs-identifier hs-type">shelleyPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-50"></span><span id="shelleyPV"><span class="annot"><span class="annottext">shelleyPV :: MajorProtocolVersion
+</span><a href="#local-6989586621682246515"><span class="hs-identifier hs-var">v</span></a></span><span>
+</span><span id="line-48"></span><span>
+</span><span id="line-49"></span><span class="annot"><span class="hs-comment">-- | Shelley era was introduced in protocol version 2.0</span></span><span>
+</span><span id="line-50"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#shelleyPV"><span class="hs-identifier hs-type">shelleyPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-51"></span><span id="shelleyPV"><span class="annot"><span class="annottext">shelleyPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#shelleyPV"><span class="hs-identifier hs-var hs-var">shelleyPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">2</span></span><span>
-</span><span id="line-51"></span><span>
-</span><span id="line-52"></span><span class="annot"><span class="hs-comment">-- | Allegra era was introduced in protocol version 3.0</span></span><span>
-</span><span id="line-53"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#allegraPV"><span class="hs-identifier hs-type">allegraPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-54"></span><span id="allegraPV"><span class="annot"><span class="annottext">allegraPV :: MajorProtocolVersion
+</span><span id="line-52"></span><span>
+</span><span id="line-53"></span><span class="annot"><span class="hs-comment">-- | Allegra era was introduced in protocol version 3.0</span></span><span>
+</span><span id="line-54"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#allegraPV"><span class="hs-identifier hs-type">allegraPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-55"></span><span id="allegraPV"><span class="annot"><span class="annottext">allegraPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#allegraPV"><span class="hs-identifier hs-var hs-var">allegraPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">3</span></span><span>
-</span><span id="line-55"></span><span>
-</span><span id="line-56"></span><span class="annot"><span class="hs-comment">-- | Mary era was introduced in protocol version 4.0</span></span><span>
-</span><span id="line-57"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#maryPV"><span class="hs-identifier hs-type">maryPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-58"></span><span id="maryPV"><span class="annot"><span class="annottext">maryPV :: MajorProtocolVersion
+</span><span id="line-56"></span><span>
+</span><span id="line-57"></span><span class="annot"><span class="hs-comment">-- | Mary era was introduced in protocol version 4.0</span></span><span>
+</span><span id="line-58"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#maryPV"><span class="hs-identifier hs-type">maryPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-59"></span><span id="maryPV"><span class="annot"><span class="annottext">maryPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#maryPV"><span class="hs-identifier hs-var hs-var">maryPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">4</span></span><span>
-</span><span id="line-59"></span><span>
-</span><span id="line-60"></span><span class="annot"><span class="hs-comment">-- | Alonzo era was introduced in protocol version 5.0</span></span><span>
-</span><span id="line-61"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#alonzoPV"><span class="hs-identifier hs-type">alonzoPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-62"></span><span id="alonzoPV"><span class="annot"><span class="annottext">alonzoPV :: MajorProtocolVersion
+</span><span id="line-60"></span><span>
+</span><span id="line-61"></span><span class="annot"><span class="hs-comment">-- | Alonzo era was introduced in protocol version 5.0</span></span><span>
+</span><span id="line-62"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#alonzoPV"><span class="hs-identifier hs-type">alonzoPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-63"></span><span id="alonzoPV"><span class="annot"><span class="annottext">alonzoPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#alonzoPV"><span class="hs-identifier hs-var hs-var">alonzoPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">5</span></span><span>
-</span><span id="line-63"></span><span>
-</span><span id="line-64"></span><span class="hs-comment">-- According to https://cardano.org/hardforks/, PV 6 was called &quot;Lobster&quot;.</span><span>
-</span><span id="line-65"></span><span>
-</span><span id="line-66"></span><span class="annot"><span class="hs-comment">-- | The Vasil HF introduced the Babbage era and Plutus V2</span></span><span>
-</span><span id="line-67"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vasilPV"><span class="hs-identifier hs-type">vasilPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-68"></span><span id="vasilPV"><span class="annot"><span class="annottext">vasilPV :: MajorProtocolVersion
+</span><span id="line-64"></span><span>
+</span><span id="line-65"></span><span class="hs-comment">-- According to https://cardano.org/hardforks/, PV 6 was called &quot;Lobster&quot;.</span><span>
+</span><span id="line-66"></span><span>
+</span><span id="line-67"></span><span class="annot"><span class="hs-comment">-- | The Vasil HF introduced the Babbage era and Plutus V2</span></span><span>
+</span><span id="line-68"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vasilPV"><span class="hs-identifier hs-type">vasilPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-69"></span><span id="vasilPV"><span class="annot"><span class="annottext">vasilPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vasilPV"><span class="hs-identifier hs-var hs-var">vasilPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">7</span></span><span>
-</span><span id="line-69"></span><span>
-</span><span id="line-70"></span><span class="annot"><span class="hs-comment">{-| Valentine was an intra-era HF where builtin functions @VerifyEcdsaSecp256k1Signature@ and
+</span><span id="line-70"></span><span>
+</span><span id="line-71"></span><span class="annot"><span class="hs-comment">{-| Valentine was an intra-era HF where builtin functions @VerifyEcdsaSecp256k1Signature@ and
 @VerifySchnorrSecp256k1Signature@ were enabled. -}</span></span><span>
-</span><span id="line-72"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#valentinePV"><span class="hs-identifier hs-type">valentinePV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-73"></span><span id="valentinePV"><span class="annot"><span class="annottext">valentinePV :: MajorProtocolVersion
+</span><span id="line-73"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#valentinePV"><span class="hs-identifier hs-type">valentinePV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-74"></span><span id="valentinePV"><span class="annot"><span class="annottext">valentinePV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#valentinePV"><span class="hs-identifier hs-var hs-var">valentinePV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">8</span></span><span>
-</span><span id="line-74"></span><span>
-</span><span id="line-75"></span><span class="annot"><span class="hs-comment">-- | The Chang HF introduced the Conway era and Plutus V3</span></span><span>
-</span><span id="line-76"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-type">changPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-77"></span><span id="changPV"><span class="annot"><span class="annottext">changPV :: MajorProtocolVersion
+</span><span id="line-75"></span><span>
+</span><span id="line-76"></span><span class="annot"><span class="hs-comment">-- | The Chang HF introduced the Conway era and Plutus V3</span></span><span>
+</span><span id="line-77"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-type">changPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-78"></span><span id="changPV"><span class="annot"><span class="annottext">changPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-var hs-var">changPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">9</span></span><span>
-</span><span id="line-78"></span><span>
-</span><span id="line-79"></span><span class="annot"><span class="hs-comment">{-| The Plomin HF was an intra-era HF where some new builtin functions were
+</span><span id="line-79"></span><span>
+</span><span id="line-80"></span><span class="annot"><span class="hs-comment">{-| The Plomin HF was an intra-era HF where some new builtin functions were
 introduced in Plutus V2 and V3. -}</span></span><span>
-</span><span id="line-81"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier hs-type">plominPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-82"></span><span id="plominPV"><span class="annot"><span class="annottext">plominPV :: MajorProtocolVersion
+</span><span id="line-82"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier hs-type">plominPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-83"></span><span id="plominPV"><span class="annot"><span class="annottext">plominPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier hs-var hs-var">plominPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">10</span></span><span>
-</span><span id="line-83"></span><span>
-</span><span id="line-84"></span><span class="annot"><span class="hs-comment">-- | The van Rossem HF will be an intra-era HF.</span></span><span>
-</span><span id="line-85"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-type">vanRossemPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-86"></span><span id="vanRossemPV"><span class="annot"><span class="annottext">vanRossemPV :: MajorProtocolVersion
+</span><span id="line-84"></span><span>
+</span><span id="line-85"></span><span class="annot"><span class="hs-comment">-- | The van Rossem HF will be an intra-era HF.</span></span><span>
+</span><span id="line-86"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-type">vanRossemPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-87"></span><span id="vanRossemPV"><span class="annot"><span class="annottext">vanRossemPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var hs-var">vanRossemPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 </span><span class="hs-number">11</span></span><span>
-</span><span id="line-87"></span><span>
-</span><span id="line-88"></span><span class="annot"><span class="hs-comment">{-| The set of protocol versions that are &quot;known&quot;, i.e. that have been released
+</span><span id="line-88"></span><span>
+</span><span id="line-89"></span><span class="annot"><span class="hs-comment">-- | The Dijkstra HF will introduce the Dijkstra era and Plutus V4.</span></span><span>
+</span><span id="line-90"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#dijkstraPV"><span class="hs-identifier hs-type">dijkstraPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-91"></span><span id="dijkstraPV"><span class="annot"><span class="annottext">dijkstraPV :: MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#dijkstraPV"><span class="hs-identifier hs-var hs-var">dijkstraPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
+</span><span class="hs-number">12</span></span><span>
+</span><span id="line-92"></span><span>
+</span><span id="line-93"></span><span class="annot"><span class="hs-comment">{-| The set of protocol versions that are &quot;known&quot;, i.e. that have been released
 and have actual differences associated with them.  This is currently only
 used for testing, so efficiency is not parmount and a list is fine. -}</span></span><span>
-</span><span id="line-91"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#knownPVs"><span class="hs-identifier hs-type">knownPVs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span class="hs-special">]</span><span>
-</span><span id="line-92"></span><span id="knownPVs"><span class="annot"><span class="annottext">knownPVs :: [MajorProtocolVersion]
+</span><span id="line-96"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#knownPVs"><span class="hs-identifier hs-type">knownPVs</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="hs-special">[</span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span class="hs-special">]</span><span>
+</span><span id="line-97"></span><span id="knownPVs"><span class="annot"><span class="annottext">knownPVs :: [MajorProtocolVersion]
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#knownPVs"><span class="hs-identifier hs-var hs-var">knownPVs</span></a></span></span><span> </span><span class="hs-glyph">=</span><span>
-</span><span id="line-93"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><span id="line-98"></span><span>  </span><span class="hs-special">[</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#shelleyPV"><span class="hs-identifier hs-var">shelleyPV</span></a></span><span>
-</span><span id="line-94"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#allegraPV"><span class="hs-identifier hs-var">allegraPV</span></a></span><span>
-</span><span id="line-95"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#maryPV"><span class="hs-identifier hs-var">maryPV</span></a></span><span>
-</span><span id="line-96"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#alonzoPV"><span class="hs-identifier hs-var">alonzoPV</span></a></span><span>
-</span><span id="line-97"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vasilPV"><span class="hs-identifier hs-var">vasilPV</span></a></span><span>
-</span><span id="line-98"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#valentinePV"><span class="hs-identifier hs-var">valentinePV</span></a></span><span>
 </span><span id="line-99"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-var">changPV</span></a></span><span>
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#allegraPV"><span class="hs-identifier hs-var">allegraPV</span></a></span><span>
 </span><span id="line-100"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier hs-var">plominPV</span></a></span><span>
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#maryPV"><span class="hs-identifier hs-var">maryPV</span></a></span><span>
 </span><span id="line-101"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#alonzoPV"><span class="hs-identifier hs-var">alonzoPV</span></a></span><span>
+</span><span id="line-102"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vasilPV"><span class="hs-identifier hs-var">vasilPV</span></a></span><span>
+</span><span id="line-103"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#valentinePV"><span class="hs-identifier hs-var">valentinePV</span></a></span><span>
+</span><span id="line-104"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#changPV"><span class="hs-identifier hs-var">changPV</span></a></span><span>
+</span><span id="line-105"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#plominPV"><span class="hs-identifier hs-var">plominPV</span></a></span><span>
+</span><span id="line-106"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>
-</span><span id="line-102"></span><span>  </span><span class="hs-special">]</span><span>
-</span><span id="line-103"></span><span>
-</span><span id="line-104"></span><span class="hs-comment">-- We're sometimes in an intermediate state where we've added new builtins but</span><span>
-</span><span id="line-105"></span><span class="hs-comment">-- not yet released them (but intend to). This is used by some of the tests to</span><span>
-</span><span id="line-106"></span><span class="hs-comment">-- decide what PVs the test should include.  UPDATE THIS when we're expecting to</span><span>
-</span><span id="line-107"></span><span class="hs-comment">-- release new builtins in a forthcoming PV.</span><span>
-</span><span id="line-108"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#newestPV"><span class="hs-identifier hs-type">newestPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-109"></span><span id="newestPV"><span class="annot"><span class="annottext">newestPV :: MajorProtocolVersion
+</span><span id="line-107"></span><span>  </span><span class="hs-special">,</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#dijkstraPV"><span class="hs-identifier hs-var">dijkstraPV</span></a></span><span>
+</span><span id="line-108"></span><span>  </span><span class="hs-special">]</span><span>
+</span><span id="line-109"></span><span>
+</span><span id="line-110"></span><span class="hs-comment">-- We're sometimes in an intermediate state where we've added new builtins but</span><span>
+</span><span id="line-111"></span><span class="hs-comment">-- not yet released them (but intend to). This is used by some of the tests to</span><span>
+</span><span id="line-112"></span><span class="hs-comment">-- decide what PVs the test should include.  UPDATE THIS when we're expecting to</span><span>
+</span><span id="line-113"></span><span class="hs-comment">-- release new builtins in a forthcoming PV.</span><span>
+</span><span id="line-114"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#newestPV"><span class="hs-identifier hs-type">newestPV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-115"></span><span id="newestPV"><span class="annot"><span class="annottext">newestPV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#newestPV"><span class="hs-identifier hs-var hs-var">newestPV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">MajorProtocolVersion
-</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#vanRossemPV"><span class="hs-identifier hs-var">vanRossemPV</span></a></span><span>
-</span><span id="line-110"></span><span>
-</span><span id="line-111"></span><span class="annot"><span class="hs-comment">{-| This is a placeholder for when we don't yet know what protocol version will
+</span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#dijkstraPV"><span class="hs-identifier hs-var">dijkstraPV</span></a></span><span>
+</span><span id="line-116"></span><span>
+</span><span id="line-117"></span><span class="annot"><span class="hs-comment">{-| This is a placeholder for when we don't yet know what protocol version will
   be used for something. It's a very high protocol version that should never
   appear in reality.
 
   We should not assign names to future protocol versions until it's
   confirmed that they are correct, otherwise we could accidentally
   associate something with the wrong protocol version. -}</span></span><span>
-</span><span id="line-118"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#futurePV"><span class="hs-identifier hs-type">futurePV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
-</span><span id="line-119"></span><span id="futurePV"><span class="annot"><span class="annottext">futurePV :: MajorProtocolVersion
+</span><span id="line-124"></span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#futurePV"><span class="hs-identifier hs-type">futurePV</span></a></span><span> </span><span class="hs-glyph">::</span><span> </span><span class="annot"><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-type">MajorProtocolVersion</span></a></span><span>
+</span><span id="line-125"></span><span id="futurePV"><span class="annot"><span class="annottext">futurePV :: MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#futurePV"><span class="hs-identifier hs-var hs-var">futurePV</span></a></span></span><span> </span><span class="hs-glyph">=</span><span> </span><span class="annot"><span class="annottext">Int -&gt; MajorProtocolVersion
 </span><a href="PlutusLedgerApi.Common.ProtocolVersions.html#MajorProtocolVersion"><span class="hs-identifier hs-var">MajorProtocolVersion</span></a></span><span> </span><span class="annot"><span class="annottext">Int
 forall a. Bounded a =&gt; a
-</span><a href="../../../ghc-9.6.7/html/libraries/base-4.18.3.0/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span>
-</span><span id="line-120"></span><span>
-</span><span id="line-121"></span><span class="hs-comment">{- Note [Mapping of protocol versions and ledger languages to semantics variants]
+</span><a href="../../../ghc-9.8.4/html/libraries/base-4.19.2.0-inplace/src/GHC.Enum.html#maxBound"><span class="hs-identifier hs-var">maxBound</span></a></span><span>
+</span><span id="line-126"></span><span>
+</span><span id="line-127"></span><span class="hs-comment">{- Note [Mapping of protocol versions and ledger languages to semantics variants]
 Semantics variants depend on both the protocol version and the ledger language.
 
 Here's a table specifying the mapping in full:
 
-  pv pre-Conway post-Conway post-van Rossem
+  pv pre-Conway post-Conway post-van Rossem post-Dijkstra
 ll
-1       A           B          D
-2       A           B          D
-3       C           C          E
+1       A           B          D               F
+2       A           B          D               F
+3       -           C          E               G
+4       -           -          -               G
 
 I.e. for example
 
@@ -348,5 +359,7 @@ I.e. for example
 - post-Conway and pre-van Rossem 'PlutusV3' corresponds to 'DefaultFunSemanticsVariantC'
 - post-van Rossem 'PlutusV1' corresponds to 'DefaultFunSemanticsVariantD'
 - post-van Rossem 'PlutusV3' corresponds to 'DefaultFunSemanticsVariantE'
+- post-Dijkstra 'PlutusV1' corresponds to 'DefaultFunSemanticsVariantF'
+- post-Dijkstra 'PlutusV3' corresponds to 'DefaultFunSemanticsVariantG'
 -}</span><span>
-</span><span id="line-140"></span></pre></body></html>
+</span><span id="line-149"></span></pre></body></html>
