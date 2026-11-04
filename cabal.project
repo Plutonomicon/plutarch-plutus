@@ -28,6 +28,11 @@ packages:
   ./.
   ./plutarch-*
 
+source-repository-package
+  type: git
+  location: https://github.com/mlabs-haskell/quickcheck-helpers
+  tag: 918eeef756310a77d023f05eb268d00e90519d4e
+
 benchmarks: True
 tests: True
 test-show-details: direct

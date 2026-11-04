@@ -47,6 +47,7 @@ import Test.QuickCheck (
   sized,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 import Test.QuickCheck.Instances.ByteString ()
 
 -- | @since 1.0.0
@@ -65,7 +66,9 @@ instance Arbitrary PLA.ScriptContext where
   {-# INLINEABLE arbitrary #-}
   arbitrary = PLA.ScriptContext <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
-  shrink (PLA.ScriptContext txi purpose) = PLA.ScriptContext <$> shrink txi <*> shrink purpose
+  shrink (PLA.ScriptContext txi purpose) =
+    runShrink
+      (PLA.ScriptContext <$> neShrink txi <*> neShrink purpose)
 
 -- | @since 1.0.0
 instance CoArbitrary PLA.ScriptContext where
@@ -130,9 +133,11 @@ instance Arbitrary PLC.Data where
     PLC.I i -> PLC.I <$> shrink i
     PLC.B bs -> PLC.B <$> shrink bs
     PLC.Constr ix dats ->
-      PLC.Constr
-        <$> (fmap getNonNegative . shrink . NonNegative $ ix)
-        <*> shrink dats
+      runShrink
+        ( PLC.Constr
+            <$> neShrinkOver @(NonNegative Integer) ix
+            <*> neShrink dats
+        )
     PLC.List ell -> PLC.List <$> shrink ell
     PLC.Map kvs -> PLC.Map <$> shrink kvs
 

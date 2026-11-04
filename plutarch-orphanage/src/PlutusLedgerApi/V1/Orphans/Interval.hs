@@ -17,6 +17,7 @@ import Test.QuickCheck (
   oneof,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, runShrink)
 
 {- | This instance does not bias the constructor choice: it is equally likely to
 produce 'PLA.Finite', 'PLA.NegInf' and 'PLA.PosInf'. Bear this in mind when
@@ -95,7 +96,7 @@ instance Arbitrary (PLA.LowerBound PLA.POSIXTime) where
       _ -> pure . PLA.LowerBound e $ False
   {-# INLINEABLE shrink #-}
   shrink (PLA.LowerBound e c) = case e of
-    PLA.Finite _ -> PLA.LowerBound <$> shrink e <*> shrink c
+    PLA.Finite _ -> runShrink (PLA.LowerBound <$> neShrink e <*> neShrink c)
     -- Negative or positive infinity bounds can't really shrink sensibly
     _ -> []
 
@@ -130,7 +131,7 @@ instance Arbitrary (PLA.UpperBound PLA.POSIXTime) where
       _ -> pure . PLA.UpperBound e $ False
   {-# INLINEABLE shrink #-}
   shrink (PLA.UpperBound e c) = case e of
-    PLA.Finite _ -> PLA.UpperBound <$> shrink e <*> shrink c
+    PLA.Finite _ -> runShrink (PLA.UpperBound <$> neShrink e <*> neShrink c)
     -- Negative or positive infinity bounds can't really shrink sensibly
     _ -> []
 
