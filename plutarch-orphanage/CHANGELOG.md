@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
 ## UNRELEASED
 
+### Changed
+
+- Shrinkers use `quickcheck-helpers` now
+
 ## 1.4.0 -- 22-10-2026
 
 ### Added
