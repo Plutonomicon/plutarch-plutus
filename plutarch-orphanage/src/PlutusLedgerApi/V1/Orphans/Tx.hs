@@ -17,6 +17,7 @@ import Test.QuickCheck (
   functionMap,
   getNonNegative,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 {- | BLAKE2b-256 hash (32 bytes) of a transaction ID.
 
@@ -38,7 +39,7 @@ instance Arbitrary PLA.TxOutRef where
   arbitrary = PLA.TxOutRef <$> arbitrary <*> (getNonNegative <$> arbitrary)
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxOutRef tid ix) =
-    PLA.TxOutRef <$> shrink tid <*> (fmap getNonNegative . shrink . NonNegative $ ix)
+    runShrink (PLA.TxOutRef <$> neShrink tid <*> neShrinkOver @(NonNegative Integer) ix)
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.TxOutRef where
@@ -60,11 +61,8 @@ instance Arbitrary PLA.TxOut where
       <*> (Value.getUtxoValue <$> arbitrary) -- value
       <*> arbitrary -- maybe datum hash
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxOut addr val mdh) = do
-    addr' <- shrink addr
-    val' <- Value.getUtxoValue <$> shrink (Value.UTxOValue val)
-    mdh' <- shrink mdh
-    pure . PLA.TxOut addr' val' $ mdh'
+  shrink (PLA.TxOut addr val mdh) =
+    runShrink (PLA.TxOut <$> neShrink addr <*> neShrinkOver @Value.UTxOValue val <*> neShrink mdh)
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.TxOut where

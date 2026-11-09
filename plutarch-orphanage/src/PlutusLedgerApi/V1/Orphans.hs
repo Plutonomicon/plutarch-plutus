@@ -27,6 +27,7 @@ import Test.QuickCheck (
   Function (function),
   functionMap,
  )
+import Test.QuickCheck.Helpers (neShrink, runShrink)
 
 -- | @since 1.0.2
 instance Arbitrary PLA.ScriptContext where
@@ -34,7 +35,7 @@ instance Arbitrary PLA.ScriptContext where
   arbitrary = PLA.ScriptContext <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.ScriptContext tinfo p) =
-    PLA.ScriptContext <$> shrink tinfo <*> shrink p
+    runShrink (PLA.ScriptContext <$> neShrink tinfo <*> neShrink p)
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.ScriptContext where

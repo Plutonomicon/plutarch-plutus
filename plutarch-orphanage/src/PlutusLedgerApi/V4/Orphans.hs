@@ -2,7 +2,6 @@
 
 module PlutusLedgerApi.V4.Orphans where
 
-import Control.Applicative (asum, (<|>))
 import Control.Monad (guard)
 import Data.Coerce (coerce)
 import Data.Maybe (fromJust)
@@ -29,6 +28,7 @@ import Test.QuickCheck (
   oneof,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 -- | @since 1.4.0
 instance Arbitrary PLA.Rational where
@@ -149,23 +149,13 @@ instance Arbitrary PLA.TxOut where
       <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxOut addr val outD refScript) =
-    asum
-      [ shrAddr
-      , shrVal
-      , shrOutD
-      , shrRefScript
-      ]
-    where
-      shrAddr :: [PLA.TxOut]
-      shrAddr = PLA.TxOut <$> shrink addr <*> pure val <*> pure outD <*> pure refScript
-      shrVal :: [PLA.TxOut]
-      shrVal = do
-        Value.UTxOValue val' <- shrink (Value.UTxOValue val)
-        pure . PLA.TxOut addr val' outD $ refScript
-      shrOutD :: [PLA.TxOut]
-      shrOutD = PLA.TxOut addr val <$> shrink outD <*> pure refScript
-      shrRefScript :: [PLA.TxOut]
-      shrRefScript = PLA.TxOut addr val outD <$> shrink refScript
+    runShrink
+      ( PLA.TxOut
+          <$> neShrink addr
+          <*> neShrinkOver @Value.UTxOValue val
+          <*> neShrink outD
+          <*> neShrink refScript
+      )
 
 -- | @since 1.4.0
 instance CoArbitrary PLA.TxOut where
@@ -208,11 +198,9 @@ instance Arbitrary PLA.AccountBalanceInterval where
     PLA.AccountBalanceLowerBound lb -> PLA.AccountBalanceLowerBound <$> shrink lb
     PLA.AccountBalanceUpperBound ub -> PLA.AccountBalanceUpperBound <$> shrink ub
     PLA.AccountBalanceBothBounds lb ub -> do
-      lb' <- shrink lb
-      ub' <- shrink ub
-      guard (lb < ub')
-      (pure . PLA.AccountBalanceBothBounds lb' $ ub)
-        <|> (pure . PLA.AccountBalanceBothBounds lb $ ub')
+      (lb', ub') <- runShrink ((,) <$> neShrink lb <*> neShrink ub)
+      guard (lb' < ub')
+      pure . PLA.AccountBalanceBothBounds lb' $ ub'
     PLA.AccountBalanceExact b -> PLA.AccountBalanceExact <$> shrink b
 
 -- | @since 1.4.0
@@ -309,11 +297,9 @@ instance Arbitrary PLA.TxInInfo where
   {-# INLINEABLE arbitrary #-}
   arbitrary = PLA.TxInInfo <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxInInfo outRef resolved) = do
-    outRef' <- shrink outRef
-    resolved' <- shrink resolved
-    (pure . PLA.TxInInfo outRef $ resolved')
-      <|> (pure . PLA.TxInInfo outRef' $ resolved)
+  shrink (PLA.TxInInfo outRef resolved) =
+    runShrink
+      (PLA.TxInInfo <$> neShrink outRef <*> neShrink resolved)
 
 -- | @since 1.4.0
 instance Arbitrary PLA.ProtocolVersion where
@@ -323,10 +309,12 @@ instance Arbitrary PLA.ProtocolVersion where
     NonNegative minor <- arbitrary
     pure . PLA.ProtocolVersion major $ minor
   {-# INLINEABLE shrink #-}
-  shrink (PLA.ProtocolVersion major minor) = do
-    NonNegative major' <- shrink (NonNegative major)
-    NonNegative minor' <- shrink (NonNegative minor)
-    pure . PLA.ProtocolVersion major' $ minor'
+  shrink (PLA.ProtocolVersion major minor) =
+    runShrink
+      ( PLA.ProtocolVersion
+          <$> neShrinkOver @(NonNegative Integer) major
+          <*> neShrinkOver @(NonNegative Integer) minor
+      )
 
 -- | @since 1.4.0
 instance Arbitrary PLA.GovernanceActionId where
@@ -371,26 +359,37 @@ instance Arbitrary PLA.GovernanceAction where
   {-# INLINEABLE shrink #-}
   shrink = \case
     PLA.ParameterChange mgid cp msh ->
-      PLA.ParameterChange
-        <$> shrink mgid
-        <*> shrink cp
-        <*> shrink msh
+      runShrink
+        ( PLA.ParameterChange
+            <$> neShrink mgid
+            <*> neShrink cp
+            <*> neShrink msh
+        )
     PLA.HardForkInitiation mgid v ->
-      PLA.HardForkInitiation
-        <$> shrink mgid
-        <*> shrink v
+      runShrink
+        ( PLA.HardForkInitiation
+            <$> neShrink mgid
+            <*> neShrink v
+        )
     PLA.TreasuryWithdrawals wdrls msh ->
-      PLA.TreasuryWithdrawals
-        <$> shrink wdrls
-        <*> shrink msh
+      runShrink
+        ( PLA.TreasuryWithdrawals
+            <$> neShrink wdrls
+            <*> neShrink msh
+        )
     PLA.NoConfidence msh -> PLA.NoConfidence <$> shrink msh
     -- No quorum shrinking
-    PLA.UpdateCommittee mgid creds mems quorum -> do
-      mgid' <- shrink mgid
-      creds' <- shrink creds
-      mems' <- shrink mems
-      pure . PLA.UpdateCommittee mgid' creds' mems' $ quorum
-    PLA.NewConstitution mgid c -> PLA.NewConstitution <$> shrink mgid <*> shrink c
+    PLA.UpdateCommittee mgid creds mems quorum ->
+      runShrink
+        ( PLA.UpdateCommittee
+            <$> neShrink mgid
+            <*> neShrink creds
+            <*> neShrink mems
+            <*> neShrink quorum
+        )
+    PLA.NewConstitution mgid c ->
+      runShrink
+        (PLA.NewConstitution <$> neShrink mgid <*> neShrink c)
     _ -> []
 
 -- | @since 1.4.0
@@ -399,7 +398,8 @@ instance Arbitrary PLA.ProposalProcedure where
   arbitrary = PLA.ProposalProcedure <$> arbitrary <*> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.ProposalProcedure dep raddr ga) =
-    PLA.ProposalProcedure <$> shrink dep <*> pure raddr <*> shrink ga
+    runShrink
+      (PLA.ProposalProcedure <$> neShrink dep <*> pure raddr <*> neShrink ga)
 
 -- | @since 1.4.0
 instance Arbitrary PLA.ScriptPurpose where
@@ -419,9 +419,13 @@ instance Arbitrary PLA.ScriptPurpose where
     PLA.Minting sh cs -> PLA.Minting sh <$> shrink cs
     PLA.Spending sh tor -> PLA.Spending sh <$> shrink tor
     PLA.Withdrawing _ _ -> []
-    PLA.Certifying sh i cert -> PLA.Certifying sh <$> shrink i <*> shrink cert
+    PLA.Certifying sh i cert ->
+      runShrink
+        (PLA.Certifying sh <$> neShrink i <*> neShrink cert)
     PLA.Voting sh v -> PLA.Voting sh <$> shrink v
-    PLA.Proposing sh i pp -> PLA.Proposing sh <$> shrink i <*> shrink pp
+    PLA.Proposing sh i pp ->
+      runShrink
+        (PLA.Proposing sh <$> neShrink i <*> neShrink pp)
     PLA.Guarding sh i -> PLA.Guarding sh <$> shrink i
 
 -- TODO: CoArbitrary, Function
@@ -492,28 +496,29 @@ instance Arbitrary PLA.TxInfo where
         currT
       $ tDonation
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) = do
-    ins' <- getNonEmpty <$> shrink (NonEmpty ins)
-    outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    PLA.TxInfo iid
-      <$> shrink subTxIx
-      <*> pure ins'
-      <*> shrink refIns
-      <*> pure outs'
-      <*> shrink mint
-      <*> shrink certs
-      <*> shrink wdrls
-      <*> shrink directs
-      <*> shrink abints
-      <*> pure valid
-      <*> shrink guards
-      <*> shrink reqGuards
-      <*> shrink reds
-      <*> shrink dats
-      <*> shrink votes
-      <*> shrink pps
-      <*> shrink currT
-      <*> shrink tDonation
+  shrink (PLA.TxInfo iid subTxIx ins refIns outs mint certs wdrls directs abints valid guards reqGuards reds dats votes pps currT tDonation) =
+    runShrink
+      ( PLA.TxInfo
+          <$> neShrink iid
+          <*> neShrink subTxIx
+          <*> neShrinkOver @(NonEmptyList PLA.TxInInfo) ins
+          <*> neShrink refIns
+          <*> neShrinkOver @(NonEmptyList PLA.TxOut) outs
+          <*> neShrink mint
+          <*> neShrink certs
+          <*> neShrink wdrls
+          <*> neShrink directs
+          <*> neShrink abints
+          <*> pure valid
+          <*> neShrink guards
+          <*> neShrink reqGuards
+          <*> neShrink reds
+          <*> neShrink dats
+          <*> neShrink votes
+          <*> neShrink pps
+          <*> neShrink currT
+          <*> neShrink tDonation
+      )
 
 -- TODO: CoArbitrary, Function
 
@@ -560,28 +565,28 @@ instance Arbitrary PLA.TopTxInfoSimplified where
         currT
       $ tDonations
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards reqGuards reds datas votes pps currT tDonations) = do
-    ins' <- getNonEmpty <$> shrink (NonEmpty ins)
-    outs' <- getNonEmpty <$> shrink (NonEmpty outs)
-    PLA.TopTxInfoSimplified
-      <$> shrink ids
-      <*> pure ins'
-      <*> shrink refIns
-      <*> pure outs'
-      <*> shrink mints
-      <*> shrink burns
-      <*> shrink certs
-      <*> shrink wdrls
-      <*> shrink dds
-      <*> pure valid
-      <*> shrink guards
-      <*> shrink reqGuards
-      <*> shrink reds
-      <*> shrink datas
-      <*> shrink votes
-      <*> shrink pps
-      <*> shrink currT
-      <*> shrink tDonations
+  shrink (PLA.TopTxInfoSimplified ids ins refIns outs mints burns certs wdrls dds valid guards reqGuards reds datas votes pps currT tDonations) =
+    runShrink
+      ( PLA.TopTxInfoSimplified
+          <$> neShrink ids
+          <*> neShrinkOver @(NonEmptyList PLA.TxInInfo) ins
+          <*> neShrink refIns
+          <*> neShrinkOver @(NonEmptyList PLA.TxOut) outs
+          <*> neShrink mints
+          <*> neShrink burns
+          <*> neShrink certs
+          <*> neShrink wdrls
+          <*> neShrink dds
+          <*> pure valid
+          <*> neShrink guards
+          <*> neShrink reqGuards
+          <*> neShrink reds
+          <*> neShrink datas
+          <*> neShrink votes
+          <*> neShrink pps
+          <*> neShrink currT
+          <*> neShrink tDonations
+      )
 
 -- TODO: CoArbitrary, Function
 
@@ -616,28 +621,20 @@ instance Arbitrary PLA.ScriptInfo where
   {-# INLINEABLE shrink #-}
   shrink = \case
     PLA.MintingScript cs -> PLA.MintingScript <$> shrink cs
-    PLA.SpendingScript outRef mDat -> do
-      outRef' <- shrink outRef
-      mDat' <- shrink mDat
-      (pure . PLA.SpendingScript outRef $ mDat')
-        <|> (pure . PLA.SpendingScript outRef' $ mDat)
+    PLA.SpendingScript outRef mDat ->
+      runShrink
+        (PLA.SpendingScript <$> neShrink outRef <*> neShrink mDat)
     PLA.WithdrawingScript aid -> PLA.WithdrawingScript <$> shrink aid
-    PLA.CertifyingScript i txCert -> do
-      i' <- shrink i
-      txCert' <- shrink txCert
-      (pure . PLA.CertifyingScript i $ txCert')
-        <|> (pure . PLA.CertifyingScript i' $ txCert)
+    PLA.CertifyingScript i txCert ->
+      runShrink
+        (PLA.CertifyingScript <$> neShrink i <*> neShrink txCert)
     PLA.VotingScript v -> PLA.VotingScript <$> shrink v
-    PLA.ProposingScript i pp -> do
-      i' <- shrink i
-      pp' <- shrink pp
-      (pure . PLA.ProposingScript i $ pp')
-        <|> (pure . PLA.ProposingScript i' $ pp)
-    PLA.GuardingScript i mTxInfo -> do
-      i' <- shrink i
-      mTxInfo' <- shrink mTxInfo
-      (pure . PLA.GuardingScript i $ mTxInfo')
-        <|> (pure . PLA.GuardingScript i' $ mTxInfo)
+    PLA.ProposingScript i pp ->
+      runShrink
+        (PLA.ProposingScript <$> neShrink i <*> neShrink pp)
+    PLA.GuardingScript i mTxInfo ->
+      runShrink
+        (PLA.GuardingScript <$> neShrink i <*> neShrink mTxInfo)
 
 -- TODO: CoArbitrary, Function
 
@@ -647,6 +644,7 @@ instance Arbitrary PLA.ScriptContext where
   arbitrary = PLA.ScriptContext <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.ScriptContext info red si sh) =
-    PLA.ScriptContext <$> shrink info <*> shrink red <*> shrink si <*> pure sh
+    runShrink
+      (PLA.ScriptContext <$> neShrink info <*> neShrink red <*> neShrink si <*> pure sh)
 
 -- TODO: CoArbitrary, Function
