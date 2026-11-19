@@ -50,7 +50,12 @@
                 iohk-nix.overlays.haskell-nix-crypto
                 inputs.herbage.overlays.default
               ];
-              inherit (haskell-nix) config;
+              config = haskell-nix.config // {
+                # The Plutus dependency declares license: NONE.
+                allowUnfreePackages = [
+                  "prettyprinter-configurable-lib-prettyprinter-configurable"
+                ];
+              };
             };
 
           herbage = inputs.herbage.lib { inherit pkgs; };
