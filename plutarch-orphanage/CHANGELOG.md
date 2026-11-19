@@ -9,6 +9,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 ### Changed
 
 - Shrinkers use `quickcheck-helpers` now
+- Fixed the shrinker for the V4 `UpdateCommittee` case potentially getting a
+  zero quorum
+- Fixed `UTxOValue`'s shrinker potentially losing the Ada entry
 
 ## 1.4.0 -- 22-10-2026
 

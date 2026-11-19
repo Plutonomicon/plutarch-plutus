@@ -16,6 +16,7 @@ import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
+import Data.List qualified as List
 import Data.Set qualified as Set
 import PlutusLedgerApi.Orphans.Common (getBlake2b244Hash)
 import PlutusLedgerApi.V1 qualified as PLA
@@ -164,15 +165,28 @@ instance Arbitrary UTxOValue where
     UTxOValue . Value.Value <$> do
       -- To ensure we don't break anything, we shrink in only two ways:
       --
-      -- 1. Dropping keys (outer or inner)
+      -- 1. Dropping keys (inner or outer)
       -- 2. Shrinking amounts
       --
+      -- We _specifically_ exclude Ada from either operation, as this can
+      -- potentially violate a required invariant.
+      --
       -- To make this a bit easier on ourselves, we first 'unpack' the Value
-      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
-      -- of these changes affect order or uniqueness, we're safe.
+      -- completely, shrink the resulting (nested) list, then 'repack'. As
+      -- neither of these changes can affect uniqueness or order, we're safe.
       let asList = fmap AssocMap.toList <$> AssocMap.toList v
-      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getPositive <$> shrink (Positive amount)) inner) asList
-      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
+      case asList of
+        -- We have _only_ the Ada entry, so stop shrinking.
+        [(_, [(_, _)])] -> []
+        -- First 'pull out' the Ada entry, shrink the rest, then put it back
+        _ -> case List.uncons asList of
+          -- Should never happen
+          Nothing -> error "UTxOValue shrinker lost the Ada entry"
+          -- Because we are forced to maintain sort order, the Ada entry will
+          -- always be the first one.
+          Just (adaEntry, rest) -> do
+            shrunkRest <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getPositive <$> shrink (Positive amount)) inner) rest
+            pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ adaEntry : shrunkRest
 
 -- | @since 1.0.0
 deriving via PLA.Value instance CoArbitrary UTxOValue
