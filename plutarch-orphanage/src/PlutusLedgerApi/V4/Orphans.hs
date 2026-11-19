@@ -385,7 +385,7 @@ instance Arbitrary PLA.GovernanceAction where
             <$> neShrink mgid
             <*> neShrink creds
             <*> neShrink mems
-            <*> neShrink quorum
+            <*> pure quorum
         )
     PLA.NewConstitution mgid c ->
       runShrink
