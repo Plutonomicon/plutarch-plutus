@@ -15,6 +15,7 @@ import Test.QuickCheck (
   oneof,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrinkOver, runShrink)
 
 {- | As 'PLA.Credential' is just a wrapper around a hash with a tag, shrinking
 this type doesn't make much sense. Therefore we don't do it.
@@ -65,11 +66,13 @@ instance Arbitrary PLA.StakingCredential where
   shrink = \case
     -- Since Credentials don't shrink, we don't shrink this case
     PLA.StakingHash _ -> []
-    PLA.StakingPtr i j k -> do
-      NonNegative i' <- shrink (NonNegative i)
-      NonNegative j' <- shrink (NonNegative j)
-      NonNegative k' <- shrink (NonNegative k)
-      pure . PLA.StakingPtr i' j' $ k'
+    PLA.StakingPtr i j k ->
+      runShrink
+        ( PLA.StakingPtr
+            <$> neShrinkOver @(NonNegative Integer) i
+            <*> neShrinkOver @(NonNegative Integer) j
+            <*> neShrinkOver @(NonNegative Integer) k
+        )
 
 -- | @since 1.0.0
 instance CoArbitrary PLA.StakingCredential where

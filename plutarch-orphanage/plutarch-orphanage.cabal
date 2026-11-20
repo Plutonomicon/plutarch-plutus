@@ -6,7 +6,7 @@ author:
 
 license:            MIT
 extra-source-files: README.md
-tested-with:        GHC ==9.6.4
+tested-with:        GHC ==9.8.4
 
 common lang
   default-language:   Haskell2010
@@ -75,11 +75,12 @@ library
   build-depends:
     , bytestring
     , containers
-    , plutus-core           >=1.51.0.0
+    , plutus-core
     , plutus-ledger-api
     , plutus-tx
     , prettyprinter
     , QuickCheck
+    , quickcheck-helpers
     , quickcheck-instances
     , these
 

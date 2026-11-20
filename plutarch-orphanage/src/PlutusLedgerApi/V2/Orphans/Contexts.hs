@@ -18,6 +18,7 @@ import Test.QuickCheck (
   functionMap,
   getNonEmpty,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 -- | @since 1.0.2
 instance Arbitrary PLA.TxInInfo where
@@ -25,7 +26,7 @@ instance Arbitrary PLA.TxInInfo where
   arbitrary = PLA.TxInInfo <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxInInfo outref resolved) =
-    PLA.TxInInfo <$> shrink outref <*> shrink resolved
+    runShrink (PLA.TxInInfo <$> neShrink outref <*> neShrink resolved)
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.TxInInfo where
@@ -59,20 +60,22 @@ instance Arbitrary PLA.TxInfo where
       <*> arbitrary -- datums
       <*> arbitrary -- tid
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxInfo ins routs outs fee mint dcert wdrl validRange sigs reds dats tid) = do
-    NonEmpty ins' <- shrink (NonEmpty ins)
-    routs' <- shrink routs
-    NonEmpty outs' <- shrink (NonEmpty outs)
-    Value.FeeValue fee' <- shrink (Value.FeeValue fee)
-    Value.NonAdaValue mint' <- shrink (Value.NonAdaValue mint)
-    dcert' <- shrink dcert
-    wdrl' <- shrink wdrl
-    validRange' <- shrink validRange
-    sigs' <- Set.toList <$> shrink (Set.fromList sigs)
-    reds' <- shrink reds
-    dats' <- shrink dats
-    tid' <- shrink tid
-    pure . PLA.TxInfo ins' routs' outs' fee' mint' dcert' wdrl' validRange' sigs' reds' dats' $ tid'
+  shrink (PLA.TxInfo ins routs outs fee mint dcert wdrl validRange sigs reds dats tid) =
+    runShrink
+      ( PLA.TxInfo
+          <$> neShrinkOver @(NonEmptyList PLA.TxInInfo) ins
+          <*> neShrink routs
+          <*> neShrinkOver @(NonEmptyList PLA.TxOut) outs
+          <*> neShrinkOver @Value.FeeValue fee
+          <*> neShrinkOver @Value.NonAdaValue mint
+          <*> neShrink dcert
+          <*> neShrink wdrl
+          <*> neShrink validRange
+          <*> (Set.toList <$> neShrink (Set.fromList sigs))
+          <*> neShrink reds
+          <*> neShrink dats
+          <*> neShrink tid
+      )
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.TxInfo where

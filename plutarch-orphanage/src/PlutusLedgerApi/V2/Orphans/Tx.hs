@@ -14,6 +14,7 @@ import Test.QuickCheck (
   oneof,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 -- | @since 1.0.0
 instance Arbitrary PLA.OutputDatum where
@@ -66,11 +67,13 @@ instance Arbitrary PLA.TxOut where
       <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxOut addr val od msh) =
-    PLA.TxOut
-      <$> shrink addr
-      <*> (Value.getUtxoValue <$> shrink (Value.UTxOValue val))
-      <*> shrink od
-      <*> shrink msh
+    runShrink
+      ( PLA.TxOut
+          <$> neShrink addr
+          <*> neShrinkOver @Value.UTxOValue val
+          <*> neShrink od
+          <*> neShrink msh
+      )
 
 -- | @since 1.0.0
 instance CoArbitrary PLA.TxOut where

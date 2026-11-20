@@ -35,6 +35,7 @@ import Test.QuickCheck (
   sized,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 -- | @since 1.1.0
 instance Arbitrary PlutusTx.Rational where
@@ -135,10 +136,9 @@ instance Arbitrary PlutusTx.BuiltinData where
       (fmap Builtins.mkB . shrink)
     where
       shrinkConstr :: Integer -> [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
-      shrinkConstr ix dats = do
-        NonNegative ix' <- shrink (NonNegative ix)
-        dats' <- shrink dats
-        pure . Builtins.mkConstr ix' $ dats'
+      shrinkConstr ix dats =
+        runShrink
+          (Builtins.mkConstr <$> neShrinkOver @(NonNegative Integer) ix <*> neShrink dats)
       shrinkMap :: [(PlutusTx.BuiltinData, PlutusTx.BuiltinData)] -> [PlutusTx.BuiltinData]
       shrinkMap kvs = Builtins.mkMap <$> shrink kvs
       shrinkList :: [PlutusTx.BuiltinData] -> [PlutusTx.BuiltinData]
@@ -251,7 +251,6 @@ instance (Arbitrary k, Ord k) => Arbitrary1 (UnsortedAssocMap k) where
       keyList <- Set.toList <$> arbitrary
       unsortedKeyList <- shuffle keyList
       traverse (\key -> (key,) <$> genVal) unsortedKeyList
-
   {-# INLINEABLE liftShrink #-}
   liftShrink shrinkVal (UnsortedAssocMap aMap) =
     UnsortedAssocMap . AssocMap.unsafeFromList <$> do
@@ -262,7 +261,6 @@ instance (Arbitrary k, Ord k) => Arbitrary1 (UnsortedAssocMap k) where
 instance (Arbitrary k, Arbitrary v, Ord k) => Arbitrary (UnsortedAssocMap k v) where
   {-# INLINEABLE arbitrary #-}
   arbitrary = liftArbitrary arbitrary
-
   {-# INLINEABLE shrink #-}
   shrink = liftShrink shrink
 

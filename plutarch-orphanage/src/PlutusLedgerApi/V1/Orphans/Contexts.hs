@@ -18,6 +18,7 @@ import Test.QuickCheck (
   oneof,
   variant,
  )
+import Test.QuickCheck.Helpers (neShrink, neShrinkOver, runShrink)
 
 -- | @since 1.0.2
 instance Arbitrary PLA.TxInInfo where
@@ -25,7 +26,7 @@ instance Arbitrary PLA.TxInInfo where
   arbitrary = PLA.TxInInfo <$> arbitrary <*> arbitrary
   {-# INLINEABLE shrink #-}
   shrink (PLA.TxInInfo outref resolved) =
-    PLA.TxInInfo <$> shrink outref <*> shrink resolved
+    runShrink (PLA.TxInInfo <$> neShrink outref <*> neShrink resolved)
 
 -- | @since 1.0.2
 instance CoArbitrary PLA.TxInInfo where
@@ -57,18 +58,20 @@ instance Arbitrary PLA.TxInfo where
       <*> arbitrary -- data
       <*> arbitrary -- tid
   {-# INLINEABLE shrink #-}
-  shrink (PLA.TxInfo ins outs fee mint dcert wdrl validRange sigs dats tid) = do
-    NonEmpty ins' <- shrink (NonEmpty ins)
-    NonEmpty outs' <- shrink (NonEmpty outs)
-    Value.FeeValue fee' <- shrink (Value.FeeValue fee)
-    Value.MintValue mint' <- shrink (Value.MintValue mint)
-    dcert' <- shrink dcert
-    wdrl' <- shrink wdrl
-    validRange' <- shrink validRange
-    sigs' <- Set.toList <$> shrink (Set.fromList sigs)
-    dats' <- shrink dats
-    tid' <- shrink tid
-    pure . PLA.TxInfo ins' outs' fee' mint' dcert' wdrl' validRange' sigs' dats' $ tid'
+  shrink (PLA.TxInfo ins outs fee mint dcert wdrl validRange sigs dats tid) =
+    runShrink
+      ( PLA.TxInfo
+          <$> neShrinkOver @(NonEmptyList PLA.TxInInfo) ins
+          <*> neShrinkOver @(NonEmptyList PLA.TxOut) outs
+          <*> neShrinkOver @Value.FeeValue fee
+          <*> neShrinkOver @Value.MintValue mint
+          <*> neShrink dcert
+          <*> neShrink wdrl
+          <*> neShrink validRange
+          <*> (Set.toList <$> neShrink (Set.fromList sigs))
+          <*> neShrink dats
+          <*> neShrink tid
+      )
 
 -- | @since 1.0.0
 instance CoArbitrary PLA.TxInfo where

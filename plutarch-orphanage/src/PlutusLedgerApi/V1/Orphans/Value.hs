@@ -16,6 +16,8 @@ import Control.Monad (guard)
 import Data.ByteString (ByteString)
 import Data.ByteString qualified as BS
 import Data.Coerce (coerce)
+import Data.Kind (Type)
+import Data.List qualified as List
 import Data.Set qualified as Set
 import PlutusLedgerApi.Orphans.Common (getBlake2b244Hash)
 import PlutusLedgerApi.V1 qualified as PLA
@@ -164,15 +166,28 @@ instance Arbitrary UTxOValue where
     UTxOValue . Value.Value <$> do
       -- To ensure we don't break anything, we shrink in only two ways:
       --
-      -- 1. Dropping keys (outer or inner)
+      -- 1. Dropping keys (inner or outer)
       -- 2. Shrinking amounts
       --
+      -- We _specifically_ exclude Ada from either operation, as this can
+      -- potentially violate a required invariant.
+      --
       -- To make this a bit easier on ourselves, we first 'unpack' the Value
-      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
-      -- of these changes affect order or uniqueness, we're safe.
+      -- completely, shrink the resulting (nested) list, then 'repack'. As
+      -- neither of these changes can affect uniqueness or order, we're safe.
       let asList = fmap AssocMap.toList <$> AssocMap.toList v
-      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getPositive <$> shrink (Positive amount)) inner) asList
-      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
+      case asList of
+        -- We have _only_ the Ada entry, so stop shrinking.
+        [(_, [(_, _)])] -> []
+        -- First 'pull out' the Ada entry, shrink the rest, then put it back
+        _ -> case List.uncons asList of
+          -- Should never happen
+          Nothing -> error "UTxOValue shrinker lost the Ada entry"
+          -- Because we are forced to maintain sort order, the Ada entry will
+          -- always be the first one.
+          Just (adaEntry, rest) -> do
+            shrunkRest <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getPositive <$> shrink (Positive amount)) inner) rest
+            pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ adaEntry : shrunkRest
 
 -- | @since 1.0.0
 deriving via PLA.Value instance CoArbitrary UTxOValue
@@ -355,7 +370,8 @@ instance Function FeeValue where
 getFeeValue :: FeeValue -> PLA.Value
 getFeeValue = coerce
 
-{- | Similar to 'NonAdaValue', but also does not have nonzero amounts.
+{- | Similar to 'NonAdaValue', but that also does not zero amounts of anything
+/other/ that Ada.
 
 = Note
 
@@ -412,15 +428,23 @@ instance Arbitrary MintValue where
     MintValue . withZeroAda . Value.Value <$> do
       -- To ensure we don't break anything, we shrink in only two ways:
       --
-      -- 1. Dropping keys (outer or inner)
+      -- 1. Dropping keys (inner or outer)
       -- 2. Shrinking amounts
       --
+      -- We _specifically_ exclude Ada from either operation, as this can
+      -- potentially violate a required invariant.
+      --
       -- To make this a bit easier on ourselves, we first 'unpack' the Value
-      -- completely, shrink the resulting (nested) list, then 'repack'. As neither
-      -- of these changes affect order or uniqueness, we're safe.
+      -- completely, shrink the resulting (nested) list, then 'repack'. As
+      -- neither of these changes can affect uniqueness, we're safe.
       let asList = fmap AssocMap.toList <$> AssocMap.toList v
-      shrunk <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getNonZero <$> shrink (NonZero amount)) inner) asList
-      pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ shrunk
+      -- We know that there must be a zero Ada entry, so if this fails, we've
+      -- done something very bad.
+      case findAndRemove Value.adaSymbol asList of
+        Nothing -> error "MintValue shrinker lost the zero Ada entry"
+        Just (adaEntry, rest) -> do
+          shrunkRest <- liftShrink (\(cs, inner) -> (cs,) <$> liftShrink (\(tn, amount) -> (tn,) . getNonZero <$> shrink (NonZero amount)) inner) rest
+          pure . AssocMap.unsafeFromList . fmap (fmap AssocMap.unsafeFromList) $ adaEntry : shrunkRest
 
 -- | @since 1.0.3
 deriving via PLA.Value instance CoArbitrary MintValue
@@ -447,3 +471,25 @@ pruneZeros (Value.Value assets) =
     assocMapNonEmpty :: [(k, v)] -> Maybe (AssocMap.Map k v)
     assocMapNonEmpty [] = Nothing
     assocMapNonEmpty lst = Just $ AssocMap.unsafeFromList lst
+
+-- Helpers
+
+-- Like List.delete, but also produces the item it found. If it didn't find
+-- anything, produces 'Nothing'.
+findAndRemove ::
+  forall (a :: Type) (b :: Type).
+  Eq a =>
+  a -> [(a, b)] -> Maybe ((a, b), [(a, b)])
+findAndRemove k = \case
+  -- cannot possibly find anything
+  [] -> Nothing
+  (x : xs) -> do
+    (leftSide, found, rightSide) <- go x [] xs
+    pure (found, foldr (:) leftSide rightSide)
+    where
+      go :: (a, b) -> [(a, b)] -> [(a, b)] -> Maybe ([(a, b)], (a, b), [(a, b)])
+      go curr@(k', _) leftSide rightSide
+        | k' == k = pure (leftSide, curr, rightSide)
+        | otherwise = case rightSide of
+            [] -> Nothing
+            (r : rs) -> go r (curr : leftSide) rs
